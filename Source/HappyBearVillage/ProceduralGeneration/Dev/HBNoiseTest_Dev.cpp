@@ -55,6 +55,7 @@ void AHBNoiseTest_Dev::MapDataTest()
 	Settings.Seed = Seed;
 	
 	FHBMapData MapData = Generator->GenerateMapData(Settings);
+	UE_LOG(LogTemp, Log, TEXT("[String Size : %d]"), MapData.MapAs1D.Len());
 	UE_LOG(LogTemp, Log, TEXT("[MapData] : \n%s"), *MapData.MapAs1D);
 }
 
