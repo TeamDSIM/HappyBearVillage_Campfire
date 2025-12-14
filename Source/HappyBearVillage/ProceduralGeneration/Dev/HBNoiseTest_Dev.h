@@ -16,12 +16,11 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	void NoiseTest();
+	void MapDataGenerateTest();
+	void MapDataTest();
 
 public:
 	UPROPERTY(EditAnywhere)
 	float Seed = 0.125f;
-
-protected:
-	UPROPERTY()
-	class UHBPerlinNoise* PerlinNoise;  
 };
