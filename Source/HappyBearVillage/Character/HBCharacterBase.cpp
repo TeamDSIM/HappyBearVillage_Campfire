@@ -11,6 +11,19 @@ AHBCharacterBase::AHBCharacterBase()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	CurrentWeapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
+	CurrentWeapon->SetupAttachment(GetMesh(), TEXT("RightHandWeaponSocket"));
+	CurrentWeapon->SetCollisionProfileName(TEXT("NoCollision"));
+	CurrentWeapon->SetIsReplicated(true);
+	CurrentWeapon->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::WorldSpaceRepresentation;
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> WeaponMeshRef(
+		TEXT("/Game/Assets/Fab/Baseball_Bat/baseball_bat/StaticMeshes/baseball_bat.baseball_bat"));
+	if (WeaponMeshRef.Succeeded())
+	{
+		WeaponMesh = WeaponMeshRef.Object;
+	}
 }
 
 void AHBCharacterBase::PostInitializeComponents()
@@ -36,30 +49,55 @@ void AHBCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void AHBCharacterBase::EquipWeapon(TSubclassOf<AHBWeaponBase> WeaponClass)
+void AHBCharacterBase::ServerRPCSetEquipped_Implementation(bool bEquipped)
 {
-	UE_LOG(LogTemp, Log, TEXT("EquipWeapon 호출"));
-	if (!WeaponClass)
+	bWeaponEquipped = bEquipped;
+	OnRep_WeaponEquipped();
+}
+
+void AHBCharacterBase::EquipWeapon()
+{
+	if (HasAuthority())
 	{
-		return;
+		UE_LOG(LogTemp, Log, TEXT("EquipWeapon 호출"));
+		
+		bWeaponEquipped = true;
+		OnRep_WeaponEquipped();
 	}
-
-	FActorSpawnParameters Params;
-	Params.Owner = this;
-	Params.Instigator = this;
-
-	AHBWeaponBase* NewWeapon = GetWorld()->SpawnActor<AHBWeaponBase>(
-		WeaponClass,
-		FTransform::Identity,
-		Params
-	);
-
-	if (NewWeapon)
+	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("NewWeapon = %s"), *NewWeapon->GetName());
-		UE_LOG(LogTemp, Log, TEXT("EquipWeapon NetMode: %d, HasAuthority: %d"), (int32)GetNetMode(), HasAuthority());
-		UE_LOG(LogTemp, Warning, TEXT("World: %s"),	*GetWorld()->GetName());
-		CurrentWeapon = NewWeapon;
+		ServerRPCSetEquipped(true);
+	}
+}
+
+void AHBCharacterBase::UnEquipWeapon()
+{
+	UE_LOG(LogTemp, Log, TEXT("UnEquipWeapon 호출"));
+	if (CurrentWeapon->GetStaticMesh() != nullptr)
+	{
+		CurrentWeapon->SetStaticMesh(nullptr);
+	}
+}
+
+void AHBCharacterBase::SetWeaponMesh()
+{
+	if (bWeaponEquipped == true)
+	{
+		if (WeaponMesh != nullptr)
+		{
+			if (CurrentWeapon->GetStaticMesh() == nullptr)
+			{
+				CurrentWeapon->SetStaticMesh(WeaponMesh);
+			}
+		}
+	}
+	
+	else
+	{
+		if (CurrentWeapon->GetStaticMesh() != nullptr)
+		{
+			CurrentWeapon->SetStaticMesh(nullptr);
+		}
 	}
 }
 
@@ -67,21 +105,10 @@ void AHBCharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AHBCharacterBase, CurrentWeapon);
+	DOREPLIFETIME(AHBCharacterBase, bWeaponEquipped);
 }
 
-void AHBCharacterBase::OnRep_CurrentWeapon()
-{
-	UE_LOG(LogTemp, Log, TEXT("OnRep_CurrentWeapon 호출"));
-
-	if (CurrentWeapon != nullptr)
-	{
-		return;
-	}
-
-	CurrentWeapon->AttachToComponent(
-		GetMesh(),
-		FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-		TEXT("RightHandWeaponSocket")
-	);
+void AHBCharacterBase::OnRep_WeaponEquipped()
+{	
+	SetWeaponMesh();
 }

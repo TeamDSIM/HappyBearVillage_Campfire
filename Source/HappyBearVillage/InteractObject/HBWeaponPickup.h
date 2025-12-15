@@ -25,6 +25,4 @@ public:
 	virtual bool CanInteract(AActor* Interactor) const override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AHBWeaponBase> WeaponClass;
 };

@@ -16,7 +16,7 @@ void AHBWeaponPickup::ExecuteInteraction(AActor* Interactor)
 	AHBCharacterBase* Character = Cast<AHBCharacterBase>(Interactor);
 	if (Character)
 	{
-		Character->EquipWeapon(WeaponClass);
+		Character->EquipWeapon();
 	}
 }
 
@@ -30,7 +30,7 @@ bool AHBWeaponPickup::CanInteract(AActor* Interactor) const
 	AHBCharacterBase* Character = Cast<AHBCharacterBase>(Interactor);
 	if (Character)
 	{
-		if (Character->GetCurrentWeapon() == nullptr)
+		if (Character->GetCurrentWeapon()->GetStaticMesh() == nullptr)
 		{
 			return true;
 		}

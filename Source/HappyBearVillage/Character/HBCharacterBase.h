@@ -38,17 +38,29 @@ protected:
 	// @Todo:
 	// 추가해야할 것
 	// 스탯, 애니메이션, 공격, 기절, 무기 장착
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeapon)
-	TObjectPtr<AHBWeaponBase> CurrentWeapon;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<UStaticMeshComponent> CurrentWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UStaticMesh> WeaponMesh;
+
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponEquipped)
+	uint8 bWeaponEquipped : 1;
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPCSetEquipped(bool bEquipped);
 
 public:
-	FORCEINLINE AHBWeaponBase* GetCurrentWeapon() { return CurrentWeapon; }
+	FORCEINLINE UStaticMeshComponent* GetCurrentWeapon() { return CurrentWeapon; }
 
-	void EquipWeapon(TSubclassOf<AHBWeaponBase> WeaponClass);
+	void EquipWeapon();
+	void UnEquipWeapon();
+
+	virtual void SetWeaponMesh();
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-
+	
 	UFUNCTION()
-	void OnRep_CurrentWeapon();
+	void OnRep_WeaponEquipped();
 };

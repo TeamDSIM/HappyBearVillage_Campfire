@@ -27,7 +27,7 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	FPSCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FPSCamera"));
 	FPSCameraComponent->SetupAttachment(FPSMeshComponent);
 
-	// @Todo : 카메라 오프셋 구해서 머리에 붙이기
+	// 카메라 오프셋 구해서 머리에 붙이기
 	FPSCameraComponent->SetRelativeLocationAndRotation(FVector(0.0f, -75.0f, 560.0f), FRotator(0.0f, 90.0f, -90.0f));
 	FPSCameraComponent->bUsePawnControlRotation = true;
 
@@ -107,6 +107,14 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 	GetMesh()->SetAnimInstanceClass(AnimInstanceClass);
 	FPSMeshComponent->SetAnimInstanceClass(AnimInstanceClass);
+
+	// 1인칭 무기 메시 설정
+	FPSCurrentWeapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FPSWeapon"));
+	FPSCurrentWeapon->SetupAttachment(FPSMeshComponent, TEXT("RightHandWeaponSocket"));
+	FPSCurrentWeapon->SetCollisionProfileName(TEXT("NoCollision"));
+	FPSCurrentWeapon->SetIsReplicated(true);
+	FPSCurrentWeapon->SetOnlyOwnerSee(true);
+	FPSCurrentWeapon->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::FirstPerson;
 }
 
 void AHBCharacterPlayer::BeginPlay()
@@ -184,9 +192,11 @@ void AHBCharacterPlayer::Interaction()
 	UE_LOG(LogTemp, Log, TEXT("Interaction 호출"));
 		if (InteractionTarget != nullptr)
 		{
+		UE_LOG(LogTemp, Log, TEXT("InteractionTarget 있음"));
 			IHBInteractableInterface* InteractionActor = Cast<IHBInteractableInterface>(InteractionTarget);
 			if (InteractionActor)
 			{
+				UE_LOG(LogTemp, Log, TEXT("InteractableInterface 도 있음"));
 				InteractionActor->Interact(this);
 			}
 		}
@@ -246,12 +256,32 @@ void AHBCharacterPlayer::InteractionTraceTick()
 	{
 		if (Interactable->CanInteract(this))
 		{
+			UE_LOG(LogTemp, Log, TEXT("InteractionTarget = %s"), *HitActor->GetName());
 			InteractionTarget = HitActor;
 		}
-	}
-	else
+	}	
+}
+
+void AHBCharacterPlayer::SetWeaponMesh()
+{
+	Super::SetWeaponMesh();
+
+	if (bWeaponEquipped == true)
 	{
-		InteractionTarget = nullptr;
+		if (WeaponMesh != nullptr)
+		{
+			if (FPSCurrentWeapon->GetStaticMesh() == nullptr)
+			{
+				FPSCurrentWeapon->SetStaticMesh(WeaponMesh);
+			}
+		}
 	}
 	
+	else
+	{
+		if (FPSCurrentWeapon->GetStaticMesh() != nullptr)
+		{
+			FPSCurrentWeapon->SetStaticMesh(nullptr);
+		}
+	}
 }

@@ -79,6 +79,9 @@ public:
 	// 1인칭 카메라에서만 보이는 메시
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	TObjectPtr<USkeletalMeshComponent> FPSMeshComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<UStaticMeshComponent> FPSCurrentWeapon;
 
 
 	// 애님 섹션
@@ -110,4 +113,6 @@ protected:
 
 	UFUNCTION()
 	void InteractionTraceTick();
+
+	virtual void SetWeaponMesh() override;
 };
