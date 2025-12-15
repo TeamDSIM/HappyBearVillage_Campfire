@@ -45,4 +45,16 @@ protected:
 	// 이동 여부를 판단할 때 사용할 최소값
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	float MovingThreshold;
+
+	// 떨어지는지 여부
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+	uint8 bIsFalling : 1;
+
+	// 점프 여부
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+	uint8 bIsJumping : 1;
+
+	// 점프 여부를 판단할 때 사용할 최소값
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+	float JumpingThreshold;
 };

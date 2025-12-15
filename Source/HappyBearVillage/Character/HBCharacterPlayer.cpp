@@ -27,7 +27,7 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	FPSCameraComponent->SetupAttachment(FPSMeshComponent);
 
 	// @Todo : 카메라 오프셋 구해서 머리에 붙이기
-	FPSCameraComponent->SetRelativeLocationAndRotation(FVector(0.0f, -75.0f, 510.0f), FRotator(0.0f, 90.0f, -90.0f));
+	FPSCameraComponent->SetRelativeLocationAndRotation(FVector(0.0f, -75.0f, 560.0f), FRotator(0.0f, 90.0f, -90.0f));
 	FPSCameraComponent->bUsePawnControlRotation = true;
 
 	FPSCameraComponent->bEnableFirstPersonFieldOfView = true;
@@ -69,6 +69,13 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	if (MouseLookActionRef.Succeeded())
 	{
 		MouseLookAction = MouseLookActionRef.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> JumpActionRef(
+		TEXT("/Game/Character/Input/Action/IA_Jump.IA_Jump"));
+	if (JumpActionRef.Succeeded())
+	{
+		JumpAction = JumpActionRef.Object;
 	}
 
 	// 메시 설정
@@ -132,6 +139,9 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(InteractionAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::Interaction);
 		
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::MouseLook);
+
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	}
 }
 

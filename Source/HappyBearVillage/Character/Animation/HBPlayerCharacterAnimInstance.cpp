@@ -10,6 +10,9 @@ UHBPlayerCharacterAnimInstance::UHBPlayerCharacterAnimInstance()
 {
 	// 이동 여부 최소값 설정
 	MovingThreshold = 3.f;
+
+	// 점프 여부 최소값 설정
+	JumpingThreshold = 100.f;
 }
 
 void UHBPlayerCharacterAnimInstance::NativeInitializeAnimation()
@@ -41,5 +44,8 @@ void UHBPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 		// Idle 여부(1(True), 0(False))
 		bIsIdle = MoveSpeed < MovingThreshold;
+
+		bIsFalling = Movement->IsFalling();
+		bIsJumping = bIsFalling & (Velocity.Z > JumpingThreshold);
 	}
 }
