@@ -7,6 +7,8 @@ public class HappyBearVillage : ModuleRules
 	public HappyBearVillage(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        
+        PublicIncludePaths.AddRange(new string[] { "HappyBearVillage" });
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", 
 			"CoreUObject", 
