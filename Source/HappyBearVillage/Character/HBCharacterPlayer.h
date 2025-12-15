@@ -56,10 +56,10 @@ public:
 	void Move(const FInputActionValue& Value);
 
 	UFUNCTION()
-	void Attack(const FInputActionValue& Value);
+	void Attack();
 
 	UFUNCTION()
-	void Interaction(const FInputActionValue& Value);
+	void Interaction();
 
 	UFUNCTION()
 	void MouseLook(const FInputActionValue& Value);
@@ -85,4 +85,29 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, Category = Animation)
 	TSubclassOf<UAnimInstance> AnimInstanceClass;
+
+	// 상호작용 섹션
+protected:
+	FTimerHandle InteracticonTraceTimerHandle;
+
+	// 플레이어의 시선 비교용
+	FRotator LastControlRotation;
+
+	// 상호작용 트레이스할 거리
+	UPROPERTY(EditDefaultsOnly, Category = Interaction)
+	float InteractionDistance = 200.f;
+
+	// trace 할 시간 간격 값
+	UPROPERTY(EditDefaultsOnly, Category = Interaction)
+	float InteractionTraceInterval = 0.1f; // 10Hz
+
+	// 시선 변경 시 trace 할 각도 값
+	UPROPERTY(EditDefaultsOnly, Category = Interaction)
+	float ViewAngleThreshold = 0.5f;	// degrees
+
+	UPROPERTY()
+	TObjectPtr<AActor> InteractionTarget;
+
+	UFUNCTION()
+	void InteractionTraceTick();
 };

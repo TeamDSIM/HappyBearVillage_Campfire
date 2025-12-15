@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "HBCharacterBase.generated.h"
 
+class AHBWeaponBase;
+
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBCharacterBase : public ACharacter
 {
@@ -22,14 +24,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	
 protected:
 	// ACharacter 에 있는 것
 	// Mesh, CharacterMovement, CapsuleComponent, Arrow
@@ -37,5 +38,17 @@ protected:
 	// @Todo:
 	// 추가해야할 것
 	// 스탯, 애니메이션, 공격, 기절, 무기 장착
-	
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeapon)
+	TObjectPtr<AHBWeaponBase> CurrentWeapon;
+
+public:
+	FORCEINLINE AHBWeaponBase* GetCurrentWeapon() { return CurrentWeapon; }
+
+	void EquipWeapon(TSubclassOf<AHBWeaponBase> WeaponClass);
+
+protected:
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void OnRep_CurrentWeapon();
 };

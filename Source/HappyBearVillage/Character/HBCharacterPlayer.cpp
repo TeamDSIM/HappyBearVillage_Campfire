@@ -6,6 +6,7 @@
 #include "InteractiveToolManager.h"
 #include "InputMappingContext.h"
 #include "Animation/HBPlayerCharacterAnimInstance.h"
+#include "Interface/HBInteractableInterface.h"
 
 AHBCharacterPlayer::AHBCharacterPlayer()
 {
@@ -17,7 +18,7 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 
 	FPSMeshComponent->SetRelativeScale3D(FVector(0.8f, 0.8f, 0.8f));
 	FPSMeshComponent->SetRelativeLocation(FVector(0.f, 0.f, 290.f));
-	
+
 
 	GetMesh()->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::WorldSpaceRepresentation;
 	FPSMeshComponent->SetCollisionProfileName(FName("NoCollision"));
@@ -56,14 +57,14 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	{
 		AttackAction = AttackActionRef.Object;
 	}
-	
+
 	static ConstructorHelpers::FObjectFinder<UInputAction> InteractionActionRef(
 		TEXT("/Game/Character/Input/Action/IA_Interaction.IA_Interaction"));
 	if (InteractionActionRef.Succeeded())
 	{
 		InteractionAction = InteractionActionRef.Object;
 	}
-	
+
 	static ConstructorHelpers::FObjectFinder<UInputAction> MouseLookActionRef(
 		TEXT("/Game/Character/Input/Action/IA_MouseLook.IA_MouseLook"));
 	if (MouseLookActionRef.Succeeded())
@@ -106,7 +107,6 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 	GetMesh()->SetAnimInstanceClass(AnimInstanceClass);
 	FPSMeshComponent->SetAnimInstanceClass(AnimInstanceClass);
-	
 }
 
 void AHBCharacterPlayer::BeginPlay()
@@ -123,22 +123,37 @@ void AHBCharacterPlayer::BeginPlay()
 		{
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
-	}	
+	}
+
+	if (IsLocallyControlled())
+	{
+		LastControlRotation = GetControlRotation();
+
+		GetWorldTimerManager().SetTimer(
+			InteracticonTraceTimerHandle,
+			this,
+			&AHBCharacterPlayer::InteractionTraceTick,
+			InteractionTraceInterval,
+			true
+		);
+	}
 }
 
 void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
+
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	if (EnhancedInputComponent)
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::Move);
-		
+
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::Attack);
-		EnhancedInputComponent->BindAction(InteractionAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::Interaction);
-		
-		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::MouseLook);
+		EnhancedInputComponent->BindAction(InteractionAction, ETriggerEvent::Triggered, this,
+		                                   &AHBCharacterPlayer::Interaction);
+
+		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this,
+		                                   &AHBCharacterPlayer::MouseLook);
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -156,15 +171,28 @@ void AHBCharacterPlayer::Move(const FInputActionValue& Value)
 		const FVector Forward = GetActorForwardVector();
 		AddMovementInput(Forward, MovementValue.Y);
 	}
-	
 }
 
-void AHBCharacterPlayer::Attack(const FInputActionValue& Value)
+void AHBCharacterPlayer::Attack()
 {
 }
 
-void AHBCharacterPlayer::Interaction(const FInputActionValue& Value)
+void AHBCharacterPlayer::Interaction()
 {
+	if (IsLocallyControlled())
+	{
+	UE_LOG(LogTemp, Log, TEXT("Interaction 호출"));
+		if (InteractionTarget != nullptr)
+		{
+			IHBInteractableInterface* InteractionActor = Cast<IHBInteractableInterface>(InteractionTarget);
+			if (InteractionActor)
+			{
+				InteractionActor->Interact(this);
+			}
+		}
+
+		InteractionTarget = nullptr;
+	}
 }
 
 void AHBCharacterPlayer::MouseLook(const FInputActionValue& Value)
@@ -176,4 +204,54 @@ void AHBCharacterPlayer::MouseLook(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisValue.X);
 		AddControllerPitchInput(LookAxisValue.Y);
 	}
+}
+
+void AHBCharacterPlayer::InteractionTraceTick()
+{
+	const FRotator CurrentRotation = GetControlRotation();
+
+	// 시선 변화 체크 시 기준치를 넘지 않았으면 스킵
+	if (CurrentRotation.Equals(LastControlRotation, ViewAngleThreshold))
+	{
+		return;
+	}
+
+	LastControlRotation = CurrentRotation;
+
+	FVector Start = FPSCameraComponent->GetComponentLocation();
+	FVector End = Start + (FPSCameraComponent->GetForwardVector() * InteractionDistance);
+
+	// 트레이스 진행
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		Hit,
+		Start,
+		End,
+		ECC_GameTraceChannel1,
+		Params
+	);
+
+	AActor* HitActor = Hit.GetActor();
+	if (!HitActor)
+	{
+		InteractionTarget = nullptr;
+		 return;
+	}
+
+	IHBInteractableInterface* Interactable = Cast<IHBInteractableInterface>(HitActor);
+	if (Interactable)
+	{
+		if (Interactable->CanInteract(this))
+		{
+			InteractionTarget = HitActor;
+		}
+	}
+	else
+	{
+		InteractionTarget = nullptr;
+	}
+	
 }
