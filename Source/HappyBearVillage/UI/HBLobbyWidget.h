@@ -9,6 +9,9 @@
 /**
  * 
  */
+
+class UMultiplayerSessionsSubsystem;
+
 UCLASS()
 class HAPPYBEARVILLAGE_API UHBLobbyWidget : public UUserWidget
 {
@@ -18,6 +21,9 @@ protected:
 	virtual void NativeConstruct() override;
 
 private:
+
+	UPROPERTY()
+	TObjectPtr< UMultiplayerSessionsSubsystem> MultiplayerSessionsSubsystem;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* HostButton;

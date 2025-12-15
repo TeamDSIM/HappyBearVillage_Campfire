@@ -3,12 +3,19 @@
 
 #include "HBLobbyWidget.h"
 #include "Components/Button.h"
-
+#include "Engine/GameInstance.h"
+#include "../Plugins/MultiPlayerSessions//Source/MultiPlayerSessions/Public/MultiplayerSessionsSubsystem.h"
 
 //화면에 나타날 준비가 모두 끝난 경우
 void UHBLobbyWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	if (UGameInstance* GI = GetGameInstance())
+	{
+		MultiplayerSessionsSubsystem = GI->GetSubsystem<UMultiplayerSessionsSubsystem>();
+	}
+
 	if (HostButton)
 	{
 		HostButton->OnClicked.AddDynamic(this, &ThisClass::HostButtonClicked);
