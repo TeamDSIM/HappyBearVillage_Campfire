@@ -20,10 +20,23 @@ void AHBPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	HBLobbyWidget = CreateWidget<UHBLobbyWidget>(this, HBLobbyWidgetClass);
-
-	if (HBLobbyWidget)
+	if (!IsLocalController())
 	{
-		HBLobbyWidget->LobbySetup();
+		return;
 	}
+
+	if (!HBLobbyWidget)
+	{
+		HBLobbyWidget = CreateWidget<UHBLobbyWidget>(this, HBLobbyWidgetClass);
+		HBLobbyWidget->AddToViewport();
+
+	}
+
+	FInputModeUIOnly InputMode;
+	InputMode.SetWidgetToFocus(HBLobbyWidget->TakeWidget());
+	SetInputMode(InputMode);
+	SetShowMouseCursor(true);
+
+	//HBLobbyWidget->LobbySetup();
+
 }
