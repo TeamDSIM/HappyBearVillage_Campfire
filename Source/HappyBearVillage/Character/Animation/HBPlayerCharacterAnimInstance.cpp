@@ -3,6 +3,7 @@
 
 #include "Character/Animation/HBPlayerCharacterAnimInstance.h"
 
+#include "KismetAnimationLibrary.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -41,6 +42,9 @@ void UHBPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 		// 이동 속력
 		MoveSpeed = Velocity.Size2D();
+
+		// 이동 방향
+		//Direction = UKismetAnimationLibrary::CalculateDirection()
 
 		// Idle 여부(1(True), 0(False))
 		bIsIdle = MoveSpeed < MovingThreshold;

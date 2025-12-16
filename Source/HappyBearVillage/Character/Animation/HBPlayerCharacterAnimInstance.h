@@ -38,6 +38,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	float MoveSpeed;
 
+	// 이동 방향
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
+	float Direction = 0.f;
+
 	// 이동 여부
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	uint8 bIsIdle : 1;
