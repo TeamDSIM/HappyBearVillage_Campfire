@@ -53,6 +53,8 @@ void AHBCharacterBase::ServerRPCSetEquipped_Implementation(bool bEquipped)
 {
 	bWeaponEquipped = bEquipped;
 	OnRep_WeaponEquipped();
+
+	//SetWeaponMesh();
 }
 
 void AHBCharacterBase::EquipWeapon()
@@ -109,6 +111,8 @@ void AHBCharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 }
 
 void AHBCharacterBase::OnRep_WeaponEquipped()
-{	
-	SetWeaponMesh();
+{
+	GetWorldTimerManager().SetTimerForNextTick(this, &AHBCharacterBase::SetWeaponMesh);
+	//SetWeaponMesh();
 }
+
