@@ -21,6 +21,9 @@ void UHBLobbyWidget::NativeConstruct()
 		//MultiCast Delegate 바인딩
 		MultiplayerSessionsSubsystem->MultiplayerOnCreateSessionComplete.AddUObject(
 			this, &ThisClass::OnCreateSessionComplete);
+
+		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(
+			this, &ThisClass::OnFindSessionsComplete);
 	}
 
 	if (HostButton)
@@ -50,10 +53,22 @@ void UHBLobbyWidget::JoinButtonClicked()
 
 	UE_LOG(LogTemp, Log, TEXT("Client Joined the Room"));
 
-
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->FindSessions(10000);
+	}
 }
 
 void UHBLobbyWidget::OnCreateSessionComplete(bool bWasSuccessful)
 {
 	UE_LOG(LogTemp, Log, TEXT("CreateSessionComplete: %s"), bWasSuccessful ? TEXT("Success") : TEXT("Fail"));
+
+}
+
+void UHBLobbyWidget::OnFindSessionsComplete(const TArray<FOnlineSessionSearchResult>& Results, bool bWasSuccessful)
+{
+	if (!bWasSuccessful || Results.Num() == 0) return;
+
+	// (나중에 MatchType 필터링 추가 권장)
+	MultiplayerSessionsSubsystem->JoinSession(Results[0]);
 }

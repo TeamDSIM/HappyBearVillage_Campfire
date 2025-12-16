@@ -38,5 +38,6 @@ private:
 	void JoinButtonClicked();
 
 	void OnCreateSessionComplete(bool bWasSuccessful);
+	void OnFindSessionsComplete(const TArray<FOnlineSessionSearchResult>& Results, bool bWasSuccessful);
 	
 };
