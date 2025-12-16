@@ -183,6 +183,17 @@ void AHBCharacterPlayer::Move(const FInputActionValue& Value)
 
 void AHBCharacterPlayer::Attack()
 {
+	if (bCanAttack)
+	{
+		// @Todo : 공격 구현
+
+		if (!HasAuthority())
+		{
+			// 애니메이션은 로컬에서 돌림
+		}
+
+		// ServerRPC 공격 실행
+	}
 }
 
 void AHBCharacterPlayer::Interaction()
@@ -284,4 +295,19 @@ void AHBCharacterPlayer::SetWeaponMesh()
 			FPSCurrentWeapon->SetStaticMesh(nullptr);
 		}
 	}
+}
+
+void AHBCharacterPlayer::AttackHitCheck()
+{
+	
+}
+
+void AHBCharacterPlayer::ServerRPCAttack_Implementation(float AttackStartTime)
+{
+	// 
+}
+
+bool AHBCharacterPlayer::ServerRPCAttack_Validate(float AttackStartTime)
+{
+	return true;
 }

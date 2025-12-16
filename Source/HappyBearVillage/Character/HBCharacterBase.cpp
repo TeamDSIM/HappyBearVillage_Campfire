@@ -52,9 +52,9 @@ void AHBCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void AHBCharacterBase::ServerRPCSetEquipped_Implementation(bool bEquipped)
 {
 	bWeaponEquipped = bEquipped;
-	OnRep_WeaponEquipped();
+	//OnRep_WeaponEquipped();
 
-	//SetWeaponMesh();
+	SetWeaponMesh();
 }
 
 void AHBCharacterBase::EquipWeapon()
@@ -114,5 +114,9 @@ void AHBCharacterBase::OnRep_WeaponEquipped()
 {
 	GetWorldTimerManager().SetTimerForNextTick(this, &AHBCharacterBase::SetWeaponMesh);
 	//SetWeaponMesh();
+}
+
+void AHBCharacterBase::AttackHitCheck()
+{
 }
 

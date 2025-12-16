@@ -31,7 +31,7 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 
-	// 입력 섹션
+	// 입력 섹션 ===========================================
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TObjectPtr<UInputMappingContext> InputMappingContext;
@@ -84,12 +84,15 @@ public:
 	TObjectPtr<UStaticMeshComponent> FPSCurrentWeapon;
 
 
-	// 애님 섹션
+	// 애님 섹션 ===========================================
 protected:
 	UPROPERTY(EditAnywhere, Category = Animation)
 	TSubclassOf<UAnimInstance> AnimInstanceClass;
 
-	// 상호작용 섹션
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<UAnimMontage> AttackMontage;
+
+	// 상호작용 섹션 ===========================================
 protected:
 	FTimerHandle InteracticonTraceTimerHandle;
 
@@ -115,4 +118,15 @@ protected:
 	void InteractionTraceTick();
 
 	virtual void SetWeaponMesh() override;
+
+	// 공격 섹션 ===========================================
+	UPROPERTY()
+	uint8 bCanAttack : 1;
+
+	virtual void AttackHitCheck() override;
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerRPCAttack(float AttackStartTime);
+
+	
 };

@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interface/HBAttackAnimationInterface.h"
 #include "HBCharacterBase.generated.h"
 
 class AHBWeaponBase;
 
 UCLASS()
-class HAPPYBEARVILLAGE_API AHBCharacterBase : public ACharacter
+class HAPPYBEARVILLAGE_API AHBCharacterBase : public ACharacter, public IHBAttackAnimationInterface
 {
 	GENERATED_BODY()
 
@@ -60,8 +61,11 @@ public:
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-	
+
 	UFUNCTION()
 	void OnRep_WeaponEquipped();
 
+	// 인터페이스 구현
+protected:
+	virtual void AttackHitCheck() override;
 };
