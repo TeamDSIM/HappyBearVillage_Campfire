@@ -77,6 +77,7 @@ void AHBCharacterBase::UnEquipWeapon()
 	UE_LOG(LogTemp, Log, TEXT("UnEquipWeapon 호출"));
 	if (CurrentWeapon->GetStaticMesh() != nullptr)
 	{
+		bWeaponEquipped = false;
 		CurrentWeapon->SetStaticMesh(nullptr);
 	}
 }

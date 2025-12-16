@@ -128,5 +128,15 @@ protected:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRPCAttack(float AttackStartTime);
 
+	UFUNCTION(Client, Unreliable)
+	void ClientRPCPlayAnimation(AHBCharacterPlayer* CharacterToPlay);
+
+	float AttackTime = 2.2667f;
+	float LastAttackStartTime = 0.f;
+	float AttackTimeDifference = 0.f;
+	float AcceptCheckDistance = 300.f;
+	float AcceptMinCheckTime = 0.15f;
+
+	void PlayAttackAnimation();
 	
 };
