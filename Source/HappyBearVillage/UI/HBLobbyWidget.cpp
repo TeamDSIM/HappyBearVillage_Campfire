@@ -16,6 +16,13 @@ void UHBLobbyWidget::NativeConstruct()
 		MultiplayerSessionsSubsystem = GI->GetSubsystem<UMultiplayerSessionsSubsystem>();
 	}
 
+	if (MultiplayerSessionsSubsystem)
+	{
+		//MultiCast Delegate ¹ÙÀÎµù
+		MultiplayerSessionsSubsystem->MultiplayerOnCreateSessionComplete.AddUObject(
+			this, &ThisClass::OnCreateSessionComplete);
+	}
+
 	if (HostButton)
 	{
 		HostButton->OnClicked.AddDynamic(this, &ThisClass::HostButtonClicked);
@@ -30,10 +37,23 @@ void UHBLobbyWidget::NativeConstruct()
 
 void UHBLobbyWidget::HostButtonClicked()
 {
-	UE_LOG(LogTemp, Log, TEXT("HostButtonClicked"));
+	UE_LOG(LogTemp, Log, TEXT("Host Made the Room"));
+
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->CreateSession(4, TEXT("FreeForAll"));
+	}
 }
 
 void UHBLobbyWidget::JoinButtonClicked()
 {
-	UE_LOG(LogTemp, Log, TEXT("JoinButtonClicked"));
+
+	UE_LOG(LogTemp, Log, TEXT("Client Joined the Room"));
+
+
+}
+
+void UHBLobbyWidget::OnCreateSessionComplete(bool bWasSuccessful)
+{
+	UE_LOG(LogTemp, Log, TEXT("CreateSessionComplete: %s"), bWasSuccessful ? TEXT("Success") : TEXT("Fail"));
 }

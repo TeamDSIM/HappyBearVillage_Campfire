@@ -36,5 +36,7 @@ private:
 
 	UFUNCTION()
 	void JoinButtonClicked();
+
+	void OnCreateSessionComplete(bool bWasSuccessful);
 	
 };
