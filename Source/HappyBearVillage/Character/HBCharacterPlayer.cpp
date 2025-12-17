@@ -4,7 +4,6 @@
 #include "Character/HBCharacterPlayer.h"
 
 #include "EngineUtils.h"
-#include "InteractiveToolManager.h"
 #include "InputMappingContext.h"
 #include "Animation/HBPlayerCharacterAnimInstance.h"
 #include "Components/CapsuleComponent.h"
