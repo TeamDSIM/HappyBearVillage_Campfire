@@ -68,4 +68,7 @@ protected:
 	// 인터페이스 구현
 protected:
 	virtual void AttackHitCheck() override;
+
+	// 공격 판정 처리 구현
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 };

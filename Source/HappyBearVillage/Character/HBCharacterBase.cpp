@@ -121,3 +121,13 @@ void AHBCharacterBase::AttackHitCheck()
 {
 }
 
+float AHBCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	class AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	UE_LOG(LogTemp, Log, TEXT("Call CharacterBase TakeDamage / Damage : %f"), DamageAmount);
+	
+	return DamageAmount;
+}
+

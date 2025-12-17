@@ -124,9 +124,17 @@ protected:
 	uint8 bCanAttack : 1;
 
 	virtual void AttackHitCheck() override;
+	void AttackHitConfirm(AActor* HitActor);
+	void DrawDebugAttackRange(const FColor& DrawColor, FVector TraceStart, FVector TraceEnd, FVector Forward);
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRPCAttack(float AttackStartTime);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerRPCNotifyHit(const FHitResult& HitResult, float HitCheckTime);
+	
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerRPCNotifyMiss(FVector_NetQuantize TraceStart, FVector_NetQuantize TraceEnd, FVector_NetQuantizeNormal TraceDir, float HitCheckTime);
 
 	UFUNCTION(Client, Unreliable)
 	void ClientRPCPlayAnimation(AHBCharacterPlayer* CharacterToPlay);

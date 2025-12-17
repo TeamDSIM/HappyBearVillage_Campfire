@@ -7,6 +7,8 @@
 #include "InteractiveToolManager.h"
 #include "InputMappingContext.h"
 #include "Animation/HBPlayerCharacterAnimInstance.h"
+#include "Components/CapsuleComponent.h"
+#include "Engine/DamageEvents.h"
 #include "GameFramework/GameStateBase.h"
 #include "Interface/HBInteractableInterface.h"
 
@@ -203,11 +205,11 @@ void AHBCharacterPlayer::Attack()
 	{
 		return;
 	}
-	
+
 	if (bCanAttack)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Call Attack when bCanAttack is True"));
-		
+
 		if (!HasAuthority())
 		{
 			// 공격 중 공격 못하게 막음
@@ -338,12 +340,170 @@ void AHBCharacterPlayer::SetWeaponMesh()
 
 void AHBCharacterPlayer::AttackHitCheck()
 {
+	// 현재 폰이 접속된 플레이어 클라이언트에 의해 제어중인지 확인
+	if (IsLocallyControlled())
+	{
+		// 충돌 판정 구하기
+		FHitResult OutHitResult;
+		FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
+
+		// 공격 관련 스탯 구하기 (사거리, 범위, 데미지 등)
+		// @Todo : 현재 임의의 값 넣어둔것, 추후 스탯 컴포넌트로 별도 구현 필요
+		float AttackRange = 40.f;
+		float AttackRadius = 50.f;
+		float AttackDamage = 1.f;
+
+		// 플레이어 Forward 벡터, 공격 시작/끝 지점 벡터 구하기
+		FVector Forward = GetActorForwardVector();
+		FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
+		FVector End = Start + GetActorForwardVector() * AttackRange;
+
+		// Sweep 으로 충돌
+		// @Todo: single 할지, multi 할지 (일단 single로 구현)
+		bool HitDetected = GetWorld()->SweepSingleByChannel(
+			OutHitResult,
+			Start,
+			End,
+			FQuat::Identity,
+			ECC_GameTraceChannel2,
+			FCollisionShape::MakeSphere(AttackRadius),
+			Params
+		);
+
+		// 충돌 체크 진행 시간 구함
+		float HitCheckTime = GetWorld()->GetGameState()->GetServerWorldTimeSeconds();
+
+		// 서버가 아니라면
+		if (!HasAuthority())
+		{
+			// 충돌 했다면
+			if (HitDetected)
+			{
+				// 서버RPC 로 충돌 노티파이 전송
+				ServerRPCNotifyHit(OutHitResult, HitCheckTime);
+			}
+
+			// 충돌 안했다면
+			else
+			{
+				// 서버RPC 로 미스 노티파이 전송
+				ServerRPCNotifyMiss(Start, End, Forward, HitCheckTime);
+			}
+		}
+
+		// 서버라면
+		else
+		{
+			// 판정 범위 디버그 표시
+			FColor DebugColor = HitDetected ? FColor::Green : FColor::Red;
+			DrawDebugAttackRange(DebugColor, Start, End, Forward);
+
+			// 충돌 했다면
+			if (HitDetected)
+			{
+				// 데미지 판정
+				AttackHitConfirm(OutHitResult.GetActor());
+			}
+		}
+	}
+}
+
+void AHBCharacterPlayer::AttackHitConfirm(AActor* HitActor)
+{
+	// 서버라면
+	if (HasAuthority())
+	{
+		// 공격 데미지 가져오기
+		// @Todo: 지금 데미지 하드코딩 중 스탯에서 가져와야 함
+		float AttackDamage = 1.f;
+
+		// 부딫힌 대상에게 TakeDamage 로 데미지 전달
+		FDamageEvent DamageEvent;
+		HitActor->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
+	}
+}
+
+void AHBCharacterPlayer::DrawDebugAttackRange(const FColor& DrawColor, FVector TraceStart, FVector TraceEnd,
+                                              FVector Forward)
+{
+	//@Todo : 스탯들 일단 하드 코딩으로 해서 나중에 갖고오게 변경
+#if ENABLE_DRAW_DEBUG
+
+	const float AttackRange = 40.f;
+	const float AttackRadius = 50.f;
+	FVector CapsuleOrigin = TraceStart + (TraceEnd - TraceStart) * 0.5f;
+	float CapsuleHalfHeight = AttackRange * 0.5f;
+
+	DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius,
+					 FRotationMatrix::MakeFromZ(Forward).ToQuat(), DrawColor, false, 5.0f);
+
+#endif
+}
+
+void AHBCharacterPlayer::ServerRPCNotifyHit_Implementation(const FHitResult& HitResult, float HitCheckTime)
+{
+	// 충돌한 액터 값을 가져옴
+	AActor* HitActor = HitResult.GetActor();
+	
+	// 액터 값이 존재하면
+	if (HitActor)
+	{
+		// 충돌 발생 위치, 충돌 발생한 액터의 바운딩 박스, 바운딩 박스의 가운데 지점
+		FVector HitLocation = HitResult.Location;
+		FBox HitBox = HitActor->GetComponentsBoundingBox();
+		FVector ActorBoxCenter = HitBox.GetCenter();
+
+		// 충돌 발생 위치와 바운딩 박스의 중간 지점이 충돌 체크 최소 거리보다 가까우면
+		if (FVector::DistSquared(HitLocation, ActorBoxCenter) <= AcceptCheckDistance * AcceptCheckDistance)
+		{
+			// 충돌 시 이벤트 진행
+			AttackHitConfirm(HitActor);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("HitTest Reject"));
+		}
+
+		// 충돌 시 Notify 이니 디버그 컬러가 Green 만 넣어도 상관없긴 함
+		DrawDebugAttackRange(FColor::Green, HitResult.TraceStart, HitResult.TraceEnd, HitActor->GetActorForwardVector());
+	}
+}
+
+bool AHBCharacterPlayer::ServerRPCNotifyHit_Validate(const FHitResult& HitResult, float HitCheckTime)
+{
+	// 마지막 공격 시작 시간이 0 (처음 공격)
+	if (LastAttackStartTime == 0.f)
+	{
+		return true;
+	}
+	// 충돌 체크 시간이랑 마지막 공격한 시간의 차이가 최소 체크 간격보다 커야 체크 진행
+	return (HitCheckTime - LastAttackStartTime) > AcceptMinCheckTime;
+}
+
+void AHBCharacterPlayer::ServerRPCNotifyMiss_Implementation(FVector_NetQuantize TraceStart,
+                                                            FVector_NetQuantize TraceEnd,
+                                                            FVector_NetQuantizeNormal TraceDir, float HitCheckTime)
+{
+	// 충돌 실패 시 판정 범위 디버그 그리기
+	DrawDebugAttackRange(FColor::Red, TraceStart, TraceEnd, TraceDir);
+}
+
+bool AHBCharacterPlayer::ServerRPCNotifyMiss_Validate(FVector_NetQuantize TraceStart, FVector_NetQuantize TraceEnd,
+                                                      FVector_NetQuantizeNormal TraceDir, float HitCheckTime)
+{
+	// 마지막 공격 시작 시간이 0 (처음 공격)
+	if (LastAttackStartTime == 0.f)
+	{
+		return true;
+	}
+	// 충돌 체크 시간이랑 마지막 공격한 시간의 차이가 최소 체크 간격보다 커야 체크 진행
+	return (HitCheckTime - LastAttackStartTime) > AcceptMinCheckTime;
 }
 
 void AHBCharacterPlayer::PlayAttackAnimation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Call PlayAttackAnimation"));
-	
+
 	// 캐릭터 메시 공격 몽타주 재생
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance)
@@ -372,7 +532,7 @@ void AHBCharacterPlayer::ClientRPCPlayAnimation_Implementation(AHBCharacterPlaye
 void AHBCharacterPlayer::ServerRPCAttack_Implementation(float AttackStartTime)
 {
 	UE_LOG(LogTemp, Log, TEXT("Call ServerRPCAttack"));
-	
+
 	// 공격 중 공격을 막기 위해 플래그를 false로 변경
 	bCanAttack = false;
 
