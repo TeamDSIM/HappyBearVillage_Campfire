@@ -11,6 +11,7 @@
 #include "Engine/DamageEvents.h"
 #include "GameFramework/GameStateBase.h"
 #include "Interface/HBInteractableInterface.h"
+#include "Stat/HBPlayerStatComponent.h"
 
 AHBCharacterPlayer::AHBCharacterPlayer()
 {
@@ -199,7 +200,6 @@ void AHBCharacterPlayer::Move(const FInputActionValue& Value)
 // 공격 구현
 void AHBCharacterPlayer::Attack()
 {
-	UE_LOG(LogTemp, Log, TEXT("Call Attack"));
 	// 무기를 끼고있지 않으면 반환
 	if (!bWeaponEquipped)
 	{
@@ -208,8 +208,6 @@ void AHBCharacterPlayer::Attack()
 
 	if (bCanAttack)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Call Attack when bCanAttack is True"));
-
 		if (!HasAuthority())
 		{
 			// 공격 중 공격 못하게 막음
@@ -241,14 +239,11 @@ void AHBCharacterPlayer::Interaction()
 {
 	if (IsLocallyControlled())
 	{
-		UE_LOG(LogTemp, Log, TEXT("Interaction 호출"));
 		if (InteractionTarget != nullptr)
 		{
-			UE_LOG(LogTemp, Log, TEXT("InteractionTarget 있음"));
 			IHBInteractableInterface* InteractionActor = Cast<IHBInteractableInterface>(InteractionTarget);
 			if (InteractionActor)
 			{
-				UE_LOG(LogTemp, Log, TEXT("InteractableInterface 도 있음"));
 				InteractionActor->Interact(this);
 			}
 		}
@@ -308,7 +303,6 @@ void AHBCharacterPlayer::InteractionTraceTick()
 	{
 		if (Interactable->CanInteract(this))
 		{
-			UE_LOG(LogTemp, Log, TEXT("InteractionTarget = %s"), *HitActor->GetName());
 			InteractionTarget = HitActor;
 		}
 	}
@@ -348,10 +342,9 @@ void AHBCharacterPlayer::AttackHitCheck()
 		FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
 		// 공격 관련 스탯 구하기 (사거리, 범위, 데미지 등)
-		// @Todo : 현재 임의의 값 넣어둔것, 추후 스탯 컴포넌트로 별도 구현 필요
-		float AttackRange = 40.f;
-		float AttackRadius = 50.f;
-		float AttackDamage = 1.f;
+		float AttackRange = Stat->GetBaseStat().AttackRange;
+		float AttackRadius = Stat->GetBaseStat().AttackRadius;
+		float AttackDamage = Stat->GetBaseStat().AttackDamage;
 
 		// 플레이어 Forward 벡터, 공격 시작/끝 지점 벡터 구하기
 		FVector Forward = GetActorForwardVector();
@@ -414,8 +407,7 @@ void AHBCharacterPlayer::AttackHitConfirm(AActor* HitActor)
 	if (HasAuthority())
 	{
 		// 공격 데미지 가져오기
-		// @Todo: 지금 데미지 하드코딩 중 스탯에서 가져와야 함
-		float AttackDamage = 1.f;
+		float AttackDamage = Stat->GetBaseStat().AttackDamage;
 
 		// 부딫힌 대상에게 TakeDamage 로 데미지 전달
 		FDamageEvent DamageEvent;
@@ -426,11 +418,10 @@ void AHBCharacterPlayer::AttackHitConfirm(AActor* HitActor)
 void AHBCharacterPlayer::DrawDebugAttackRange(const FColor& DrawColor, FVector TraceStart, FVector TraceEnd,
                                               FVector Forward)
 {
-	//@Todo : 스탯들 일단 하드 코딩으로 해서 나중에 갖고오게 변경
 #if ENABLE_DRAW_DEBUG
 
-	const float AttackRange = 40.f;
-	const float AttackRadius = 50.f;
+	const float AttackRange = Stat->GetBaseStat().AttackRange;
+	const float AttackRadius = Stat->GetBaseStat().AttackRadius;
 	FVector CapsuleOrigin = TraceStart + (TraceEnd - TraceStart) * 0.5f;
 	float CapsuleHalfHeight = AttackRange * 0.5f;
 
@@ -502,8 +493,6 @@ bool AHBCharacterPlayer::ServerRPCNotifyMiss_Validate(FVector_NetQuantize TraceS
 
 void AHBCharacterPlayer::PlayAttackAnimation()
 {
-	UE_LOG(LogTemp, Log, TEXT("Call PlayAttackAnimation"));
-
 	// 캐릭터 메시 공격 몽타주 재생
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance)
@@ -521,7 +510,6 @@ void AHBCharacterPlayer::PlayAttackAnimation()
 
 void AHBCharacterPlayer::ClientRPCPlayAnimation_Implementation(AHBCharacterPlayer* CharacterToPlay)
 {
-	UE_LOG(LogTemp, Log, TEXT("Call ClientRPCPlayAnimation"));
 	// CharacterToPlay 가 유효하면 공격 애니메이션 재생
 	if (CharacterToPlay)
 	{
@@ -531,8 +519,6 @@ void AHBCharacterPlayer::ClientRPCPlayAnimation_Implementation(AHBCharacterPlaye
 
 void AHBCharacterPlayer::ServerRPCAttack_Implementation(float AttackStartTime)
 {
-	UE_LOG(LogTemp, Log, TEXT("Call ServerRPCAttack"));
-
 	// 공격 중 공격을 막기 위해 플래그를 false로 변경
 	bCanAttack = false;
 

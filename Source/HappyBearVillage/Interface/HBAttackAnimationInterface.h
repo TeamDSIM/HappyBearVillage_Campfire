@@ -14,8 +14,11 @@ class UHBAttackAnimationInterface : public UInterface
 };
 
 /**
- * 
+ *	작성일: 2025-12-16
+ *  작성자: 박현용
+ *  설명: 공격 애니메이션에 들어가는 노티파이에서 캐릭터로 피격 판정 체크를 전달해주는 인터페이스
  */
+
 class HAPPYBEARVILLAGE_API IHBAttackAnimationInterface
 {
 	GENERATED_BODY()

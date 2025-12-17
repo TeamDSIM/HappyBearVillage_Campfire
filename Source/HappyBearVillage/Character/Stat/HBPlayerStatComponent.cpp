@@ -6,11 +6,14 @@
 // Sets default values for this component's properties
 UHBPlayerStatComponent::UHBPlayerStatComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	bWantsInitializeComponent = true;
+	
+	SetIsReplicated(true);
+}
 
-	// ...
+void UHBPlayerStatComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
 }
 
 
@@ -23,12 +26,10 @@ void UHBPlayerStatComponent::BeginPlay()
 	
 }
 
-
-// Called every frame
-void UHBPlayerStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+float UHBPlayerStatComponent::ApplyDamage(float InDamageAmount)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	TotalTakenDamage += InDamageAmount;
+	UE_LOG(LogTemp, Log, TEXT("%s Total Damage : %f"), *GetOwner()->GetName(), TotalTakenDamage);
+	
+	return TotalTakenDamage;
 }
-

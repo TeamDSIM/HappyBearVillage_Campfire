@@ -7,6 +7,7 @@
 #include "Interface/HBAttackAnimationInterface.h"
 #include "HBCharacterBase.generated.h"
 
+class UHBPlayerStatComponent;
 class AHBWeaponBase;
 
 UCLASS()
@@ -39,6 +40,13 @@ protected:
 	// @Todo:
 	// 추가해야할 것
 	// 스탯, 애니메이션, 공격, 기절, 무기 장착
+
+	// 스탯 관련 섹션 =========================================================
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UHBPlayerStatComponent> Stat;
+
+	// 무기 장착 관련 섹션 =====================================================
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> CurrentWeapon;
 

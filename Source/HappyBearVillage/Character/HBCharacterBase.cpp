@@ -4,6 +4,7 @@
 #include "Character/HBCharacterBase.h"
 
 #include "Net/UnrealNetwork.h"
+#include "Stat/HBPlayerStatComponent.h"
 #include "Weapon/HBWeaponBase.h"
 
 // Sets default values
@@ -24,6 +25,9 @@ AHBCharacterBase::AHBCharacterBase()
 	{
 		WeaponMesh = WeaponMeshRef.Object;
 	}
+
+	// Stat 컴포넌트
+	Stat = CreateDefaultSubobject<UHBPlayerStatComponent>(TEXT("Stat"));
 }
 
 void AHBCharacterBase::PostInitializeComponents()
@@ -127,6 +131,7 @@ float AHBCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	UE_LOG(LogTemp, Log, TEXT("Call CharacterBase TakeDamage / Damage : %f"), DamageAmount);
+	Stat->ApplyDamage(DamageAmount);
 	
 	return DamageAmount;
 }
