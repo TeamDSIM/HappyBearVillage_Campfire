@@ -35,7 +35,7 @@ void UHBPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	Super::NativeUpdateAnimation(DeltaTime);
 
-	if(Movement)
+	if (Movement)
 	{
 		// 이동하는 속도
 		Velocity = Movement->Velocity;
@@ -44,7 +44,9 @@ void UHBPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		MoveSpeed = Velocity.Size2D();
 
 		// 이동 방향
-		//Direction = UKismetAnimationLibrary::CalculateDirection()
+		Direction = UKismetAnimationLibrary::CalculateDirection(
+			Owner->GetVelocity(), Owner->GetActorRotation()
+		);
 
 		// Idle 여부(1(True), 0(False))
 		bIsIdle = MoveSpeed < MovingThreshold;
