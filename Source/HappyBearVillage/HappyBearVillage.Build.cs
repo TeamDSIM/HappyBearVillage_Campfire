@@ -16,7 +16,10 @@ public class HappyBearVillage : ModuleRules
 			"InputCore", 
 			"EnhancedInput",
 			"OnlineSubsystem",
-            "OnlineSubsystemSteam"
+            "OnlineSubsystemSteam",
+			"Core",
+			"UMG",
+			"MultiplayerSessions"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "AnimGraphRuntime" });
