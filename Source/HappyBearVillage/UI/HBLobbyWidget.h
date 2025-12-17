@@ -9,15 +9,21 @@
 /**
  * 
  */
+
+class UMultiplayerSessionsSubsystem;
+
 UCLASS()
 class HAPPYBEARVILLAGE_API UHBLobbyWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
-	void LobbySetup();
+protected:
+	virtual void NativeConstruct() override;
 
 private:
+
+	UPROPERTY()
+	TObjectPtr< UMultiplayerSessionsSubsystem> MultiplayerSessionsSubsystem;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* HostButton;
@@ -25,10 +31,13 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UButton* JoinButton;
 
-	//UFUNCTION()
-	//void HostButtonClicked();
+	UFUNCTION()
+	void HostButtonClicked();
 
-	//UFUNCTION()
-	//void JoinButtonClicked();
+	UFUNCTION()
+	void JoinButtonClicked();
+
+	void OnCreateSessionComplete(bool bWasSuccessful);
+	void OnFindSessionsComplete(const TArray<FOnlineSessionSearchResult>& Results, bool bWasSuccessful);
 	
 };

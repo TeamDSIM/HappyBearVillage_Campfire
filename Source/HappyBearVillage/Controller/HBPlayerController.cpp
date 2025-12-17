@@ -35,10 +35,9 @@ void AHBPlayerController::BeginPlay()
 	}
 
 	FInputModeUIOnly InputMode;
-	InputMode.SetWidgetToFocus(HBLobbyWidget->TakeWidget());
 	SetInputMode(InputMode);
 	SetShowMouseCursor(true);
 
-	//HBLobbyWidget->LobbySetup();
 
 }
+
