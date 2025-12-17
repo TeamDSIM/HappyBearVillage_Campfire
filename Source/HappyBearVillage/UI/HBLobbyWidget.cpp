@@ -40,7 +40,7 @@ void UHBLobbyWidget::NativeConstruct()
 
 void UHBLobbyWidget::HostButtonClicked()
 {
-	UE_LOG(LogTemp, Log, TEXT("Host Made the Room"));
+	//UE_LOG(LogTemp, Log, TEXT("Host Made the Room"));
 
 	if (MultiplayerSessionsSubsystem)
 	{
@@ -51,7 +51,7 @@ void UHBLobbyWidget::HostButtonClicked()
 void UHBLobbyWidget::JoinButtonClicked()
 {
 
-	UE_LOG(LogTemp, Log, TEXT("Client Joined the Room"));
+	//UE_LOG(LogTemp, Log, TEXT("Client Joined the Room"));
 
 	if (MultiplayerSessionsSubsystem)
 	{
