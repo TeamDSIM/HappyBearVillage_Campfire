@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class MultiPlayerSessions : ModuleRules
+public class MultiplayerSessions : ModuleRules
 {
-	public MultiPlayerSessions(ReadOnlyTargetRules Target) : base(Target)
+	public MultiplayerSessions(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		

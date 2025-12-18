@@ -20,6 +20,8 @@ void AHBPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UE_LOG(LogTemp, Log, TEXT("PlayerController BeginPlay"));
+
 	//이 체크가 있어야 client 추가해도 오류 X
 	//체크가 없으면 remote pc에서 createwidget를 호출하는데, localplayer 가 없으므로 설정 불가
 	if (!IsLocalController())
