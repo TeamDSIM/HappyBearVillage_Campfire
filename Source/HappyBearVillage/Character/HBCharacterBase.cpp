@@ -5,6 +5,7 @@
 
 #include "Net/UnrealNetwork.h"
 #include "Stat/HBPlayerStatComponent.h"
+#include "UI/HBPlayerRoleWidget.h"
 #include "UI/HBTotalDamageWidget.h"
 #include "UI/HBWidgetComponent.h"
 #include "Weapon/HBWeaponBase.h"
@@ -46,6 +47,22 @@ AHBCharacterBase::AHBCharacterBase()
 		TotalDamageWidget->SetDrawSize(FVector2D(150.f, 15.f));
 		TotalDamageWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+
+	// TotalDamage 위젯 컴포넌트
+	PlayerRoleWidget = CreateDefaultSubobject<UHBWidgetComponent>(TEXT("PlayerRoleWidget"));
+	PlayerRoleWidget->SetupAttachment(GetMesh());
+	PlayerRoleWidget->SetRelativeLocation(FVector(0.f, 0.f, 240.f));
+	static ConstructorHelpers::FClassFinder<UUserWidget> PlayerRoleWidgetRef(
+		TEXT("/Game/Personal/PARK_H_Y/UI/WBP_PlayerRole.WBP_PlayerRole_C"));
+	if (PlayerRoleWidgetRef.Class)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Player Role Widget component Init"));
+		
+		PlayerRoleWidget->SetWidgetClass(PlayerRoleWidgetRef.Class);
+		PlayerRoleWidget->SetWidgetSpace(EWidgetSpace::Screen);
+		PlayerRoleWidget->SetDrawSize(FVector2D(150.f, 30.f));
+		PlayerRoleWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 void AHBCharacterBase::PostInitializeComponents()
@@ -76,9 +93,19 @@ void AHBCharacterBase::SetUpCharacterWidget(class UHBUserWidget* InUserWidget)
 	UHBTotalDamageWidget* Widget = Cast<UHBTotalDamageWidget>(InUserWidget);
 	if (Widget)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Setup Character Widget Call"));
+		UE_LOG(LogTemp, Log, TEXT("Setup Character Widget Call - Widget"));
 		Widget->UpdateTotalDamage(Stat->GetTotalTakenDamage());
 		Stat->OnTotalTakenDamageChanged.AddUObject(Widget, &UHBTotalDamageWidget::UpdateTotalDamage);
+	}
+
+	UHBPlayerRoleWidget* RoleWidget = Cast<UHBPlayerRoleWidget>(InUserWidget);
+	if (RoleWidget)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Setup Character Widget Call - RoleWidget"));
+		RoleWidget->UpdatePlayerRole(Stat->GetCharacterRole().Role);
+		RoleWidget->UpdatePlayerJob(Stat->GetCharacterRole().Job);
+		Stat->OnPlayerRoleChanged.AddUObject(RoleWidget, &UHBPlayerRoleWidget::UpdatePlayerRole);
+		Stat->OnPlayerJobChanged.AddUObject(RoleWidget, &UHBPlayerRoleWidget::UpdatePlayerJob);
 	}
 }
 

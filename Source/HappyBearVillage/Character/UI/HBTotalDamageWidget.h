@@ -29,5 +29,6 @@ protected:
 
 	UPROPERTY()
 	float CurrentTotalDamage;
+
 	
 };

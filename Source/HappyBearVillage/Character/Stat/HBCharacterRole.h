@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HBCharacterRole.generated.h"
 
 /**
  *	작성일: 2025-12-18
@@ -17,26 +18,57 @@ enum class ERoleType : uint8
 	CITIZEN UMETA(DisplayName = "Citizen"),
 
 
-	END UMETA(DisplayName = "End")	// 총 개수를 나타내기 위한 마지막 선언
+	END UMETA(DisplayName = "End") // 총 개수
 };
 
 UENUM(BlueprintType)
-enum class EMafiaRole : uint8
+enum class EJobType : uint8
 {
-	//
+	// 마피아 직업군
+	MAFIA UMETA(DisplayName = "Mafia"),
+
+
+	// 시민 직업군
+	CITIZEN UMETA(DisplayName = "Citizen"),
+
+
+	END UMETA(DisplayName = "End") // 총 개수
 };
 
 USTRUCT(BlueprintType)
-struct FHBCharacterRole : public FTableRowBase
+struct FHBCharacterRole
 {
 	GENERATED_BODY()
 
 public:
 	FHBCharacterRole()
-	{}
+		: Role(ERoleType::CITIZEN), Job(EJobType::CITIZEN)
+	{
+	}
 
 	// 마피아 / 시민 종류 열거형
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Role)
+	ERoleType Role;
 
 	// 상세 직업 열거형
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Role)
+	EJobType Job;
+
+	void InitRole()
+	{
+		int32 RoleNum = FMath::RandRange(static_cast<int32>(ERoleType::CITIZEN), static_cast<int32>(ERoleType::END) - 1);
+		Role = static_cast<ERoleType>(RoleNum);
+
+		int32 JobNum = 0;
+		if (Role == ERoleType::CITIZEN)
+		{
+			JobNum = FMath::RandRange(static_cast<int32>(EJobType::CITIZEN), static_cast<int32>(EJobType::END) - 1);
+			Job = static_cast<EJobType>(JobNum);
+		}
+		else if (Role == ERoleType::MAFIA)
+		{
+			JobNum = FMath::RandRange(static_cast<int32>(EJobType::MAFIA), static_cast<int32>(EJobType::CITIZEN) - 1);
+			Job = static_cast<EJobType>(JobNum);
+		}
+	}
 };

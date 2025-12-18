@@ -11,6 +11,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "Interface/HBInteractableInterface.h"
 #include "Stat/HBPlayerStatComponent.h"
+#include "Subsystem/HBGameFlowSubsystem.h"
 
 AHBCharacterPlayer::AHBCharacterPlayer()
 {
@@ -81,6 +82,14 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	if (JumpActionRef.Succeeded())
 	{
 		JumpAction = JumpActionRef.Object;
+	}
+
+	// @PHYTODO : 임시 직업 분배
+	static ConstructorHelpers::FObjectFinder<UInputAction> StartActionRef(
+		TEXT("/Game/Character/Input/Action/IA_Start.IA_Start"));
+	if (StartActionRef.Succeeded())
+	{
+		StartAction = StartActionRef.Object;
 	}
 
 	// 메시 설정
@@ -180,6 +189,9 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+
+		// @PHYTODO : 임시 직업 분배
+		EnhancedInputComponent->BindAction(StartAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::Start);
 	}
 }
 
@@ -260,6 +272,17 @@ void AHBCharacterPlayer::MouseLook(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisValue.X);
 		AddControllerPitchInput(LookAxisValue.Y);
 	}
+}
+
+void AHBCharacterPlayer::Start()
+{
+	// 서버이면 직업 분배
+	if (!HasAuthority())
+	{
+		return;
+	}
+	
+	ServerRPCStart();
 }
 
 void AHBCharacterPlayer::InteractionTraceTick()
@@ -504,6 +527,24 @@ void AHBCharacterPlayer::PlayAttackAnimation()
 	UAnimInstance* FPSAnimInstance = FPSMeshComponent->GetAnimInstance();
 	if (FPSAnimInstance)
 	{
+	}
+}
+
+// @PHYTODO : 직업 분배 임시 확인용
+void AHBCharacterPlayer::ServerRPCStart_Implementation()
+{
+	UE_LOG(LogTemp, Log, TEXT("ServerRPCStart Call"));
+	// 서버가 아니라면
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	UGameInstance* GameInstance = GetGameInstance();
+	if (GameInstance)
+	{
+		UE_LOG(LogTemp, Log, TEXT("ServerRPCStart GameInstance is Valid"));
+		GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StartGame();
 	}
 }
 

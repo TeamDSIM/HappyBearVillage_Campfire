@@ -51,6 +51,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TObjectPtr<UInputAction> JumpAction;
 
+	// @PHYTODO : 직업 분배 임시 확인용
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	TObjectPtr<UInputAction> StartAction;
+	
 public:
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
@@ -63,6 +67,11 @@ public:
 
 	UFUNCTION()
 	void MouseLook(const FInputActionValue& Value);
+
+	// @PHYTODO : 직업 분배 임시 확인용
+	
+	UFUNCTION()
+	void Start();
 
 	// 1인칭 카메라
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -146,5 +155,10 @@ protected:
 	float AcceptMinCheckTime = 0.15f;
 
 	void PlayAttackAnimation();
+
+	
+	// @PHYTODO : 직업 분배 임시 확인용
+	UFUNCTION(Server, Reliable)
+	void ServerRPCStart();
 	
 };

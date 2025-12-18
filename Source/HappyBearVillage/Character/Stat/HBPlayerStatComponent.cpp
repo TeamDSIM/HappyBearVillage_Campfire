@@ -37,11 +37,21 @@ float UHBPlayerStatComponent::ApplyDamage(float InDamageAmount)
 	return TotalTakenDamage;
 }
 
+void UHBPlayerStatComponent::InitCharacterRole()
+{
+	// 랜덤 직업 설정
+	CharacterRole.InitRole();
+
+	// 바뀐 직업 서버 반영
+	OnRep_CharacterRole();
+}
+
 void UHBPlayerStatComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UHBPlayerStatComponent, TotalTakenDamage);
+	DOREPLIFETIME(UHBPlayerStatComponent, CharacterRole);
 }
 
 void UHBPlayerStatComponent::OnRep_TotalTakenDamage()
@@ -49,4 +59,13 @@ void UHBPlayerStatComponent::OnRep_TotalTakenDamage()
 	UE_LOG(LogTemp, Log, TEXT("OnRep_TotalTakenDamage Call"));
 	
 	OnTotalTakenDamageChanged.Broadcast(TotalTakenDamage);
+}
+
+void UHBPlayerStatComponent::OnRep_CharacterRole()
+{
+	UE_LOG(LogTemp, Log, TEXT("OnRep_CharacterRole Call"));
+	// UI 갱신 시켜야 함
+	OnPlayerRoleChanged.Broadcast(CharacterRole.Role);
+	OnPlayerJobChanged.Broadcast(CharacterRole.Job);
+	
 }

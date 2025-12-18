@@ -3,12 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HBCharacterRole.h"
 #include "HBCharacterStat.h"
 #include "Components/ActorComponent.h"
 #include "HBPlayerStatComponent.generated.h"
 
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTotalTakenDamageChanged, float /*CurrentTotalDamage*/)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerRoleChanged, ERoleType)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerJobChanged, EJobType)
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class HAPPYBEARVILLAGE_API UHBPlayerStatComponent : public UActorComponent
@@ -26,8 +29,11 @@ protected:
 
 public:
 	FOnTotalTakenDamageChanged OnTotalTakenDamageChanged;
+	FOnPlayerRoleChanged OnPlayerRoleChanged;
+	FOnPlayerJobChanged OnPlayerJobChanged;
 
 public:
+	// 스탯 관련 섹션 =====================================================================
 	FORCEINLINE const FHBCharacterStat& GetBaseStat() const { return BaseStat; }
 	FORCEINLINE float GetTotalTakenDamage() const { return TotalTakenDamage; }
 	FORCEINLINE bool GetIsVoteTarget() const { return bIsVoteTarget; }
@@ -35,10 +41,19 @@ public:
 
 	float ApplyDamage(float InDamageAmount);
 
+	// 직업 관련 섹션 =====================================================================
+	FORCEINLINE const FHBCharacterRole& GetCharacterRole() const { return CharacterRole; }
+
+	void InitCharacterRole();
+
 protected:
 	// 캐릭터 기본 스탯
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
 	FHBCharacterStat BaseStat;
+
+	// 캐릭터 직업
+	UPROPERTY(ReplicatedUsing = OnRep_CharacterRole, Transient, VisibleInstanceOnly, Category = Stat)
+	FHBCharacterRole CharacterRole;
 
 	// 투표 시 캐릭터가 받은 데미지
 	UPROPERTY(ReplicatedUsing = OnRep_TotalTakenDamage, Transient, VisibleInstanceOnly, Category = Stat)
@@ -57,4 +72,7 @@ protected:
 
 	UFUNCTION()
 	void OnRep_TotalTakenDamage();
+
+	UFUNCTION()
+	void OnRep_CharacterRole();
 };

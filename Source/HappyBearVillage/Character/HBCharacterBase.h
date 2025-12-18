@@ -13,7 +13,8 @@ class UHBPlayerStatComponent;
 class AHBWeaponBase;
 
 UCLASS()
-class HAPPYBEARVILLAGE_API AHBCharacterBase : public ACharacter, public IHBAttackAnimationInterface, public IHBCharacterWidgetInterface
+class HAPPYBEARVILLAGE_API AHBCharacterBase : public ACharacter, public IHBAttackAnimationInterface,
+                                              public IHBCharacterWidgetInterface
 {
 	GENERATED_BODY()
 
@@ -47,11 +48,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widget, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UWidgetComponent> TotalDamageWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widget, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UWidgetComponent> PlayerRoleWidget;
+	
 	virtual void SetUpCharacterWidget(class UHBUserWidget* InUserWidget) override;
 
 	// 스탯 관련 섹션 =========================================================
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UHBPlayerStatComponent> Stat;
+
+public:
+	FORCEINLINE UHBPlayerStatComponent* GetStat() const { return Stat; }
 
 	// 무기 장착 관련 섹션 =====================================================
 protected:
@@ -86,5 +93,6 @@ protected:
 	virtual void AttackHitCheck() override;
 
 	// 공격 판정 처리 구현
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	                         class AController* EventInstigator, AActor* DamageCauser) override;
 };
