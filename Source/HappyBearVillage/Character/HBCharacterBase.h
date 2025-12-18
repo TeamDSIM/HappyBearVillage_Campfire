@@ -3,15 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/Character.h"
 #include "Interface/HBAttackAnimationInterface.h"
+#include "Interface/HBCharacterWidgetInterface.h"
 #include "HBCharacterBase.generated.h"
 
 class UHBPlayerStatComponent;
 class AHBWeaponBase;
 
 UCLASS()
-class HAPPYBEARVILLAGE_API AHBCharacterBase : public ACharacter, public IHBAttackAnimationInterface
+class HAPPYBEARVILLAGE_API AHBCharacterBase : public ACharacter, public IHBAttackAnimationInterface, public IHBCharacterWidgetInterface
 {
 	GENERATED_BODY()
 
@@ -40,6 +42,12 @@ protected:
 	// @Todo:
 	// 추가해야할 것
 	// 스탯, 애니메이션, 공격, 기절, 무기 장착
+
+	// UI 섹션 ==============================================================
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widget, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UWidgetComponent> TotalDamageWidget;
+
+	virtual void SetUpCharacterWidget(class UHBUserWidget* InUserWidget) override;
 
 	// 스탯 관련 섹션 =========================================================
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))

@@ -8,6 +8,8 @@
 #include "HBPlayerStatComponent.generated.h"
 
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnTotalTakenDamageChanged, float /*CurrentTotalDamage*/)
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class HAPPYBEARVILLAGE_API UHBPlayerStatComponent : public UActorComponent
 {
@@ -23,6 +25,9 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	FOnTotalTakenDamageChanged OnTotalTakenDamageChanged;
+
+public:
 	FORCEINLINE const FHBCharacterStat& GetBaseStat() const { return BaseStat; }
 	FORCEINLINE float GetTotalTakenDamage() const { return TotalTakenDamage; }
 	FORCEINLINE bool GetIsVoteTarget() const { return bIsVoteTarget; }
@@ -36,7 +41,7 @@ protected:
 	FHBCharacterStat BaseStat;
 
 	// 투표 시 캐릭터가 받은 데미지
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
+	UPROPERTY(ReplicatedUsing = OnRep_TotalTakenDamage, Transient, VisibleInstanceOnly, Category = Stat)
 	float TotalTakenDamage = 0.f;
 
 	// 캐릭터 축출 대상 여부
@@ -47,5 +52,9 @@ protected:
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
 	uint8 bIsAlive : 1;
 
-	// 
+protected:
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void OnRep_TotalTakenDamage();
 };

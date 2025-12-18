@@ -5,6 +5,8 @@
 
 #include "Net/UnrealNetwork.h"
 #include "Stat/HBPlayerStatComponent.h"
+#include "UI/HBTotalDamageWidget.h"
+#include "UI/HBWidgetComponent.h"
 #include "Weapon/HBWeaponBase.h"
 
 // Sets default values
@@ -28,6 +30,22 @@ AHBCharacterBase::AHBCharacterBase()
 
 	// Stat 컴포넌트
 	Stat = CreateDefaultSubobject<UHBPlayerStatComponent>(TEXT("Stat"));
+
+	// TotalDamage 위젯 컴포넌트
+	TotalDamageWidget = CreateDefaultSubobject<UHBWidgetComponent>(TEXT("TotalDamageWidget"));
+	TotalDamageWidget->SetupAttachment(GetMesh());
+	TotalDamageWidget->SetRelativeLocation(FVector(0.f, 0.f, 180.f));
+	static ConstructorHelpers::FClassFinder<UUserWidget> TotalDamageWidgetRef(
+		TEXT("/Game/Personal/PARK_H_Y/UI/WBP_TotalDamage.WBP_TotalDamage_C"));
+	if (TotalDamageWidgetRef.Class)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Total Widget component Init"));
+		
+		TotalDamageWidget->SetWidgetClass(TotalDamageWidgetRef.Class);
+		TotalDamageWidget->SetWidgetSpace(EWidgetSpace::Screen);
+		TotalDamageWidget->SetDrawSize(FVector2D(150.f, 15.f));
+		TotalDamageWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 void AHBCharacterBase::PostInitializeComponents()
@@ -51,6 +69,17 @@ void AHBCharacterBase::Tick(float DeltaTime)
 void AHBCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void AHBCharacterBase::SetUpCharacterWidget(class UHBUserWidget* InUserWidget)
+{
+	UHBTotalDamageWidget* Widget = Cast<UHBTotalDamageWidget>(InUserWidget);
+	if (Widget)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Setup Character Widget Call"));
+		Widget->UpdateTotalDamage(Stat->GetTotalTakenDamage());
+		Stat->OnTotalTakenDamageChanged.AddUObject(Widget, &UHBTotalDamageWidget::UpdateTotalDamage);
+	}
 }
 
 void AHBCharacterBase::ServerRPCSetEquipped_Implementation(bool bEquipped)
