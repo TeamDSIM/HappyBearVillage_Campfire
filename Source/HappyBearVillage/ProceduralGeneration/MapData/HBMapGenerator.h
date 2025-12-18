@@ -36,5 +36,5 @@ protected:
 	TArray<TObjectPtr<AActor>> FieldActors;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")
-	float FieldElementSize = 1000.0f;
+	float FieldElementSize = 400.0f;
 };
