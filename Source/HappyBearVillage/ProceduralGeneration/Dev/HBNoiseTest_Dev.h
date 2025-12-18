@@ -19,6 +19,7 @@ protected:
 	void NoiseTest();
 	void MapDataGenerateTest();
 	void MapDataTest();
+	void MapGenerateTest();
 
 public:
 	UPROPERTY(EditAnywhere)

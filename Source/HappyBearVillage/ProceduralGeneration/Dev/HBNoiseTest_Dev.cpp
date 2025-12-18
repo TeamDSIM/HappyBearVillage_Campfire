@@ -4,7 +4,9 @@
 #include "ProceduralGeneration/Dev/HBNoiseTest_Dev.h"
 
 #include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
+#include "ProceduralGeneration/MapData/HBMapGenerator.h"
 #include "ProceduralGeneration/Noise/HBPerlinNoise.h"
+#include "ProceduralGeneration/MapData/HBMapGenerator.h"
 
 AHBNoiseTest_Dev::AHBNoiseTest_Dev()
 {
@@ -15,8 +17,7 @@ void AHBNoiseTest_Dev::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MapDataGenerateTest();
-	MapDataTest();
+	MapGenerateTest();
 }
 
 void AHBNoiseTest_Dev::NoiseTest()
@@ -59,3 +60,16 @@ void AHBNoiseTest_Dev::MapDataTest()
 	UE_LOG(LogTemp, Log, TEXT("[MapData] : \n%s"), *MapData.MapAs1D);
 }
 
+void AHBNoiseTest_Dev::MapGenerateTest()
+{
+	UHBMapDataGenerator* Generator = NewObject<UHBMapDataGenerator>();
+	UHBMapGenerator* MapGenerator = NewObject<UHBMapGenerator>();
+	
+	FHBNoiseSettings Settings;
+	Settings.Resolution = {64, 64};
+	Settings.GridSize = {4, 4};
+	Settings.Seed = Seed;
+	
+	FHBMapData MapData = Generator->GenerateMapData(Settings);
+	MapGenerator->GenerateField(MapData, GetWorld());
+}
