@@ -64,8 +64,9 @@ void UHBPerlinNoise::GeneratePerlinNoise(FHBNoiseSettings InNoiseSettings)
 			float InterpolateTop = FMath::Lerp(DotTopLeft, DotTopRight, SmoothUV.X);
 			float InterpolateBottom = FMath::Lerp(DotBottomLeft, DotBottomRight, SmoothUV.X);
 			float Perlin = FMath::Lerp(InterpolateTop, InterpolateBottom, SmoothUV.Y);
-			
-			Noise[Row][Col] = static_cast<int32>(Perlin * 10);
+
+			Perlin = FMath::Clamp(Perlin * 20, -9.9f, 9.9f);
+			Noise[Row][Col] = static_cast<int32>(Perlin);
 		}
 	}
 }
@@ -151,10 +152,11 @@ void UHBPerlinNoise::DebugGeneratePerlinNoise(FHBNoiseSettings InNoiseSettings)
 			float InterpolateTop = FMath::Lerp(DotTopLeft, DotTopRight, SmoothUV.X);
 			float InterpolateBottom = FMath::Lerp(DotBottomLeft, DotBottomRight, SmoothUV.X);
 			float Perlin = FMath::Lerp(InterpolateTop, InterpolateBottom, SmoothUV.Y);
-			
+
+			Perlin = FMath::Clamp(Perlin * 20, -9.9f, 9.9f);
 			PerlinLogText += FString::Printf(TEXT("(%0.1f)"), Perlin);
 			
-			Noise[Row][Col] = static_cast<int32>(Perlin * 10);
+			Noise[Row][Col] = static_cast<int32>(Perlin);
 		}
 
 		UVLogTest += TEXT("\n");
