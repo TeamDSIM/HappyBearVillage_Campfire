@@ -35,7 +35,6 @@ void UHBPlayerRoleWidget::UpdatePlayerRole(ERoleType NewRole)
 
 	if (RoleText)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Player Role is %s"), *PlayerRole);
 		RoleText->SetText(FText::FromString(FString::Printf(TEXT("%s"), *PlayerRole)));
 	}
 	
@@ -47,7 +46,6 @@ void UHBPlayerRoleWidget::UpdatePlayerJob(EJobType NewJob)
 
 	if (JobText)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Player Job is %s"), *PlayerJob);
 		JobText->SetText(FText::FromString(FString::Printf(TEXT("%s"), *PlayerJob)));
 	}
 }

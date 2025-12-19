@@ -40,8 +40,6 @@ AHBCharacterBase::AHBCharacterBase()
 		TEXT("/Game/Personal/PARK_H_Y/UI/WBP_TotalDamage.WBP_TotalDamage_C"));
 	if (TotalDamageWidgetRef.Class)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Total Widget component Init"));
-		
 		TotalDamageWidget->SetWidgetClass(TotalDamageWidgetRef.Class);
 		TotalDamageWidget->SetWidgetSpace(EWidgetSpace::Screen);
 		TotalDamageWidget->SetDrawSize(FVector2D(150.f, 15.f));
@@ -56,8 +54,6 @@ AHBCharacterBase::AHBCharacterBase()
 		TEXT("/Game/Personal/PARK_H_Y/UI/WBP_PlayerRole.WBP_PlayerRole_C"));
 	if (PlayerRoleWidgetRef.Class)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Player Role Widget component Init"));
-		
 		PlayerRoleWidget->SetWidgetClass(PlayerRoleWidgetRef.Class);
 		PlayerRoleWidget->SetWidgetSpace(EWidgetSpace::Screen);
 		PlayerRoleWidget->SetDrawSize(FVector2D(150.f, 30.f));
@@ -93,7 +89,6 @@ void AHBCharacterBase::SetUpCharacterWidget(class UHBUserWidget* InUserWidget)
 	UHBTotalDamageWidget* Widget = Cast<UHBTotalDamageWidget>(InUserWidget);
 	if (Widget)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Setup Character Widget Call - Widget"));
 		Widget->UpdateTotalDamage(Stat->GetTotalTakenDamage());
 		Stat->OnTotalTakenDamageChanged.AddUObject(Widget, &UHBTotalDamageWidget::UpdateTotalDamage);
 	}
@@ -101,7 +96,6 @@ void AHBCharacterBase::SetUpCharacterWidget(class UHBUserWidget* InUserWidget)
 	UHBPlayerRoleWidget* RoleWidget = Cast<UHBPlayerRoleWidget>(InUserWidget);
 	if (RoleWidget)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Setup Character Widget Call - RoleWidget"));
 		RoleWidget->UpdatePlayerRole(Stat->GetCharacterRole().Role);
 		RoleWidget->UpdatePlayerJob(Stat->GetCharacterRole().Job);
 		Stat->OnPlayerRoleChanged.AddUObject(RoleWidget, &UHBPlayerRoleWidget::UpdatePlayerRole);
@@ -186,7 +180,6 @@ float AHBCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	UE_LOG(LogTemp, Log, TEXT("Call CharacterBase TakeDamage / Damage : %f"), DamageAmount);
 	Stat->ApplyDamage(DamageAmount);
 	
 	return DamageAmount;

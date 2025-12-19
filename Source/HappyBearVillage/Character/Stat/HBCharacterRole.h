@@ -26,10 +26,15 @@ enum class EJobType : uint8
 {
 	// 마피아 직업군
 	MAFIA UMETA(DisplayName = "Mafia"),
-
-
+	// 임시 직업군
+	KILLER UMETA(DisplayName = "Killer"),
+	THIEF UMETA(DisplayName = "Thief"),
+	
 	// 시민 직업군
 	CITIZEN UMETA(DisplayName = "Citizen"),
+	// 임시 직업군
+	POLICE UMETA(DisplayName = "Police"),
+	DOCTOR UMETA(DisplayName = "Doctor"),
 
 
 	END UMETA(DisplayName = "End") // 총 개수
@@ -56,7 +61,10 @@ public:
 
 	void InitRole()
 	{
-		int32 RoleNum = FMath::RandRange(static_cast<int32>(ERoleType::CITIZEN), static_cast<int32>(ERoleType::END) - 1);
+		FRandomStream RandomStream;
+		RandomStream.Initialize(FDateTime::Now().GetTicks());
+		
+		int32 RoleNum = FMath::RandRange(static_cast<int32>(ERoleType::MAFIA), static_cast<int32>(ERoleType::END) - 1);
 		Role = static_cast<ERoleType>(RoleNum);
 
 		int32 JobNum = 0;

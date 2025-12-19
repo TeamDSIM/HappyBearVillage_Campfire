@@ -53,6 +53,8 @@ void UHBGameFlowSubsystem::StartGame()
 					// 플레이어의 직업 설정
 					PlayerStatComponent->InitCharacterRole();
 				}
+
+				Character->SetRandomBaseColor();
 			}
 		}
 	}

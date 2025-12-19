@@ -27,8 +27,10 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 
 	// 입력 섹션 ===========================================
@@ -91,6 +93,18 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> FPSCurrentWeapon;
+
+	// 플레이어 색상 섹션 ===================================
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterial;
+
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerColor)
+	FLinearColor PlayerColor;
+
+	UFUNCTION()
+	void OnRep_PlayerColor();
+
+	void SetRandomBaseColor();
 
 
 	// 애님 섹션 ===========================================

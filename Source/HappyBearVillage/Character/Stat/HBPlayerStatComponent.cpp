@@ -32,7 +32,6 @@ float UHBPlayerStatComponent::ApplyDamage(float InDamageAmount)
 {
 	TotalTakenDamage += InDamageAmount;
 	OnTotalTakenDamageChanged.Broadcast(TotalTakenDamage);
-	UE_LOG(LogTemp, Log, TEXT("%s Total Damage : %f"), *GetOwner()->GetName(), TotalTakenDamage);
 	
 	return TotalTakenDamage;
 }
@@ -56,14 +55,11 @@ void UHBPlayerStatComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePr
 
 void UHBPlayerStatComponent::OnRep_TotalTakenDamage()
 {
-	UE_LOG(LogTemp, Log, TEXT("OnRep_TotalTakenDamage Call"));
-	
 	OnTotalTakenDamageChanged.Broadcast(TotalTakenDamage);
 }
 
 void UHBPlayerStatComponent::OnRep_CharacterRole()
 {
-	UE_LOG(LogTemp, Log, TEXT("OnRep_CharacterRole Call"));
 	// UI 갱신 시켜야 함
 	OnPlayerRoleChanged.Broadcast(CharacterRole.Role);
 	OnPlayerJobChanged.Broadcast(CharacterRole.Job);

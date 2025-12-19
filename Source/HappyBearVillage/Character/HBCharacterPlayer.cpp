@@ -10,6 +10,7 @@
 #include "Engine/DamageEvents.h"
 #include "GameFramework/GameStateBase.h"
 #include "Interface/HBInteractableInterface.h"
+#include "Net/UnrealNetwork.h"
 #include "Stat/HBPlayerStatComponent.h"
 #include "Subsystem/HBGameFlowSubsystem.h"
 
@@ -144,17 +145,20 @@ void AHBCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
+
 	// InputMappingContext 설정
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (PlayerController)
-	{
-		UEnhancedInputLocalPlayerSubsystem* Subsystem =
-			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		if (Subsystem)
-		{
-			Subsystem->AddMappingContext(InputMappingContext, 0);
-		}
-	}
+	// @PHYTODO : 이거 PossessedBy 로 옮겨줘야 함
+	// APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	// if (PlayerController)
+	// {
+	// 	UEnhancedInputLocalPlayerSubsystem* Subsystem =
+	// 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	// 	if (Subsystem)
+	// 	{
+	// 		Subsystem->AddMappingContext(InputMappingContext, 0);
+	// 	}
+	// }
 
 
 	if (IsLocallyControlled())
@@ -171,9 +175,49 @@ void AHBCharacterPlayer::BeginPlay()
 	}
 }
 
+void AHBCharacterPlayer::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// if (IsLocallyControlled())
+	// {
+	// 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	// 	if (PlayerController)
+	// 	{
+	// 		ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+	// 		if (LocalPlayer)
+	// 		{
+	// 			UEnhancedInputLocalPlayerSubsystem* Subsystem =
+	// 				ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	// 			if (Subsystem)
+	// 			{
+	// 				Subsystem->AddMappingContext(InputMappingContext, 0);
+	// 			}
+	// 		}
+	// 	}
+	// }
+}
+
 void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		UEnhancedInputLocalPlayerSubsystem* Subsystem =
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+		if (Subsystem)
+		{
+			Subsystem->AddMappingContext(InputMappingContext, 0);
+		}
+	}
+	
 
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	if (EnhancedInputComponent)
@@ -193,6 +237,13 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		// @PHYTODO : 임시 직업 분배
 		EnhancedInputComponent->BindAction(StartAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::Start);
 	}
+}
+
+void AHBCharacterPlayer::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AHBCharacterPlayer, PlayerColor)
 }
 
 void AHBCharacterPlayer::Move(const FInputActionValue& Value)
@@ -281,8 +332,34 @@ void AHBCharacterPlayer::Start()
 	{
 		return;
 	}
-	
+
 	ServerRPCStart();
+}
+
+void AHBCharacterPlayer::OnRep_PlayerColor()
+{
+	SetRandomBaseColor();
+}
+
+void AHBCharacterPlayer::SetRandomBaseColor()
+{
+	// DynamicMaterial 보장
+	if (!DynamicMaterial && GetMesh())
+	{
+		DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
+	}
+	
+	if (DynamicMaterial)
+	{
+		// 서버일때만 랜덤 색상 변수 생성
+		if (HasAuthority())
+		{
+			PlayerColor = FLinearColor::MakeRandomColor();
+		}
+
+		// CharacterBaseColor 변수에 RandomColor 변수 부여
+		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
+	}
 }
 
 void AHBCharacterPlayer::InteractionTraceTick()
@@ -448,7 +525,7 @@ void AHBCharacterPlayer::DrawDebugAttackRange(const FColor& DrawColor, FVector T
 	float CapsuleHalfHeight = AttackRange * 0.5f;
 
 	DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius,
-					 FRotationMatrix::MakeFromZ(Forward).ToQuat(), DrawColor, false, 5.0f);
+	                 FRotationMatrix::MakeFromZ(Forward).ToQuat(), DrawColor, false, 5.0f);
 
 #endif
 }
@@ -457,7 +534,7 @@ void AHBCharacterPlayer::ServerRPCNotifyHit_Implementation(const FHitResult& Hit
 {
 	// 충돌한 액터 값을 가져옴
 	AActor* HitActor = HitResult.GetActor();
-	
+
 	// 액터 값이 존재하면
 	if (HitActor)
 	{
@@ -478,7 +555,8 @@ void AHBCharacterPlayer::ServerRPCNotifyHit_Implementation(const FHitResult& Hit
 		}
 
 		// 충돌 시 Notify 이니 디버그 컬러가 Green 만 넣어도 상관없긴 함
-		DrawDebugAttackRange(FColor::Green, HitResult.TraceStart, HitResult.TraceEnd, HitActor->GetActorForwardVector());
+		DrawDebugAttackRange(FColor::Green, HitResult.TraceStart, HitResult.TraceEnd,
+		                     HitActor->GetActorForwardVector());
 	}
 }
 
@@ -545,6 +623,8 @@ void AHBCharacterPlayer::ServerRPCStart_Implementation()
 	{
 		UE_LOG(LogTemp, Log, TEXT("ServerRPCStart GameInstance is Valid"));
 		GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StartGame();
+
+		OnRep_PlayerColor();
 	}
 }
 

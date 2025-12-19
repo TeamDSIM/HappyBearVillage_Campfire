@@ -33,7 +33,6 @@ void UHBTotalDamageWidget::UpdateTotalDamage(float NewTotalDamage)
 	
 	if (TotalDamageText)
 	{
-		UE_LOG(LogTemp, Log, TEXT("UpdateTotalDamage Call"));
 		TotalDamageText->SetText(FText::FromString(FString::Printf(
 			TEXT("%.0f"), CurrentTotalDamage)));
 	}
