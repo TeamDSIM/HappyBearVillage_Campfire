@@ -7,6 +7,7 @@
 
 #include "ProceduralGeneration/Noise/HBNoiseSettings.h"
 #include "ProceduralGeneration/Noise/HBPerlinNoise.h"
+#include "Utils/HBUtils.h"
 
 FHBMapData UHBMapDataGenerator::GenerateMapData(UHBPerlinNoise* InPerlinNoise)
 {
@@ -22,7 +23,7 @@ FHBMapData UHBMapDataGenerator::GenerateMapData(UHBPerlinNoise* InPerlinNoise)
 			Nodes[i][j].Row = i;
 			Nodes[i][j].Col = j;
 			Nodes[i][j].AreaID = -1;
-			Nodes[i][j].Value = ' ';
+			Nodes[i][j].Type = ' ';
 			
 			AreaAdj[i][j].Src = nullptr;
 			AreaAdj[i][j].Dest = nullptr;
@@ -34,10 +35,12 @@ FHBMapData UHBMapDataGenerator::GenerateMapData(UHBPerlinNoise* InPerlinNoise)
 	{
 		for (int32 j=0; j<Width; ++j)
 		{
-			if (InPerlinNoise->GetNoiseElement(i, j) >= 0)
+			Nodes[i][j].Perlin = InPerlinNoise->GetNoiseElement(i, j);
+			
+			if (Nodes[i][j].Perlin >= 0)
 			{
 				Nodes[i][j].AreaID = 0;
-				Nodes[i][j].Value = 'A';
+				Nodes[i][j].Type = 'A';
 			}
 		}
 	}
@@ -217,7 +220,7 @@ FHBMapData UHBMapDataGenerator::GenerateMapData(UHBPerlinNoise* InPerlinNoise)
 
 		while (Path != Src)
 		{
-			Nodes[Path->Row][Path->Col].Value = 'R';
+			Nodes[Path->Row][Path->Col].Type = 'R';
 			Path = Prev[Path->Row][Path->Col];
 		}
 
@@ -233,7 +236,7 @@ FHBMapData UHBMapDataGenerator::GenerateMapData(UHBPerlinNoise* InPerlinNoise)
 	{
 		for (int32 j=0; j<Width; ++j)
 		{
-			MapAs1D.AppendChar(Nodes[i][j].Value);
+			MapAs1D.AppendChar(Nodes[i][j].Type);
 		}
 	}
 
@@ -249,7 +252,95 @@ FHBMapData UHBMapDataGenerator::GenerateMapData(FHBNoiseSettings Settings)
 	UHBPerlinNoise* PerlinNoise = NewObject<UHBPerlinNoise>();
 	PerlinNoise->GeneratePerlinNoise(Settings);
 	
-	return GenerateMapData(PerlinNoise);;
+	return GenerateMapData(PerlinNoise);
+}
+
+FHBMapData UHBMapDataGenerator::AddHouseInfo(int32 HouseCount)
+{
+	if (Result.MapAs1D.IsEmpty()) return FHBMapData();
+
+	TArray<TArray<FMapNode>> CandidateNodes;
+	TArray<int32> CandidateAreas;
+	CandidateNodes.SetNum(1 + AreaCount);
+
+	for (int32 Row=0; Row<Result.Resolution.Y; ++Row)
+	{
+		for (int32 Col=0; Col<Result.Resolution.X; ++Col)
+		{
+			int32 Perlin = Nodes[Row][Col].Perlin;
+			int32 AreaID = Nodes[Row][Col].AreaID;
+			
+			if (Perlin > 1 && AreaID > 0)
+			{
+				CandidateNodes[AreaID].Add(Nodes[Row][Col]);
+			}
+		}
+	}
+
+	for (int i=1; i<=AreaCount; ++i)
+	{
+		CandidateAreas.Add(i);
+		HBUtils::Shuffle(CandidateNodes[i]);
+	}
+	
+	HBUtils::Shuffle(CandidateAreas);
+	int32 AreaIndex = 0;
+
+	for (int i=0; i<HouseCount; ++i)
+	{
+		bool IsValid = true;
+
+		do
+		{
+			IsValid = true;
+			
+			int32 TargetArea = CandidateAreas[AreaIndex];
+			while (CandidateNodes[TargetArea].IsEmpty())
+			{
+				++AreaIndex;
+				if (AreaIndex == CandidateAreas.Num()) AreaIndex = 0;
+
+				TargetArea = CandidateAreas[AreaIndex];
+			}
+			
+			FMapNode TargetNode = CandidateNodes[TargetArea].Last();
+			CandidateNodes[TargetArea].Pop();
+
+			for (int j=0; j<4; ++j)
+			{
+				for (int k=0; k<4; ++k)
+				{
+					FMapNode AdjNode = Nodes[TargetNode.Row + j][TargetNode.Col + k];
+					if (AdjNode.Perlin <= 1 || AdjNode.AreaID <= 0) IsValid = false;
+					if (AdjNode.Type == 'H' || AdjNode.Type == 'h') IsValid = false;
+				}
+			}
+
+			if (IsValid)
+			{
+				for (int j=0; j<4; ++j)
+				{
+					for (int k=0; k<4; ++k)
+					{
+						Nodes[TargetNode.Row + j][TargetNode.Col + k].Type = 'h';
+					}
+				}
+
+				Nodes[TargetNode.Row][TargetNode.Col].Type = 'H';
+			}
+		}
+		while (!IsValid);
+	}
+
+	for (int32 Row=0; Row<Height; ++Row)
+	{
+		for (int32 Col=0; Col<Width; ++Col)
+		{
+			Result.MapAs1D[Width * Row + Col] = Nodes[Row][Col].Type;
+		}
+	}
+	
+	return Result;
 }
 
 void UHBMapDataGenerator::PrintMapData()
@@ -276,9 +367,9 @@ void UHBMapDataGenerator::PrintMapData()
 				AreaLogText += TEXT(" ");
 			}
 
-			if (Nodes[Row][Col].Value != ' ')
+			if (Nodes[Row][Col].Type != ' ')
 			{
-				TypeLogText += FString::Printf(TEXT("%c"), Nodes[Row][Col].Value);
+				TypeLogText += FString::Printf(TEXT("%c"), Nodes[Row][Col].Type);
 			}
 			else
 			{

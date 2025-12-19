@@ -8,6 +8,7 @@
 /**
  * 
  */
+
 USTRUCT(BlueprintType)
 struct FHBMapData
 {
@@ -21,5 +22,11 @@ public:
 	float Seed = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MapData")
+	int32 AreaScale = 4;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MapData")
 	FString MapAs1D;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MapData")
+	int32 AreaIDAs1D;
 };
