@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "HBLobbyWidget.h"
+#include "HBTitleWidget.h"
 #include "Components/Button.h"
 #include "Engine/GameInstance.h"
 #include "MultiplayerSessionsSubsystem.h"
 
 //화면에 나타날 준비가 모두 끝난 경우
-void UHBLobbyWidget::NativeConstruct()
+void UHBTitleWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
@@ -38,7 +38,7 @@ void UHBLobbyWidget::NativeConstruct()
 
 }
 
-void UHBLobbyWidget::HostButtonClicked()
+void UHBTitleWidget::HostButtonClicked()
 {
 	//UE_LOG(LogTemp, Log, TEXT("Host Made the Room"));
 
@@ -48,7 +48,7 @@ void UHBLobbyWidget::HostButtonClicked()
 	}
 }
 
-void UHBLobbyWidget::JoinButtonClicked()
+void UHBTitleWidget::JoinButtonClicked()
 {
 
 	UE_LOG(LogTemp, Log, TEXT("Client Joined the Room"));
@@ -59,13 +59,13 @@ void UHBLobbyWidget::JoinButtonClicked()
 	}
 }
 
-void UHBLobbyWidget::OnCreateSessionComplete(bool bWasSuccessful)
+void UHBTitleWidget::OnCreateSessionComplete(bool bWasSuccessful)
 {
 	UE_LOG(LogTemp, Log, TEXT("CreateSessionComplete: %s"), bWasSuccessful ? TEXT("Success") : TEXT("Fail"));
 
 }
 
-void UHBLobbyWidget::OnFindSessionsComplete(
+void UHBTitleWidget::OnFindSessionsComplete(
     const TArray<FOnlineSessionSearchResult>& Results,
     bool bWasSuccessful)
 

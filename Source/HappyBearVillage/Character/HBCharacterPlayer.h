@@ -30,6 +30,8 @@ protected:
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	//virtual void PossessedBy(AController* NewController) override;
+
 
 	// 입력 섹션
 protected:

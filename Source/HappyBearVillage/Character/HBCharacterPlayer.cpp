@@ -122,16 +122,16 @@ void AHBCharacterPlayer::BeginPlay()
 	Super::BeginPlay();
 
 	// InputMappingContext 설정
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (PlayerController)
-	{
-		UEnhancedInputLocalPlayerSubsystem* Subsystem =
-			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		if (Subsystem)
-		{
-			Subsystem->AddMappingContext(InputMappingContext, 0);
-		}
-	}
+	//APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	//if (PlayerController)
+	//{
+	//	UEnhancedInputLocalPlayerSubsystem* Subsystem =
+	//		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	//	if (Subsystem)
+	//	{
+	//		Subsystem->AddMappingContext(InputMappingContext, 0);
+	//	}
+	//}
 
 	if (IsLocallyControlled())
 	{
@@ -151,6 +151,22 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		UEnhancedInputLocalPlayerSubsystem* Subsystem =
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+		if (Subsystem)
+		{
+			Subsystem->AddMappingContext(InputMappingContext, 0);
+		}
+	}
+
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	if (EnhancedInputComponent)
 	{
@@ -167,6 +183,20 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	}
 }
+
+//void AHBCharacterPlayer::PossessedBy(AController* NewController)
+//{
+//	Super::PossessedBy(NewController);
+//	if (IsLocallyControlled())
+//	{
+//		APlayerController* PC = Cast<APlayerController>(NewController);
+//		if (PC)
+//		{
+//			ULocalPlayer* LP = PC->GetLocalPlayer();
+//			LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->AddMappingContext(InputMappingContext, 0);
+//		}
+//	}
+//}
 
 void AHBCharacterPlayer::Move(const FInputActionValue& Value)
 {

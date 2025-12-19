@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "HBLobbyWidget.generated.h"
+#include "HBTitleWidget.generated.h"
 
 /**
  * 
@@ -13,7 +13,7 @@
 class UMultiplayerSessionsSubsystem;
 
 UCLASS()
-class HAPPYBEARVILLAGE_API UHBLobbyWidget : public UUserWidget
+class HAPPYBEARVILLAGE_API UHBTitleWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
