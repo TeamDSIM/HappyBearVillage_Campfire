@@ -21,6 +21,7 @@ public:
 	UHBMapGenerator();
 	
 	void GenerateField(FHBMapData InMapData, UWorld* InWorld);
+	void GenerateHouse(FHBMapData InMapData, UWorld* InWorld);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")
@@ -33,7 +34,13 @@ protected:
 	TSubclassOf<AActor> ForestFieldClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")
+	TArray<TSubclassOf<AActor>> HouseClasses;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")
 	TArray<TObjectPtr<AActor>> FieldActors;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")
+	TArray<TObjectPtr<AActor>> HouseActors;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")
 	float FieldElementSize = 400.0f;
