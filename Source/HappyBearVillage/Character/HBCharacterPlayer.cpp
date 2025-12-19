@@ -624,7 +624,7 @@ void AHBCharacterPlayer::ServerRPCStart_Implementation()
 		UE_LOG(LogTemp, Log, TEXT("ServerRPCStart GameInstance is Valid"));
 		GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StartGame();
 
-		OnRep_PlayerColor();
+		//OnRep_PlayerColor();
 	}
 }
 
