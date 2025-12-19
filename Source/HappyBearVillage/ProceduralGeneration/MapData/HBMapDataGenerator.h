@@ -17,8 +17,9 @@ struct FMapNode
 	int32 Row;
 	int32 Col;
 
+	int32 Perlin = -100;
 	int32 AreaID = -1;
-	TCHAR Value = ' ';
+	TCHAR Type = ' ';
 };
 
 struct FMapEdge
@@ -38,6 +39,7 @@ public:
 	
 	FHBMapData GenerateMapData(class UHBPerlinNoise* InPerlinNoise);
 	FHBMapData GenerateMapData(FHBNoiseSettings Settings);
+	FHBMapData AddHouseInfo(int32 HouseCount);
 	void PrintMapData();
 
 private:
