@@ -10,7 +10,7 @@ UHBPlayerStatComponent::UHBPlayerStatComponent()
 {
 	bWantsInitializeComponent = true;
 	
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 }
 
 void UHBPlayerStatComponent::InitializeComponent()
