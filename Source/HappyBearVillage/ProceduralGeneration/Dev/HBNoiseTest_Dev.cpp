@@ -16,8 +16,8 @@ AHBNoiseTest_Dev::AHBNoiseTest_Dev()
 void AHBNoiseTest_Dev::BeginPlay()
 {
 	Super::BeginPlay();
-
-	MapGenerateTest();
+	
+	AddHouseTest();
 }
 
 void AHBNoiseTest_Dev::NoiseTest()
@@ -72,4 +72,22 @@ void AHBNoiseTest_Dev::MapGenerateTest()
 	
 	FHBMapData MapData = Generator->GenerateMapData(Settings);
 	MapGenerator->GenerateField(MapData, GetWorld());
+}
+
+void AHBNoiseTest_Dev::AddHouseTest()
+{
+	UHBMapDataGenerator* MapDataGenerator = NewObject<UHBMapDataGenerator>();
+	UHBMapGenerator* MapGenerator = NewObject<UHBMapGenerator>();
+	
+	FHBNoiseSettings Settings;
+	Settings.Resolution = {64, 64};
+	Settings.GridSize = {4, 4};
+	Settings.Seed = Seed;
+	
+	FHBMapData MapData = MapDataGenerator->GenerateMapData(Settings);
+	MapData = MapDataGenerator->AddHouseInfo(8);
+	MapDataGenerator->PrintMapData();
+	
+	MapGenerator->GenerateField(MapData, GetWorld());
+	MapGenerator->GenerateHouse(MapData, GetWorld());
 }

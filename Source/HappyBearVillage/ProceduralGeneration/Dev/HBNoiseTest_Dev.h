@@ -20,6 +20,7 @@ protected:
 	void MapDataGenerateTest();
 	void MapDataTest();
 	void MapGenerateTest();
+	void AddHouseTest();
 
 public:
 	UPROPERTY(EditAnywhere)
