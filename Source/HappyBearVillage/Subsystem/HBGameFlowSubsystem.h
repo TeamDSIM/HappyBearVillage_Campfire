@@ -12,19 +12,6 @@
  *  설명: 마피아 게임 플로우를 관리하는 서브시스템
  */
 
-// 각 페이즈를 나타내는 enum 클래스
-UENUM(BlueprintType)
-enum class EGamePhase : uint8
-{
-	Waiting,	// 대기 상태
-	Discussion,	// 토론 상태
-	Fight,		// 난투 상태
-	Vote,		// 최종 투표 상태
-	Night,		// 밤 상태
-
-	End,
-};
-
 UCLASS()
 class HAPPYBEARVILLAGE_API UHBGameFlowSubsystem : public UGameInstanceSubsystem
 {
@@ -35,13 +22,24 @@ public:
 	void StartGame();
 
 private:
-	// @PHYTODO : 각 페이즈 별 시작 함수
+	// 각 페이즈 별 시작 함수
+	void StartDay();		// 낮 (토론 전 잠시 대기)
+	void StartDiscussion();		// 토론
+	void StartFight();			// 난투
+	void StartVote();			// 투표
+	void StartNight();			// 밤
+	
+	// 페이즈 변환 함수
+	void SetPhase(EGamePhase NewPhase, float Duration);
 
-	// @PHYTODO : 페이즈 변환 함수
+	// 시간초 감소 함수
+	void StartCountdown(float StartTime);
+	void TickCountdown();
 	
 	
 	// 각 페이즈 별 시간 관리할 타이머
 	FTimerHandle PhaseTimerHandle;
+	FTimerHandle CountdownTimerHandle;
 	
 	
 };

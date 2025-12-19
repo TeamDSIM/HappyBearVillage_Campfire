@@ -20,3 +20,7 @@ void AHBMafiaGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 void AHBMafiaGameState::OnRep_GamePhase()
 {
 }
+
+void AHBMafiaGameState::OnRep_RemainingTime()
+{
+}
