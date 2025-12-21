@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProceduralGeneration/MapData/HBMapGenerator.h"
+#include "ProceduralGeneration/Map/HBMapGenerator.h"
 #include "Engine/World.h"
 #include "ProceduralGeneration/Map/HBForestField.h"
-#include "ProceduralGeneration/Map/HBForestLoop.h"
+#include "ProceduralGeneration/Map/HBForestSpline.h"
 #include "ProceduralGeneration/Map/HBRoadField.h"
 
 UHBMapGenerator::UHBMapGenerator()
@@ -70,10 +70,10 @@ void UHBMapGenerator::GenerateField(FHBMapData InMapData, UWorld* InWorld)
 			}
 			else
 			{
-				AActor* FieldActor = InWorld->SpawnActor<AHBForestField>(ForestFieldClass, SpawnTransform);
-				FieldActors.Add(FieldActor);
-				//AActor* FieldActor = InWorld->SpawnActor<AHBRoadField>(RoadFieldClass, SpawnTransform);
+				//AActor* FieldActor = InWorld->SpawnActor<AHBForestField>(ForestFieldClass, SpawnTransform);
 				//FieldActors.Add(FieldActor);
+				AActor* FieldActor = InWorld->SpawnActor<AHBRoadField>(RoadFieldClass, SpawnTransform);
+				FieldActors.Add(FieldActor);
 			}
 		}
 	}
@@ -124,7 +124,7 @@ void UHBMapGenerator::GenerateForestSpline(FHBMapData InMapData, UWorld* InWorld
 	{
 		TArray<FVector> CurForestBorderGridIndices = InMapData.ForestBorderGridIndices[i];
 
-		AHBForestLoop* ForestLoop = InWorld->SpawnActor<AHBForestLoop>(AHBForestLoop::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
+		AHBForestSpline* ForestLoop = InWorld->SpawnActor<AHBForestSpline>(AHBForestSpline::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
 		ForestLoop->Initialize(CurForestBorderGridIndices, FieldElementSize);
 	}
 }

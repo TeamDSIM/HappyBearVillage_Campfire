@@ -1,32 +1,32 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "HBForestLoop.h"
+#include "HBForestSpline.h"
 #include "Components/SplineComponent.h"
 #include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
 
 
-AHBForestLoop::AHBForestLoop()
+AHBForestSpline::AHBForestSpline()
 {
-	ForestField = CreateDefaultSubobject<USplineComponent>(TEXT("ForestField"));
-	ForestField->bDrawDebug = true;
-	RootComponent = ForestField;
+	ForestSpline = CreateDefaultSubobject<USplineComponent>(TEXT("ForestField"));
+	ForestSpline->bDrawDebug = true;
+	RootComponent = ForestSpline;
 }
 
-void AHBForestLoop::Initialize(TArray<FVector> CurForestGridIndices, float FieldElementSize)
+void AHBForestSpline::Initialize(TArray<FVector> CurForestGridIndices, float FieldElementSize)
 {
 	if (CurForestGridIndices.Num() <= 1) return;
 
-	ForestField->ClearSplinePoints(false);
+	ForestSpline->ClearSplinePoints(false);
 
 	for (int32 i=0; i<CurForestGridIndices.Num(); ++i)
 	{
 		FVector Location = FVector(CurForestGridIndices[i].Y * FieldElementSize, CurForestGridIndices[i].X * FieldElementSize, FieldElementSize / 2);
 		
 		FSplinePoint SplinePoint(i, Location, ESplinePointType::Curve);
-		ForestField->AddPoint(SplinePoint, false);
+		ForestSpline->AddPoint(SplinePoint, false);
 	}
 
-	ForestField->SetClosedLoop(true, false);
-	ForestField->UpdateSpline();
+	ForestSpline->SetClosedLoop(true, false);
+	ForestSpline->UpdateSpline();
 }

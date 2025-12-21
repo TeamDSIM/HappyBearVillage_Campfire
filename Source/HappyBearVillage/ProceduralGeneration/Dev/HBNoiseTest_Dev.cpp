@@ -3,10 +3,9 @@
 
 #include "ProceduralGeneration/Dev/HBNoiseTest_Dev.h"
 
-#include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
-#include "ProceduralGeneration/MapData/HBMapGenerator.h"
 #include "ProceduralGeneration/Noise/HBPerlinNoise.h"
-#include "ProceduralGeneration/MapData/HBMapGenerator.h"
+#include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
+#include "ProceduralGeneration/Map/HBMapGenerator.h"
 
 AHBNoiseTest_Dev::AHBNoiseTest_Dev()
 {
