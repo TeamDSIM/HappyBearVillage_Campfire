@@ -4,6 +4,7 @@
 #include "ProceduralGeneration/MapData/HBMapGenerator.h"
 #include "Engine/World.h"
 #include "ProceduralGeneration/Map/HBForestField.h"
+#include "ProceduralGeneration/Map/HBForestLoop.h"
 #include "ProceduralGeneration/Map/HBRoadField.h"
 
 UHBMapGenerator::UHBMapGenerator()
@@ -43,7 +44,7 @@ void UHBMapGenerator::GenerateField(FHBMapData InMapData, UWorld* InWorld)
 	const int32 Width = MapData.Resolution.X;
 	const int32 Height = MapData.Resolution.Y;
 
-	if (Width <= 0 || Height <= 0 || MapData.MapAs1D.Len() != Width * Height)
+	if (Width <= 0 || Height <= 0 || Height != MapData.Map.Num() || Width != MapData.Map[0].Num())
 	{
 		UE_LOG(LogTemp, Error, TEXT("Invalid MapData"));
 		return;
@@ -53,8 +54,7 @@ void UHBMapGenerator::GenerateField(FHBMapData InMapData, UWorld* InWorld)
 	{
 		for (int32 Col = 0; Col < Width; ++Col)
 		{
-			int32 Index = Row * Width + Col;
-			TCHAR TileType = MapData.MapAs1D[Index];
+			TCHAR TileType = MapData.Map[Row][Col];
 
 			FTransform SpawnTransform;
 			SpawnTransform.SetLocation(FVector(Col * FieldElementSize, Row * FieldElementSize, 0));
@@ -72,6 +72,8 @@ void UHBMapGenerator::GenerateField(FHBMapData InMapData, UWorld* InWorld)
 			{
 				AActor* FieldActor = InWorld->SpawnActor<AHBForestField>(ForestFieldClass, SpawnTransform);
 				FieldActors.Add(FieldActor);
+				//AActor* FieldActor = InWorld->SpawnActor<AHBRoadField>(RoadFieldClass, SpawnTransform);
+				//FieldActors.Add(FieldActor);
 			}
 		}
 	}
@@ -90,7 +92,7 @@ void UHBMapGenerator::GenerateHouse(FHBMapData InMapData, UWorld* InWorld)
 	const int32 Width = MapData.Resolution.X;
 	const int32 Height = MapData.Resolution.Y;
 
-	if (Width <= 0 || Height <= 0 || MapData.MapAs1D.Len() != Width * Height)
+	if (Width <= 0 || Height <= 0 || Height != MapData.Map.Num() || Width != MapData.Map[0].Num())
 	{
 		UE_LOG(LogTemp, Error, TEXT("Invalid MapData"));
 		return;
@@ -100,8 +102,7 @@ void UHBMapGenerator::GenerateHouse(FHBMapData InMapData, UWorld* InWorld)
 	{
 		for (int32 Col = 0; Col < Width; ++Col)
 		{
-			int32 Index = Row * Width + Col;
-			TCHAR TileType = MapData.MapAs1D[Index];
+			TCHAR TileType = MapData.Map[Row][Col];
 
 			TSubclassOf<AActor> RandomClass = HouseClasses[FMath::RandRange(0, HouseClasses.Num() - 1)]; // ToDo : 동기화 과정에서 Rand 함수 대체 필요
 			FVector SpawnLocation = FVector((Col + 1.5f) * FieldElementSize, (Row + 1.5f) * FieldElementSize, FieldElementSize / 2);
@@ -112,5 +113,18 @@ void UHBMapGenerator::GenerateHouse(FHBMapData InMapData, UWorld* InWorld)
 				HouseActors.Add(HouseActor);
 			}
 		}
+	}
+}
+
+void UHBMapGenerator::GenerateForestSpline(FHBMapData InMapData, UWorld* InWorld)
+{
+	MapData = InMapData;
+
+	for (int i=1; i<InMapData.ForestBorderGridIndices.Num(); ++i)
+	{
+		TArray<FVector> CurForestBorderGridIndices = InMapData.ForestBorderGridIndices[i];
+
+		AHBForestLoop* ForestLoop = InWorld->SpawnActor<AHBForestLoop>(AHBForestLoop::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
+		ForestLoop->Initialize(CurForestBorderGridIndices, FieldElementSize);
 	}
 }

@@ -22,6 +22,7 @@ public:
 	
 	void GenerateField(FHBMapData InMapData, UWorld* InWorld);
 	void GenerateHouse(FHBMapData InMapData, UWorld* InWorld);
+	void GenerateForestSpline(FHBMapData InMapData, UWorld* InWorld);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")

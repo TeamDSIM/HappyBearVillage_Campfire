@@ -24,9 +24,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MapData")
 	int32 AreaScale = 4;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MapData")
-	FString MapAs1D;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MapData")
-	int32 AreaIDAs1D;
+	TArray<TArray<TCHAR>> Map;
+	TArray<TArray<FVector>> ForestBorderGridIndices;
 };
