@@ -9,58 +9,72 @@
 #include "ProceduralGeneration/Noise/HBPerlinNoise.h"
 #include "Utils/HBUtils.h"
 
-FHBMapData UHBMapDataGenerator::GenerateMapData(UHBPerlinNoise* InPerlinNoise)
+FHBMapData UHBMapDataGenerator::GenerateMapData(FHBNoiseSettings Settings)
+{
+	UHBPerlinNoise* PerlinNoise = NewObject<UHBPerlinNoise>();
+	PerlinNoise->GeneratePerlinNoise(Settings);
+	
+	GenerateFieldData(PerlinNoise);
+	GenerateHouseData(8);
+	GenerateForestData();
+
+	UpdateMap();
+
+	return MapData;
+}
+
+FHBMapData UHBMapDataGenerator::GenerateFieldData(UHBPerlinNoise* InPerlinNoise)
 {
 	// 초기화
 	Width = InPerlinNoise->GetNoiseSettings().Resolution.X;
 	Height = InPerlinNoise->GetNoiseSettings().Resolution.Y;
 	AreaCount = 0;
 
-	for (int32 i=0; i<256; ++i)
+	for (int32 Row=0; Row<MAX_HEIGHT; ++Row)
 	{
-		for (int32 j=0; j<256; ++j)
+		for (int32 Col=0; Col<MAX_WIDTH; ++Col)
 		{
-			Nodes[i][j].Row = i;
-			Nodes[i][j].Col = j;
-			Nodes[i][j].AreaID = -1;
-			Nodes[i][j].Type = ' ';
+			Nodes[Row][Col].Row = Row;
+			Nodes[Row][Col].Col = Col;
+			Nodes[Row][Col].AreaID = UNDEFINED;
+			Nodes[Row][Col].Type = ' ';
 			
-			AreaAdj[i][j].Src = nullptr;
-			AreaAdj[i][j].Dest = nullptr;
-			AreaAdj[i][j].Weight = 10000;
+			AreaAdj[Row][Col].Src = nullptr;
+			AreaAdj[Row][Col].Dest = nullptr;
+			AreaAdj[Row][Col].Weight = MAX_WEIGHT;
 		}
 	}
 
-	for (int32 i=0; i<Height; ++i)
+	for (int32 Row=0; Row<Height; ++Row)
 	{
-		for (int32 j=0; j<Width; ++j)
+		for (int32 Col=0; Col<Width; ++Col)
 		{
-			Nodes[i][j].Perlin = InPerlinNoise->GetNoiseElement(i, j);
+			Nodes[Row][Col].Perlin = InPerlinNoise->GetNoiseElement(Row, Col);
 			
-			if (Nodes[i][j].Perlin >= 0)
+			if (Nodes[Row][Col].Perlin >= 0)
 			{
-				Nodes[i][j].AreaID = 0;
-				Nodes[i][j].Type = 'A';
+				Nodes[Row][Col].Type = 'A';
 			}
 		}
 	}
 
-	BorderNodes.Empty();
+	AreaBorderNodes.Empty();
 
 	// 영역 구분
 	int32 DR[4] = {0, 0, 1, -1};
 	int32 DC[4] = {1, -1, 0, 0};
 
-	for (int32 i=0; i<Height; ++i)
+	for (int32 Row=0; Row<Height; ++Row)
 	{
-		for (int32 j=0; j<Width; ++j)
+		for (int32 Col=0; Col<Width; ++Col)
 		{
-			if (Nodes[i][j].AreaID != 0) continue;
+			if (Nodes[Row][Col].AreaID != UNDEFINED) continue;
+			if (Nodes[Row][Col].Type != 'A') continue;
 
 			++AreaCount;
 
 			TQueue<FMapNode*> BfsQueue;
-			FMapNode* Start = &Nodes[i][j];
+			FMapNode* Start = &Nodes[Row][Col];
 			Start->AreaID = AreaCount;
 			BfsQueue.Enqueue(Start);
 
@@ -78,8 +92,9 @@ FHBMapData UHBMapDataGenerator::GenerateMapData(UHBPerlinNoise* InPerlinNoise)
 					int32 NextCol = CurNode->Col + DC[k];
 
 					if (NextRow < 0 || NextCol < 0 || NextRow >= Height || NextCol >= Width) continue;
-					if (Nodes[NextRow][NextCol].AreaID == -1) IsEdgeArea = true;
-					if (Nodes[NextRow][NextCol].AreaID != 0) continue;
+					if (Nodes[NextRow][NextCol].AreaID == UNDEFINED) IsEdgeArea = true;
+					if (Nodes[NextRow][NextCol].AreaID != UNDEFINED) continue;
+					if (Nodes[NextRow][NextCol].Type != 'A') continue;
 
 					FMapNode* NextNode = &Nodes[NextRow][NextCol];
 					NextNode->AreaID = CurNode->AreaID;
@@ -87,17 +102,17 @@ FHBMapData UHBMapDataGenerator::GenerateMapData(UHBPerlinNoise* InPerlinNoise)
 					BfsQueue.Enqueue(NextNode);
 				}
 
-				if (IsEdgeArea) BorderNodes.Add(CurNode);
+				if (IsEdgeArea) AreaBorderNodes.Add(CurNode);
 			}
 		}
 	}
 
-	if (AreaCount >= 256) return FHBMapData();
+	if (AreaCount >= MAX_HEIGHT) return FHBMapData();
 
 	// 최단거리 탐색
-	for (auto& Node : BorderNodes)
+	for (auto& Node : AreaBorderNodes)
 	{
-		bool IsVisit[256][256] = { false, };
+		bool IsVisit[MAX_HEIGHT][MAX_WIDTH] = { false, };
 
 		TQueue<TPair<FMapNode*, int32>> BfsQueue;
 
@@ -181,7 +196,7 @@ FHBMapData UHBMapDataGenerator::GenerateMapData(UHBPerlinNoise* InPerlinNoise)
 
 		if (Find(SrcAreaID, ParentAreaID) == Find(DestAreaID, ParentAreaID)) continue;
 
-		FMapNode* Prev[256][256] = { nullptr, };
+		FMapNode* Prev[MAX_HEIGHT][MAX_WIDTH] = { nullptr, };
 
 		TQueue<FMapNode*> BfsQueue;
 
@@ -230,42 +245,29 @@ FHBMapData UHBMapDataGenerator::GenerateMapData(UHBPerlinNoise* InPerlinNoise)
 		if (UnionCount == AreaCount) break;
 	}
 
-	FString MapAs1D;
-
+	MapData.Resolution = { Width, Height };
+	MapData.Seed = InPerlinNoise->GetNoiseSettings().Seed;
+	MapData.Map.SetNum(Height);
 	for (int32 i=0; i<Height; ++i)
 	{
-		for (int32 j=0; j<Width; ++j)
-		{
-			MapAs1D.AppendChar(Nodes[i][j].Type);
-		}
+		MapData.Map[i].SetNum(Width);
 	}
-
-	Result.Resolution = { Width, Height };
-	Result.Seed = InPerlinNoise->GetNoiseSettings().Seed;
-	Result.MapAs1D = MapAs1D;
-
-	return Result;
+	UpdateMap();
+		
+	return MapData;
 }
 
-FHBMapData UHBMapDataGenerator::GenerateMapData(FHBNoiseSettings Settings)
+FHBMapData UHBMapDataGenerator::GenerateHouseData(int32 HouseCount)
 {
-	UHBPerlinNoise* PerlinNoise = NewObject<UHBPerlinNoise>();
-	PerlinNoise->GeneratePerlinNoise(Settings);
-	
-	return GenerateMapData(PerlinNoise);
-}
-
-FHBMapData UHBMapDataGenerator::AddHouseInfo(int32 HouseCount)
-{
-	if (Result.MapAs1D.IsEmpty()) return FHBMapData();
+	if (MapData.Map.IsEmpty()) return FHBMapData();
 
 	TArray<TArray<FMapNode>> CandidateNodes;
 	TArray<int32> CandidateAreas;
 	CandidateNodes.SetNum(1 + AreaCount);
 
-	for (int32 Row=0; Row<Result.Resolution.Y; ++Row)
+	for (int32 Row=0; Row<MapData.Resolution.Y; ++Row)
 	{
-		for (int32 Col=0; Col<Result.Resolution.X; ++Col)
+		for (int32 Col=0; Col<MapData.Resolution.X; ++Col)
 		{
 			int32 Perlin = Nodes[Row][Col].Perlin;
 			int32 AreaID = Nodes[Row][Col].AreaID;
@@ -332,15 +334,87 @@ FHBMapData UHBMapDataGenerator::AddHouseInfo(int32 HouseCount)
 		while (!IsValid);
 	}
 
+	UpdateMap();
+	
+	return MapData;
+}
+
+FHBMapData UHBMapDataGenerator::GenerateForestData()
+{
+	ForestBorderGridIndices.Add(TArray<FVector>());
+	
+	int32 DR[4] = {0, 0, 1, -1};
+	int32 DC[4] = {1, -1, 0, 0};
+	
 	for (int32 Row=0; Row<Height; ++Row)
 	{
 		for (int32 Col=0; Col<Width; ++Col)
 		{
-			Result.MapAs1D[Width * Row + Col] = Nodes[Row][Col].Type;
+			if (Nodes[Row][Col].Type != ' ') continue;
+			if (!IsForestBorder(&Nodes[Row][Col])) continue;
+
+			++ForestCount;
+			ForestBorderGridIndices.Add(TArray<FVector>());
+			ForestBorderGridIndices[ForestCount].Add(FVector(Row, Col, 0));
+
+			bool IsVisit[MAX_HEIGHT][MAX_WIDTH] = { false, };
+			TArray<FMapNode*> DfsStack;
+			
+			FMapNode* Start = &Nodes[Row][Col];
+			Start->AreaID = -ForestCount;
+			Start->Type = 'F';
+			IsVisit[Start->Row][Start->Col] = true;
+			DfsStack.Push(Start);
+
+			while (!DfsStack.IsEmpty())
+			{
+				FMapNode* CurNode = DfsStack.Last();
+				DfsStack.Pop();
+				
+				for (int32 k=0; k<4; ++k)
+				{
+					int32 NextRow = CurNode->Row + DR[k];
+					int32 NextCol = CurNode->Col + DC[k];
+
+					if (NextRow < 0 || NextCol < 0 || NextRow >= Height || NextCol >= Width) continue;
+					if (Nodes[NextRow][NextCol].AreaID >= 0) continue;
+					if (IsVisit[NextRow][NextCol]) continue;
+					
+					IsVisit[NextRow][NextCol] = true;
+					
+					FMapNode* NextNode = &Nodes[NextRow][NextCol];
+
+					if (IsForestBorder(NextNode))
+					{
+						ForestBorderGridIndices[ForestCount].Add(FVector(CurNode->Row, CurNode->Col, 0));
+						DfsStack.Push(NextNode);
+						NextNode->AreaID = CurNode->AreaID;
+						NextNode->Type = CurNode->Type;
+					}
+				}
+			}
 		}
 	}
-	
-	return Result;
+
+	MapData.ForestBorderGridIndices = ForestBorderGridIndices;
+	UpdateMap();
+
+	UE_LOG(LogTemp, Log, TEXT("[ForestCount : ] %d"), ForestCount);
+
+	return MapData;
+}
+
+FHBMapData UHBMapDataGenerator::UpdateMap()
+{
+	for (int32 Row=0; Row<Height; ++Row)
+	{
+		for (int32 Col=0; Col<Width; ++Col)
+		{
+			MapData.Map[Row][Col] = Nodes[Row][Col].Type;
+		}
+	}
+
+	return MapData;
 }
 
 void UHBMapDataGenerator::PrintMapData()
@@ -398,4 +472,32 @@ int32 UHBMapDataGenerator::Find(int32 ID, TArray<int32>& Parents)
 	if (Parents[ID] != ID) Parents[ID] = Find(Parents[ID], Parents);
 
 	return Parents[ID];
+}
+
+bool UHBMapDataGenerator::IsForestBorder(FMapNode* Node)
+{
+	if (Node->AreaID >= 0) return false;
+	if (Node->Type == 'A' || Node->Type == 'R') return false;
+	
+	bool IsBorder = false;
+	
+	int32 DR[8] = {0, 0, 1, 1, 1, -1, -1, -1};
+	int32 DC[8] = {1, -1, 0, 1, -1, 0, 1, -1};
+	
+	for (int32 k=0; k<8; ++k)
+	{
+		int32 NextRow = Node->Row + DR[k];
+		int32 NextCol = Node->Col + DC[k];
+		
+		if (NextRow < 0 || NextCol < 0 || NextRow >= Height || NextCol >= Width)
+		{
+			IsBorder = true;
+			continue;
+		}
+		
+		if (Nodes[NextRow][NextCol].AreaID >= 0) IsBorder = true;
+		if (Nodes[NextRow][NextCol].Type == 'A' || Nodes[NextRow][NextCol].Type == 'R') IsBorder = true;
+	}
+	
+	return IsBorder;
 }
