@@ -16,11 +16,14 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
 	void NoiseTest();
-	void MapDataGenerateTest();
+	void GenerateFieldDataTest();
+	void GenerateFieldTest();
+	void GenerateHouseTest();
+	void GenerateForestTest();
+
 	void MapDataTest();
-	void MapGenerateTest();
-	void AddHouseTest();
 
 public:
 	UPROPERTY(EditAnywhere)
