@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/TextBlock.h"
+#include "GameState/HBMafiaGameState.h"
 #include "UI/HBUserWidget.h"
 #include "HBPhaseHUD.generated.h"
 
@@ -17,11 +18,13 @@ class HAPPYBEARVILLAGE_API UHBPhaseHUD : public UHBUserWidget
 
 public:
 	UHBPhaseHUD(const FObjectInitializer& ObjectInitializer);
-
-public:
-
+	
 protected:
 	virtual void NativeConstruct() override;
+
+public:
+	void UpdateCurrentPhase(EGamePhase NewPhase);
+	void UpdateCurrentTime(float NewTime);
 
 protected:
 	UPROPERTY()

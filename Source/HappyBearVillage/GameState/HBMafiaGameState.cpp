@@ -19,8 +19,10 @@ void AHBMafiaGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 void AHBMafiaGameState::OnRep_GamePhase()
 {
+	OnGamePhaseChanged.Broadcast(CurrentPhase);
 }
 
 void AHBMafiaGameState::OnRep_RemainingTime()
 {
+	OnRemainingTimeChanged.Broadcast(RemainingTime);
 }

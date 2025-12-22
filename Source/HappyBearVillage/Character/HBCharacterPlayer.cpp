@@ -13,6 +13,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Stat/HBPlayerStatComponent.h"
 #include "Subsystem/HBGameFlowSubsystem.h"
+#include "UI/HBUserHUDWidget.h"
 
 AHBCharacterPlayer::AHBCharacterPlayer()
 {
@@ -362,6 +363,27 @@ void AHBCharacterPlayer::SetRandomBaseColor()
 	}
 }
 
+void AHBCharacterPlayer::ResetBaseColor()
+{
+	// DynamicMaterial 보장
+	if (!DynamicMaterial && GetMesh())
+	{
+		DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
+	}
+
+	if (DynamicMaterial)
+	{
+		// 서버일때만 랜덤 색상 변수 생성
+		if (HasAuthority())
+		{
+			PlayerColor = FLinearColor::White;
+		}
+
+		// CharacterBaseColor 변수에 RandomColor 변수 부여
+		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
+	}
+}
+
 void AHBCharacterPlayer::InteractionTraceTick()
 {
 	const FRotator CurrentRotation = GetControlRotation();
@@ -613,6 +635,15 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 	if (InHUDWidget)
 	{
 		//@PHYTODO : 시간 경과에 따른 처리 진행
+		AHBMafiaGameState* GameState = GetWorld()->GetGameState<AHBMafiaGameState>();
+		if (GameState)
+		{
+			InHUDWidget->UpdatePhase(GameState->CurrentPhase);
+			InHUDWidget->UpdateRemainingTime(GameState->RemainingTime);
+
+			GameState->OnGamePhaseChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdatePhase);
+			GameState->OnRemainingTimeChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateRemainingTime);
+		}
 	}
 }
 
@@ -630,7 +661,22 @@ void AHBCharacterPlayer::ServerRPCStart_Implementation()
 	if (GameInstance)
 	{
 		UE_LOG(LogTemp, Log, TEXT("ServerRPCStart GameInstance is Valid"));
-		GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StartGame();
+		UHBGameFlowSubsystem* GameFlowSubsystem = GameInstance->GetSubsystem<UHBGameFlowSubsystem>();
+		if (GameFlowSubsystem)
+		{
+			// 게임이 진행중이면
+			if (GameFlowSubsystem->GetIsGamePlaying())
+			{
+				// 게임 중지
+				GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StopGame();
+			}
+			// 게임이 진행중이지 않으면
+			else
+			{
+				// 게임 실행
+				GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StartGame();
+			}
+		}
 
 		//OnRep_PlayerColor();
 	}

@@ -45,6 +45,14 @@ void UHBPlayerStatComponent::InitCharacterRole()
 	OnRep_CharacterRole();
 }
 
+void UHBPlayerStatComponent::ResetCharacterRole()
+{
+	CharacterRole.Job = EJobType::CITIZEN;
+	CharacterRole.Role = ERoleType::CITIZEN;
+
+	OnRep_CharacterRole();
+}
+
 void UHBPlayerStatComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
