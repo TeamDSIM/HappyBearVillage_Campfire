@@ -9,9 +9,29 @@
 /**
  * 
  */
+
+class UButton;
+
+
 UCLASS()
 class HAPPYBEARVILLAGE_API UHBLobbyWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void NativeConstruct() override;
+
+private:
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* StartButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* ExitButton;
+
+	UFUNCTION()
+	void StartButtonClicked();
+
+	UFUNCTION()
+	void ExitButtonClicked();
 };

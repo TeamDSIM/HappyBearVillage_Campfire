@@ -7,6 +7,7 @@
 #include "HBPlayerController.generated.h"
 
 class UHBTitleWidget;
+class UHBLobbyWidget;
 
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBPlayerController : public APlayerController
@@ -18,11 +19,11 @@ protected:
 	virtual void BeginPlay() override;
 	//virtual void BeginPlayingState() override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-	TSubclassOf<class UHBTitleWidget> HBTitleWidgetClass;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	//TSubclassOf<class UHBTitleWidget> HBTitleWidgetClass;
 
-	UPROPERTY()
-	TObjectPtr<class UHBTitleWidget> HBTitleWidget;
+	//UPROPERTY()
+	//TObjectPtr<class UHBTitleWidget> HBTitleWidget;
 
 private:
 	//강타입의 경우는 지정한 위젯만 들어올 수 있고 (로비 UI, 인게임 HUD)
@@ -33,8 +34,8 @@ private:
 	//강 타입 참조
 	UPROPERTY()
 	UHBTitleWidget* TitleWidget;
-	//UPROPERTY()
-	//UHBTitleWidget* LobbyWidget;
+	UPROPERTY()
+	UHBLobbyWidget* LobbyWidget;
 
 	//약타입의 경우 다음과 같이 선언함 (userwidget을 상속한 어느 위젯이든 가리킬 수 있음)
 	//UPROPERTY()
@@ -43,8 +44,8 @@ private:
 	//약 타입 참조
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> TitleWidgetClass;
-	//UPROPERTY(EditDefaultsOnly)
-	//TSubclassOf<UUserWidget> LobbyWidgetClass;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> LobbyWidgetClass;
 
 	//강타입의 경우 다음과 같이 선언함 (HBTitleWidget만 들어올 수 있음)
 	//UPROPERTY(EditDefaultsOnly)

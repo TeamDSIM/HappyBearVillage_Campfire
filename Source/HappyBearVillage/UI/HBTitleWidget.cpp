@@ -44,6 +44,7 @@ void UHBTitleWidget::HostButtonClicked()
 
 	if (MultiplayerSessionsSubsystem)
 	{
+        // @todo : 최대 인원 설정
 		MultiplayerSessionsSubsystem->CreateSession(4, TEXT("FreeForAll"));
 	}
 }

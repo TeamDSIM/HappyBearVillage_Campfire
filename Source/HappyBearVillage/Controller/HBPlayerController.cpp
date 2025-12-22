@@ -4,6 +4,7 @@
 #include "HBPlayerController.h"
 #include "Blueprint/Userwidget.h" 
 #include "../UI/HBTitleWidget.h"
+#include "../UI/HBLobbyWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameInstance/HBGameInstance.h"
 
@@ -109,6 +110,14 @@ void AHBPlayerController::SetupUI()
 		SetShowMouseCursor(true);
 	}
 
+	if (Map == TEXT("TestLobbyMap"))
+	{
+		CreateLobbyUI();
+		FInputModeGameOnly InputMode;
+		SetInputMode(InputMode);
+		SetShowMouseCursor(false);
+	}
+
 }
 
 void AHBPlayerController::CreateTitleUI()
@@ -132,7 +141,23 @@ void AHBPlayerController::CreateTitleUI()
 
 void AHBPlayerController::CreateLobbyUI()
 {
+	UE_LOG(LogTemp, Log, TEXT("createlobbyuicalled"));
 
+	if (!IsLocalController() || LobbyWidget)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Not LobbyWidget"));
+		return;
+	}
+
+	//약타입으로 생성
+	UUserWidget* RawWidget = CreateWidget<UUserWidget>(this, LobbyWidgetClass);
+
+	//강타입으로 캐스팅
+	LobbyWidget = Cast<UHBLobbyWidget>(RawWidget);
+
+	LobbyWidget->AddToViewport();
+
+	SpawnedWidgets.Add(RawWidget);
 }
 
 void AHBPlayerController::RemoveUI()
@@ -149,7 +174,7 @@ void AHBPlayerController::RemoveUI()
 	// 강타입 포인터도 정리
 	// 강타입은 배열에 관리 X (같은 위젯을 중복 제거할수도 있음)
 	TitleWidget = nullptr;
-	//HBLobbyWidget = nullptr;
+	LobbyWidget = nullptr;
 }
 
 
