@@ -134,7 +134,7 @@ void AHBPlayerController::SetupUI()
 
 	if (Map == TEXT("InGameMap"))
 	{
-		CreateLobbyUI();
+		InGameHUDComponent->ActivateHUD(this);
 		FInputModeGameOnly InputMode;
 		SetInputMode(InputMode);
 		SetShowMouseCursor(false);

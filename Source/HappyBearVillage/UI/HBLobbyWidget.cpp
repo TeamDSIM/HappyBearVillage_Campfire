@@ -15,13 +15,13 @@ void UHBLobbyWidget::NativeConstruct()
 
 	if (StartButton)
 	{
-		StartButton->IsFocusable = false;
+		//StartButton->IsFocusable = false;
 		StartButton->OnClicked.AddDynamic(this, &ThisClass::StartButtonClicked);
 	}
 
 	if (ExitButton)
 	{
-		ExitButton->IsFocusable = false;
+		//ExitButton->IsFocusable = false;
 		ExitButton->OnClicked.AddDynamic(this, &ThisClass::ExitButtonClicked);
 	}
 

@@ -28,7 +28,8 @@ void UHBTitleWidget::NativeConstruct()
 
 	if (HostButton)
 	{
-        HostButton->IsFocusable = false;
+		//UE가 BP에서 설정하라고 추천함
+        //HostButton->IsFocusable = false;
 		HostButton->OnClicked.AddDynamic(this, &ThisClass::HostButtonClicked);
 	}
 
