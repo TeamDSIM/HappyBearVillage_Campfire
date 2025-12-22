@@ -42,6 +42,9 @@ private:
 	void StartCountdown(float StartTime);
 	void TickCountdown();
 
+	//플레이어들 순환하며 무기 장착 해제 함수
+	void UnEquippedAllPlayer(AHBMafiaGameState* InGameState);
+
 
 	// 각 페이즈 별 시간 관리할 타이머
 	FTimerHandle PhaseTimerHandle;

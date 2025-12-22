@@ -137,6 +137,8 @@ void UHBGameFlowSubsystem::StopGame()
 			}
 		}
 	}
+	
+	UnEquippedAllPlayer(GameState);
 }
 
 // @PHYTODO : 각 페이즈별 함수
@@ -151,6 +153,8 @@ void UHBGameFlowSubsystem::StartDay()
 	{
 		GameState->OnRep_GamePhase();
 	}
+	
+	UnEquippedAllPlayer(GameState);
 }
 
 void UHBGameFlowSubsystem::StartDiscussion()
@@ -199,6 +203,8 @@ void UHBGameFlowSubsystem::StartNight()
 	{
 		GameState->OnRep_GamePhase();
 	}
+
+	UnEquippedAllPlayer(GameState);
 }
 
 void UHBGameFlowSubsystem::SetPhase(EGamePhase NewPhase, float Duration)
@@ -308,5 +314,26 @@ void UHBGameFlowSubsystem::TickCountdown()
 		}
 
 		GameState->OnRep_RemainingTime();
+	}
+}
+
+void UHBGameFlowSubsystem::UnEquippedAllPlayer(AHBMafiaGameState* InGameState)
+{
+	// 플레이어 목록 불러오기
+	TArray<APlayerState*> Players = InGameState->PlayerArray;
+
+	// 플레이어 목록을 돌며 무기 장착 해제
+	for (int32 i = 0; i < Players.Num(); ++i)
+	{
+		// 컨트롤러 -> CharacterPlayer -> StatComponent 에 접근
+		AController* PlayerController = Players[i]->GetPlayerController();
+		if (PlayerController)
+		{
+			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
+			if (Character)
+			{
+				Character->UnEquipWeapon();
+			}
+		}
 	}
 }

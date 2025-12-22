@@ -331,7 +331,7 @@ void AHBCharacterPlayer::Interaction()
 	}
 
 	// 현재 Phase 가 난투 Phase 가 아니면 상호작용 하지 못하도록 방지
-	if (GameState->CurrentPhase != EGamePhase::Fight)
+	if (GameState->CurrentPhase != EGamePhase::Fight  && GameState->CurrentPhase != EGamePhase::Lobby)
 	{
 		return;
 	}
@@ -435,7 +435,7 @@ void AHBCharacterPlayer::InteractionTraceTick()
 	}
 
 	// 현재 Phase 가 난투 Phase 가 아니면 상호작용하지 않으므로 판별 실행 X
-	if (GameState->CurrentPhase != EGamePhase::Fight)
+	if (GameState->CurrentPhase != EGamePhase::Fight && GameState->CurrentPhase != EGamePhase::Lobby)
 	{
 		return;
 	}
