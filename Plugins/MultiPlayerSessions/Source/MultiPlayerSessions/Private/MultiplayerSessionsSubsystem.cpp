@@ -17,7 +17,7 @@ UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
 {
 	//Delegate 바인딩
 	CreateSessionCompleteDelegate = FOnCreateSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnCreateSessionComplete);
-	FindSessionsCompleteDelegate = FOnFindSessionsCompleteDelegate::CreateUObject(this, &ThisClass::OnFindSessionsComplete);
+	//FindSessionsCompleteDelegate = FOnFindSessionsCompleteDelegate::CreateUObject(this, &ThisClass::OnFindSessionsComplete);
 	JoinSessionCompleteDelegate = FOnJoinSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnJoinSessionComplete);
 
 
@@ -227,89 +227,91 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 }
 
 //세션 찾기
-void UMultiplayerSessionsSubsystem::FindSessions(int32 MaxSearchResults)
-{
-	UE_LOG(LogTemp, Log, TEXT("FindSessions Called"));
-	// 1. 세션이 유효한지 확인
-	if (!SessionInterface.IsValid())
-	{
-		//MultiplayerOnCreateSessionComplete.Broadcast(false);
-		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
-		return;
-	}
 
-	// 2. 델리게이트 등록
-	FindSessionsCompleteDelegateHandle =
-		SessionInterface->AddOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegate);
-
-	// 3. 검색 객체 생성 및 설정 추가
-	SessionSearch = MakeShared<FOnlineSessionSearch>();
-	SessionSearch->MaxSearchResults = MaxSearchResults;
-
-	const IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
-	// const bool bIsLAN = (Subsystem && Subsystem->GetSubsystemName() == "NULL");
-	// SessionSearch->bIsLanQuery = bIsLAN;
-	SessionSearch->bIsLanQuery = false;
-
-	SessionSearch->QuerySettings.Set(FName(TEXT("PRESENCE")), true, EOnlineComparisonOp::Equals);
-
-	SessionSearch->QuerySettings.Set(
-		FName(TEXT("LOBBIES")),
-		true,
-		EOnlineComparisonOp::Equals
-	);
-
-	//SessionSearch->QuerySettings.Set(
-	//	FName(TEXT("HB_Keywords")),
-	//	FString(TEXT("HBVillage")),
-	//	EOnlineComparisonOp::In /*Equals*/
-	//);
-
-
-	// 4. LocalPlayer 가져옴 + 못가져온 경우
-	ULocalPlayer* LocalPlayer = GetWorld() ? GetWorld()->GetFirstLocalPlayerFromController() : nullptr;
-
-	if (!LocalPlayer)
-	{
-		UE_LOG(LogTemp, Log, TEXT("There is no LocalPlayer. >>FindSessions"));
-		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegateHandle);
-		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
-		return;
-	}
-
-	// 5. Net ID 가져옴 + 못가져온 경우
-	const FUniqueNetIdRepl& NetIdRepl = LocalPlayer->GetPreferredUniqueNetId();
-
-	if (!NetIdRepl.IsValid())
-	{
-		UE_LOG(LogTemp, Log, TEXT("Not valid NedIdRepl(Steam ID). >>FindSessions"));
-		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegateHandle);
-		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
-		return;
-	}
-
-	UE_LOG(LogTemp, Log,
-		TEXT("Find Debug: bIsLanQuery=%d | Presence=%s | Lobbies=%s"),
-		SessionSearch->bIsLanQuery,
-		SessionSearch->QuerySettings.SearchParams.Contains(FName(TEXT("PRESENCE"))) ? TEXT("SET") : TEXT("NO"),
-		SessionSearch->QuerySettings.SearchParams.Contains(FName(TEXT("LOBBIES"))) ? TEXT("SET") : TEXT("NO")
-	);
-
-
-	// 6. Session 찾기 + 못찾은 경우
-	const bool bStarted = SessionInterface->FindSessions(*NetIdRepl.GetUniqueNetId(), SessionSearch.ToSharedRef());
-
-
-	if (!bStarted)
-	{
-		UE_LOG(LogTemp, Log, TEXT("cannot Start FindSession. >>FindSessions"));
-		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegateHandle);
-		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
-		return;
-	}
-}
+//void UMultiplayerSessionsSubsystem::FindSessions(int32 MaxSearchResults)
+//{
+//	UE_LOG(LogTemp, Log, TEXT("FindSessions Called"));
+//	// 1. 세션이 유효한지 확인
+//	if (!SessionInterface.IsValid())
+//	{
+//		//MultiplayerOnCreateSessionComplete.Broadcast(false);
+//		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
+//		return;
+//	}
+//
+//	// 2. 델리게이트 등록
+//	FindSessionsCompleteDelegateHandle =
+//		SessionInterface->AddOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegate);
+//
+//	// 3. 검색 객체 생성 및 설정 추가
+//	SessionSearch = MakeShared<FOnlineSessionSearch>();
+//	SessionSearch->MaxSearchResults = MaxSearchResults;
+//
+//	const IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
+//	// const bool bIsLAN = (Subsystem && Subsystem->GetSubsystemName() == "NULL");
+//	// SessionSearch->bIsLanQuery = bIsLAN;
+//	SessionSearch->bIsLanQuery = false;
+//
+//	SessionSearch->QuerySettings.Set(FName(TEXT("PRESENCE")), true, EOnlineComparisonOp::Equals);
+//
+//	SessionSearch->QuerySettings.Set(
+//		FName(TEXT("LOBBIES")),
+//		true,
+//		EOnlineComparisonOp::Equals
+//	);
+//
+//	//SessionSearch->QuerySettings.Set(
+//	//	FName(TEXT("HB_Keywords")),
+//	//	FString(TEXT("HBVillage")),
+//	//	EOnlineComparisonOp::In /*Equals*/
+//	//);
+//
+//
+//	// 4. LocalPlayer 가져옴 + 못가져온 경우
+//	ULocalPlayer* LocalPlayer = GetWorld() ? GetWorld()->GetFirstLocalPlayerFromController() : nullptr;
+//
+//	if (!LocalPlayer)
+//	{
+//		UE_LOG(LogTemp, Log, TEXT("There is no LocalPlayer. >>FindSessions"));
+//		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegateHandle);
+//		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
+//		return;
+//	}
+//
+//	// 5. Net ID 가져옴 + 못가져온 경우
+//	const FUniqueNetIdRepl& NetIdRepl = LocalPlayer->GetPreferredUniqueNetId();
+//
+//	if (!NetIdRepl.IsValid())
+//	{
+//		UE_LOG(LogTemp, Log, TEXT("Not valid NedIdRepl(Steam ID). >>FindSessions"));
+//		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegateHandle);
+//		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
+//		return;
+//	}
+//
+//	UE_LOG(LogTemp, Log,
+//		TEXT("Find Debug: bIsLanQuery=%d | Presence=%s | Lobbies=%s"),
+//		SessionSearch->bIsLanQuery,
+//		SessionSearch->QuerySettings.SearchParams.Contains(FName(TEXT("PRESENCE"))) ? TEXT("SET") : TEXT("NO"),
+//		SessionSearch->QuerySettings.SearchParams.Contains(FName(TEXT("LOBBIES"))) ? TEXT("SET") : TEXT("NO")
+//	);
+//
+//
+//	// 6. Session 찾기 + 못찾은 경우
+//	const bool bStarted = SessionInterface->FindSessions(*NetIdRepl.GetUniqueNetId(), SessionSearch.ToSharedRef());
+//
+//
+//	if (!bStarted)
+//	{
+//		UE_LOG(LogTemp, Log, TEXT("cannot Start FindSession. >>FindSessions"));
+//		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegateHandle);
+//		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
+//		return;
+//	}
+//}
 
 //세션 조인
+
 void UMultiplayerSessionsSubsystem::JoinSession(const FOnlineSessionSearchResult& SearchResult)
 {
 
@@ -354,6 +356,21 @@ void UMultiplayerSessionsSubsystem::JoinSession(const FOnlineSessionSearchResult
 		MultiplayerOnJoinSessionComplete.Broadcast(EOnJoinSessionCompleteResult::UnknownError);
 	}
 }
+
+//세션 파괴 (나가기)
+void UMultiplayerSessionsSubsystem::DestroySession()
+{
+	//host 가 아닌 경우
+	if (!SessionInterface.IsValid())
+	{
+		MultiplayerOnDestroySessionComplete.Broadcast(false);
+		return;
+	}
+
+	//host 인 경우 방 삭제 후 나가기
+	SessionInterface->DestroySession(NAME_GameSession);
+}
+
 
 //Callback 부분, OSS가 작업이 끝났다고 부르는 함수
 void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
@@ -408,29 +425,31 @@ void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName SessionName, b
 
 
 // 세션 찾기 완료한 경우
-void UMultiplayerSessionsSubsystem::OnFindSessionsComplete(bool bWasSuccessful)
-{
-	UE_LOG(LogTemp, Log, TEXT("OnFindSessionsComplete called"));
-	// 1. 세션이 유효한지 확인
-	if (SessionInterface.IsValid())
-	{
-		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegateHandle);
-	}
 
-	// 2. 검색 성공 여부와 유효성 검사
-	if (!bWasSuccessful || !SessionSearch.IsValid())
-	{
-		UE_LOG(LogTemp, Log, TEXT("fail to search session. >>OnFindSessionsComplete"));
-		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
-		return;
-	}
-
-	// 3. 성공 시 broadcast
-	MultiplayerOnFindSessionsComplete.Broadcast(SessionSearch->SearchResults, true);
-
-}
+//void UMultiplayerSessionsSubsystem::OnFindSessionsComplete(bool bWasSuccessful)
+//{
+//	UE_LOG(LogTemp, Log, TEXT("OnFindSessionsComplete called"));
+//	// 1. 세션이 유효한지 확인
+//	if (SessionInterface.IsValid())
+//	{
+//		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegateHandle);
+//	}
+//
+//	// 2. 검색 성공 여부와 유효성 검사
+//	if (!bWasSuccessful || !SessionSearch.IsValid())
+//	{
+//		UE_LOG(LogTemp, Log, TEXT("fail to search session. >>OnFindSessionsComplete"));
+//		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
+//		return;
+//	}
+//
+//	// 3. 성공 시 broadcast
+//	MultiplayerOnFindSessionsComplete.Broadcast(SessionSearch->SearchResults, true);
+//
+//}
 
 //세션 조인 완료한 경우
+
 void UMultiplayerSessionsSubsystem::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
 {
 	UE_LOG(LogTemp, Error,
@@ -485,4 +504,10 @@ void UMultiplayerSessionsSubsystem::OnSessionUserInviteAccepted(
 	}
 
 	JoinSession(InviteResult);
+}
+
+
+void UMultiplayerSessionsSubsystem::OnDestroySessionComplete(FName SessionName, bool bWasSuccessful)
+{
+	MultiplayerOnDestroySessionComplete.Broadcast(bWasSuccessful);
 }

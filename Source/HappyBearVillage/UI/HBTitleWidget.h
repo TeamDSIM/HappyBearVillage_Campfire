@@ -29,16 +29,16 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UButton* HostButton;
 
-	UPROPERTY(meta = (BindWidget))
-	UButton* JoinButton;
+	//UPROPERTY(meta = (BindWidget))
+	//UButton* JoinButton;
 
 	UFUNCTION()
 	void HostButtonClicked();
 
 	UFUNCTION()
-	void JoinButtonClicked();
+	//void JoinButtonClicked();
 
 	void OnCreateSessionComplete(bool bWasSuccessful);
-	void OnFindSessionsComplete(const TArray<FOnlineSessionSearchResult>& Results, bool bWasSuccessful);
+	//void OnFindSessionsComplete(const TArray<FOnlineSessionSearchResult>& Results, bool bWasSuccessful);
 	
 };
