@@ -50,7 +50,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widget, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UWidgetComponent> PlayerRoleWidget;
-	
+
+	//UPROPERTY()
 	virtual void SetUpCharacterWidget(class UHBUserWidget* InUserWidget) override;
 
 	// 스탯 관련 섹션 =========================================================

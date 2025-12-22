@@ -20,6 +20,8 @@ enum class EGamePhase : uint8
 	Vote,		// 최종 투표 상태
 	Night,		// 밤 상태
 
+
+	Lobby,
 	End,
 };
 
@@ -38,7 +40,7 @@ public:
 public:
 	// @PHYTODO : 나중에 다 컴포넌트로 생성해서 옮겨주기
 	UPROPERTY(ReplicatedUsing = OnRep_GamePhase, BlueprintReadOnly)
-	EGamePhase CurrentPhase = EGamePhase::Day;
+	EGamePhase CurrentPhase = EGamePhase::Lobby;
 
 	UPROPERTY(ReplicatedUsing = OnRep_RemainingTime, BlueprintReadOnly)
 	float RemainingTime = 0.f;

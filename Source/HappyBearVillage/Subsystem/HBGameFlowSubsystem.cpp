@@ -62,6 +62,30 @@ void UHBGameFlowSubsystem::StartGame()
 
 
 	// @PHYTODO : 페이즈 시작
+	StartDay();
+}
+
+void UHBGameFlowSubsystem::StopGame()
+{
+	// 서버에서 처리하도록 예외처리
+	UWorld* World = GetWorld();
+	if (!IsServer(World))
+	{
+		return;
+	}
+
+	// 페이즈 관리를 위해 HBMafiaGameState 불러오기
+	AHBMafiaGameState* GameState = World->GetGameState<AHBMafiaGameState>();
+	if (!GameState)
+	{
+		return;
+	}
+
+	World->GetTimerManager().ClearTimer(PhaseTimerHandle);
+	World->GetTimerManager().ClearTimer(CountdownTimerHandle);
+
+	GameState->CurrentPhase = EGamePhase::Lobby;
+	GameState->RemainingTime = 0.f;
 }
 
 // @PHYTODO : 각 페이즈별 함수
@@ -113,8 +137,12 @@ void UHBGameFlowSubsystem::SetPhase(EGamePhase NewPhase, float Duration)
 	}
 
 	// GameState 의 현재 페이즈와 남은 시간을 페이즈에 맞게 설정
+	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] SetPhase / Duration"));
 	GameState->CurrentPhase = NewPhase;
 	GameState->RemainingTime = Duration;
+
+	World->GetTimerManager().ClearTimer(CountdownTimerHandle);
+	StartCountdown(Duration);
 
 	// 각 페이즈 종료 시 다음 페이즈로 넘겨줄 델리게이트 생성
 	World->GetTimerManager().SetTimer(
@@ -185,6 +213,12 @@ void UHBGameFlowSubsystem::TickCountdown()
 	if (GameState)
 	{
 		GameState->RemainingTime = FMath::Max(0.f, GameState->RemainingTime - 1.f);
+
+		FString PhaseName
+			= StaticEnum<EGamePhase>()->GetNameStringByValue(static_cast<int32>(GameState->CurrentPhase));
+
+		UE_LOG(LogTemp, Log, TEXT("[Phase : %s], Remaining Time : %f"),
+		       *PhaseName, GameState->RemainingTime);
 
 		if (GameState->RemainingTime <= 0.f)
 		{

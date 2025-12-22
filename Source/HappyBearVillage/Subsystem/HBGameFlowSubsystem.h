@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameState/HBMafiaGameState.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "HBGameFlowSubsystem.generated.h"
 
@@ -20,6 +21,7 @@ class HAPPYBEARVILLAGE_API UHBGameFlowSubsystem : public UGameInstanceSubsystem
 public:
 	// 게임 시작 시 호출될 함수
 	void StartGame();
+	void StopGame();
 
 private:
 	// 각 페이즈 별 시작 함수
