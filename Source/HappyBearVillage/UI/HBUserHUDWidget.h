@@ -13,5 +13,12 @@ UCLASS()
 class HAPPYBEARVILLAGE_API UHBUserHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
+
+protected:
+	virtual void NativeConstruct() override;
+
+protected:
+	UPROPERTY()
+	TObjectPtr<class UHBPhaseHUD> PhaseHUDWidget;
 };

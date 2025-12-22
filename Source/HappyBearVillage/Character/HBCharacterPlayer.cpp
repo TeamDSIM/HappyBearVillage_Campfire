@@ -608,6 +608,14 @@ void AHBCharacterPlayer::PlayAttackAnimation()
 	}
 }
 
+void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
+{
+	if (InHUDWidget)
+	{
+		//@PHYTODO : 시간 경과에 따른 처리 진행
+	}
+}
+
 // @PHYTODO : 직업 분배 임시 확인용
 void AHBCharacterPlayer::ServerRPCStart_Implementation()
 {

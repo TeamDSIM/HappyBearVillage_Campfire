@@ -24,6 +24,9 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class UHBTitleWidget> HBTitleWidget;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UHBInGameHUDComponent> InGameHUDComponent;
+
 private:
 	//강타입의 경우는 지정한 위젯만 들어올 수 있고 (로비 UI, 인게임 HUD)
 	//약타입의 경우는 어느 위젯이든 가리킬 수 있음 (타이틀/팝업/오버레이)

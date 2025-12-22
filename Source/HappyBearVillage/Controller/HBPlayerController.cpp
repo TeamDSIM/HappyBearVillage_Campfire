@@ -4,6 +4,7 @@
 #include "HBPlayerController.h"
 #include "Blueprint/Userwidget.h" 
 #include "../UI/HBTitleWidget.h"
+#include "Component/HBInGameHUDComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameInstance/HBGameInstance.h"
 
@@ -17,6 +18,7 @@ AHBPlayerController::AHBPlayerController()
 	//	HBLobbyWidgetClass = HBLobbyWidgetRef.Class();
 	//}
 
+	InGameHUDComponent = CreateDefaultSubobject<UHBInGameHUDComponent>(TEXT("InGameHUD"));
 }
 
 void AHBPlayerController::BeginPlay()
@@ -107,6 +109,14 @@ void AHBPlayerController::SetupUI()
 		FInputModeUIOnly InputMode;
 		SetInputMode(InputMode);
 		SetShowMouseCursor(true);
+	}
+
+	else if (Map == TEXT("TestMap"))
+	{
+		if (InGameHUDComponent)
+		{
+			InGameHUDComponent->ActivateHUD(this);
+		}
 	}
 
 }

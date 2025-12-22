@@ -8,6 +8,7 @@
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
+#include "Interface/HBCharacterHUDInterface.h"
 #include "HBCharacterPlayer.generated.h"
 
 /**
@@ -18,7 +19,7 @@ class UInputAction;
 class UInputComponent;
 
 UCLASS()
-class HAPPYBEARVILLAGE_API AHBCharacterPlayer : public AHBCharacterBase
+class HAPPYBEARVILLAGE_API AHBCharacterPlayer : public AHBCharacterBase, public IHBCharacterHUDInterface
 {
 	GENERATED_BODY()
 
@@ -176,5 +177,9 @@ protected:
 	// @PHYTODO : 직업 분배 임시 확인용
 	UFUNCTION(Server, Reliable)
 	void ServerRPCStart();
+
+	// UI 섹션 ====================================================
+protected:
+	virtual void SetupHUDWidget(UHBUserHUDWidget* InHUDWidget) override;
 	
 };
