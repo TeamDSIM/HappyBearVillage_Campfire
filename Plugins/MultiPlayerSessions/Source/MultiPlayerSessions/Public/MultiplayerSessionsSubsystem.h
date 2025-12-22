@@ -21,7 +21,6 @@ class MULTIPLAYERSESSIONS_API UMultiplayerSessionsSubsystem : public UGameInstan
 	GENERATED_BODY()
 
 public:
-	UMultiplayerSessionsSubsystem();
 
 	//Host啊 规 积己
 	void CreateSession(int32 NumPublicConnections, FString MatchType);
@@ -33,13 +32,21 @@ public:
 	FMultiplayerOnFindSessionsComplete MultiplayerOnFindSessionsComplete;
 	FMultiplayerOnJoinSessionComplete MultiplayerOnJoinSessionComplete;
 
+	//模备 檬措肺 立加侩
+	FOnSessionUserInviteAcceptedDelegate SessionUserInviteAcceptedDelegate;
+	FDelegateHandle SessionUserInviteAcceptedDelegateHandle;
 
 protected:
+
+	UMultiplayerSessionsSubsystem();
+	virtual void Initialize(FSubsystemCollectionBase& Collection);
+
 	//Callback
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 	void OnFindSessionsComplete(bool bWasSuccessful);
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-
+	void OnSessionUserInviteAccepted(bool bWasSuccessful, int32 ControllerId,
+		FUniqueNetIdPtr UserId, const FOnlineSessionSearchResult& InviteResult);
 	
 
 private:

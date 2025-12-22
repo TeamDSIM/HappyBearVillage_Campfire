@@ -19,7 +19,9 @@ public class HappyBearVillage : ModuleRules
             "OnlineSubsystemSteam",
 			"Core",
 			"UMG",
-			"MultiplayerSessions"
+			"MultiplayerSessions",
+			"OnlineSubsystemUtils",
+			"SteamSockets"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "AnimGraphRuntime" });
