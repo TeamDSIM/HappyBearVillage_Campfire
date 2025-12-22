@@ -11,6 +11,7 @@
  */
 
 class UMultiplayerSessionsSubsystem;
+class UButton;
 
 UCLASS()
 class HAPPYBEARVILLAGE_API UHBTitleWidget : public UUserWidget
@@ -26,7 +27,7 @@ private:
 	TObjectPtr< UMultiplayerSessionsSubsystem> MultiplayerSessionsSubsystem;
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* HostButton;
+	UButton* HostButton;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* JoinButton;

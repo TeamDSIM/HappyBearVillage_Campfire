@@ -5,6 +5,7 @@
 #include "Blueprint/Userwidget.h" 
 #include "../UI/HBTitleWidget.h"
 #include "Component/HBInGameHUDComponent.h"
+#include "../UI/HBLobbyWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameInstance/HBGameInstance.h"
 
@@ -27,8 +28,8 @@ void AHBPlayerController::BeginPlay()
 
 	UE_LOG(LogTemp, Log, TEXT("PlayerController BeginPlay"));
 
-	//ÀÌ Ã¼Å©°¡ ÀÖ¾î¾ß client Ãß°¡ÇØµµ ¿À·ù X
-	//Ã¼Å©°¡ ¾øÀ¸¸é remote pc¿¡¼­ createwidget¸¦ È£ÃâÇÏ´Âµ¥, localplayer °¡ ¾øÀ¸¹Ç·Î ¼³Á¤ ºÒ°¡
+	//ï¿½ï¿½ Ã¼Å©ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½ client ï¿½ß°ï¿½ï¿½Øµï¿½ ï¿½ï¿½ï¿½ï¿½ X
+	//Ã¼Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ remote pcï¿½ï¿½ï¿½ï¿½ createwidgetï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï´Âµï¿½, localplayer ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½
 	if (!IsLocalController())
 	{
 		UE_LOG(LogTemp, Log, TEXT("no LocalController >>Playercontroller"));
@@ -40,8 +41,8 @@ void AHBPlayerController::BeginPlay()
 
 }
 
-//Pawn PossessÇÏ¶ó°í Server->Client ÁöÁ¤ ÈÄ È£ÃâµÇ´Â ÇÔ¼ö
-//Travel ÀÌÈÄ, Respawn ÀÌÈÄ, Possess °»½Å ½Ã È£Ãâ
+//Pawn Possessï¿½Ï¶ï¿½ï¿½ Server->Client ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
+//Travel ï¿½ï¿½ï¿½ï¿½, Respawn ï¿½ï¿½ï¿½ï¿½, Possess ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½
 
 //void AHBPlayerController::BeginPlayingState()
 //{
@@ -99,7 +100,7 @@ void AHBPlayerController::SetupUI()
 		return;
 	}
 
-	//¸Ê¿¡ µû¶ó ¾î¶² UI¸¦ ¶ç¿ïÁö È®ÀÎ
+	//ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½î¶² UIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
 	const FString Map = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 	
 
@@ -111,12 +112,20 @@ void AHBPlayerController::SetupUI()
 		SetShowMouseCursor(true);
 	}
 
-	else if (Map == TEXT("TestMap"))
+	if (Map == TEXT("TestMap"))
 	{
 		if (InGameHUDComponent)
 		{
 			InGameHUDComponent->ActivateHUD(this);
 		}
+	}
+
+	if (Map == TEXT("TestLobbyMap"))
+	{
+		CreateLobbyUI();
+		FInputModeGameOnly InputMode;
+		SetInputMode(InputMode);
+		SetShowMouseCursor(false);
 	}
 
 }
@@ -128,10 +137,10 @@ void AHBPlayerController::CreateTitleUI()
 		return;
 	}
 
-	//¾àÅ¸ÀÔÀ¸·Î »ý¼º
+	//ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	UUserWidget* RawWidget = CreateWidget<UUserWidget>(this, TitleWidgetClass);
 
-	//°­Å¸ÀÔÀ¸·Î Ä³½ºÆÃ
+	//ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½
 	TitleWidget = Cast<UHBTitleWidget>(RawWidget);
 	
 	TitleWidget->AddToViewport();
@@ -142,7 +151,23 @@ void AHBPlayerController::CreateTitleUI()
 
 void AHBPlayerController::CreateLobbyUI()
 {
+	UE_LOG(LogTemp, Log, TEXT("createlobbyuicalled"));
 
+	if (!IsLocalController() || LobbyWidget)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Not LobbyWidget"));
+		return;
+	}
+
+	//ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	UUserWidget* RawWidget = CreateWidget<UUserWidget>(this, LobbyWidgetClass);
+
+	//ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½
+	LobbyWidget = Cast<UHBLobbyWidget>(RawWidget);
+
+	LobbyWidget->AddToViewport();
+
+	SpawnedWidgets.Add(RawWidget);
 }
 
 void AHBPlayerController::RemoveUI()
@@ -156,10 +181,10 @@ void AHBPlayerController::RemoveUI()
 	}
 	SpawnedWidgets.Empty();
 
-	// °­Å¸ÀÔ Æ÷ÀÎÅÍµµ Á¤¸®
-	// °­Å¸ÀÔÀº ¹è¿­¿¡ °ü¸® X (°°Àº À§Á¬À» Áßº¹ Á¦°ÅÇÒ¼öµµ ÀÖÀ½)
+	// ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½ ï¿½ï¿½ï¿½ï¿½
+	// ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ X (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ßºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ò¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 	TitleWidget = nullptr;
-	//HBLobbyWidget = nullptr;
+	LobbyWidget = nullptr;
 }
 
 
