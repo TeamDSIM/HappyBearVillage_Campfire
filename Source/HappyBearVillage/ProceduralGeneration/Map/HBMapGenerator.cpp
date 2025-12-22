@@ -12,19 +12,19 @@ UHBMapGenerator::UHBMapGenerator()
 	RoadFieldClass = AHBRoadField::StaticClass();
 	ForestFieldClass = AHBForestField::StaticClass();
 
-	static ConstructorHelpers::FClassFinder<AActor> OldHouseRef(TEXT("/Script/Engine.Blueprint'/Game/Map/BP_Old_House.BP_Old_House_C'"));
+	static ConstructorHelpers::FClassFinder<AActor> OldHouseRef(TEXT("/Script/Engine.Blueprint'/Game/Village/BP_Old_House.BP_Old_House_C'"));
 	if (OldHouseRef.Succeeded())
 	{
 		HouseClasses.Add(OldHouseRef.Class);
 	}
 	
-	static ConstructorHelpers::FClassFinder<AActor> AbandonedHouseRef(TEXT("/Script/Engine.Blueprint'/Game/Map/BP_Abandoned_House.BP_Abandoned_House_C'"));
+	static ConstructorHelpers::FClassFinder<AActor> AbandonedHouseRef(TEXT("/Script/Engine.Blueprint'/Game/Village/BP_Abandoned_House.BP_Abandoned_House_C'"));
 	if (AbandonedHouseRef.Succeeded())
 	{
 		HouseClasses.Add(AbandonedHouseRef.Class);
 	}
 	
-	static ConstructorHelpers::FClassFinder<AActor> VikingHouseRef(TEXT("/Script/Engine.Blueprint'/Game/Map/BP_Viking_House.BP_Viking_House_C'"));
+	static ConstructorHelpers::FClassFinder<AActor> VikingHouseRef(TEXT("/Script/Engine.Blueprint'/Game/Village/BP_Viking_House.BP_Viking_House_C'"));
 	if (VikingHouseRef.Succeeded())
 	{
 		HouseClasses.Add(VikingHouseRef.Class);
