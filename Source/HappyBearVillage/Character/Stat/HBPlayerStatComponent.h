@@ -44,7 +44,11 @@ public:
 	// 직업 관련 섹션 =====================================================================
 	FORCEINLINE const FHBCharacterRole& GetCharacterRole() const { return CharacterRole; }
 
+	// 캐릭터 직업 부여
 	void InitCharacterRole();
+
+	// 캐릭터 직업 초기화
+	void ResetCharacterRole();
 
 protected:
 	// 캐릭터 기본 스탯

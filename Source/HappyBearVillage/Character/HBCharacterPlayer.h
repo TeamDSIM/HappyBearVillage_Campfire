@@ -108,6 +108,7 @@ public:
 	void OnRep_PlayerColor();
 
 	void SetRandomBaseColor();
+	void ResetBaseColor();
 
 
 	// 애님 섹션 ===========================================

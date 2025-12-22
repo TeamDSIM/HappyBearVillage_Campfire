@@ -3,6 +3,8 @@
 
 #include "UI/HBPhaseHUD.h"
 
+#include "Interface/HBCharacterHUDInterface.h"
+
 UHBPhaseHUD::UHBPhaseHUD(const FObjectInitializer& ObjectInitializer)
 {
 }
@@ -16,5 +18,31 @@ void UHBPhaseHUD::NativeConstruct()
 
 	TimeText = Cast<UTextBlock>(GetWidgetFromName(TEXT("Time")));
 	ensure(TimeText);
+	
+}
 
+void UHBPhaseHUD::UpdateCurrentPhase(EGamePhase NewPhase)
+{
+	const UEnum* Enum = StaticEnum<EGamePhase>();
+	if (!Enum)
+	{
+		UE_LOG(LogTemp, Error, TEXT("EGamePhase enum is null"));
+		return;
+	}
+	
+	PhaseString = Enum->GetNameStringByValue(static_cast<int32>(NewPhase));
+
+	if (PhaseText)
+	{
+		PhaseText->SetText(FText::FromString(FString::Printf(TEXT("%s"), *PhaseString)));
+	}
+}
+
+void UHBPhaseHUD::UpdateCurrentTime(float NewTime)
+{
+	if (TimeText)
+	{
+		TimeText->SetText(FText::FromString(FString::Printf(TEXT("%d : %d")
+			, ((int32)NewTime / 60), ((int32)NewTime % 60))));
+	}
 }

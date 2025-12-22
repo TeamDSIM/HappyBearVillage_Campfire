@@ -17,5 +17,14 @@ void UHBUserHUDWidget::NativeConstruct()
 	{
 		HUDPawn->SetupHUDWidget(this);
 	}
-	
+}
+
+void UHBUserHUDWidget::UpdatePhase(EGamePhase NewGamePhase)
+{
+	PhaseHUDWidget->UpdateCurrentPhase(NewGamePhase);
+}
+
+void UHBUserHUDWidget::UpdateRemainingTime(float NewRemainingTime)
+{
+	PhaseHUDWidget->UpdateCurrentTime(NewRemainingTime);
 }

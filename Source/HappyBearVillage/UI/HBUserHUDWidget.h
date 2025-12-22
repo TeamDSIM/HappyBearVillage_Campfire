@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "GameState/HBMafiaGameState.h"
 #include "HBUserHUDWidget.generated.h"
 
 /**
@@ -17,6 +18,10 @@ class HAPPYBEARVILLAGE_API UHBUserHUDWidget : public UUserWidget
 
 protected:
 	virtual void NativeConstruct() override;
+
+public:
+	void UpdatePhase(EGamePhase NewGamePhase);
+	void UpdateRemainingTime(float NewRemainingTime);
 
 protected:
 	UPROPERTY()
