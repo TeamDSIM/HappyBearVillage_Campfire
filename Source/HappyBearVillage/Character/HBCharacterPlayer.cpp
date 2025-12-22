@@ -14,6 +14,7 @@
 #include "Stat/HBPlayerStatComponent.h"
 #include "Subsystem/HBGameFlowSubsystem.h"
 #include "UI/HBUserHUDWidget.h"
+#include "GameState/HBMafiaGameState.h"
 
 AHBCharacterPlayer::AHBCharacterPlayer()
 {
@@ -755,4 +756,25 @@ bool AHBCharacterPlayer::ServerRPCAttack_Validate(float AttackStartTime)
 	// 현재 공격 시작 시간과 이전 공격 시작 시간이 애니메이션 길이보다 길어야 true 반환
 	// 짧으면 악의적으로 공격을 빨리 하는거라 판단해서 false
 	return (AttackStartTime - LastAttackStartTime) > AttackTime;
+}
+
+void AHBCharacterPlayer::EnterHouse()
+{
+	NightState = EPlayerNightState::InHouse;
+}
+
+void AHBCharacterPlayer::ExitHouse()
+{
+	AHBMafiaGameState* GS = GetWorld()->GetGameState<AHBMafiaGameState>();
+	if (!GS || !GS->IsNight())
+	{
+		NightState = EPlayerNightState::Outside;
+		return;
+	}
+
+	NightState = EPlayerNightState::Outside;
+
+	Stamina = FMath::Max(Stamina - 20.f, 0.f);
+
+	UE_LOG(LogTemp, Warning, TEXT("[NightFlow] ExitHouse - Stamina: %f"), Stamina);
 }

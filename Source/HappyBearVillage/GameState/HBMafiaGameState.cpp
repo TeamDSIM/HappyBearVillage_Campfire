@@ -26,3 +26,8 @@ void AHBMafiaGameState::OnRep_RemainingTime()
 {
 	OnRemainingTimeChanged.Broadcast(RemainingTime);
 }
+
+bool AHBMafiaGameState::IsNight() const
+{
+	return CurrentPhase == EGamePhase::Night;
+}

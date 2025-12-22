@@ -18,6 +18,14 @@ class UInputMappingContext;
 class UInputAction;
 class UInputComponent;
 
+
+UENUM(BlueprintType)
+enum class EPlayerNightState : uint8
+{
+	InHouse UMETA(DisplayName = "In House"),
+	Outside UMETA(DisplayName = "Outside")
+};
+
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBCharacterPlayer : public AHBCharacterBase, public IHBCharacterHUDInterface
 {
@@ -59,6 +67,17 @@ protected:
 	// @PHYTODO : 직업 분배 임시 확인용
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TObjectPtr<UInputAction> StartAction;
+
+	// ================= Night Flow =================
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night")
+	float Stamina = 100.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night")
+	float MaxStamina = 100.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night")
+	EPlayerNightState NightState = EPlayerNightState::InHouse;
 	
 public:
 	UFUNCTION()
@@ -77,6 +96,14 @@ public:
 	
 	UFUNCTION()
 	void Start();
+
+	// ================= Night Flow =================
+	UFUNCTION(BlueprintCallable, Category = "Night")
+	void EnterHouse();
+
+	UFUNCTION(BlueprintCallable, Category = "Night")
+	void ExitHouse();
+
 
 	// 1인칭 카메라
 	UPROPERTY(VisibleAnywhere, Category = Camera)
