@@ -36,6 +36,7 @@
 		},
 		{
 			"Name": "SteamSockets",
+			"Name": "PCGGeometryScriptInterop",
 			"Enabled": true
 		}
 	]
