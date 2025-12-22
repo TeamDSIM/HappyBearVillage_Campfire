@@ -249,6 +249,24 @@ void AHBCharacterPlayer::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 
 void AHBCharacterPlayer::Move(const FInputActionValue& Value)
 {
+	UWorld* World = Cast<UWorld>(GetWorld());
+	if (!World)
+	{
+		return;
+	}
+
+	AHBMafiaGameState* GameState = World->GetGameState<AHBMafiaGameState>();
+	if (!GameState)
+	{
+		return;
+	}
+
+	// 현재 Phase 가 Day(광장 이동 및 초기화 단계) 또는 Discussion(토론 단계) 이면 이동 방지
+	if (GameState->CurrentPhase == EGamePhase::Day || GameState->CurrentPhase == EGamePhase::Discussion)
+	{
+		return;
+	}
+	
 	const FVector2D MovementValue = Value.Get<FVector2D>();
 	if (Controller)
 	{
@@ -300,6 +318,24 @@ void AHBCharacterPlayer::Attack()
 
 void AHBCharacterPlayer::Interaction()
 {
+	UWorld* World = Cast<UWorld>(GetWorld());
+	if (!World)
+	{
+		return;
+	}
+
+	AHBMafiaGameState* GameState = World->GetGameState<AHBMafiaGameState>();
+	if (!GameState)
+	{
+		return;
+	}
+
+	// 현재 Phase 가 난투 Phase 가 아니면 상호작용 하지 못하도록 방지
+	if (GameState->CurrentPhase != EGamePhase::Fight)
+	{
+		return;
+	}
+	
 	if (IsLocallyControlled())
 	{
 		if (InteractionTarget != nullptr)
@@ -386,6 +422,24 @@ void AHBCharacterPlayer::ResetBaseColor()
 
 void AHBCharacterPlayer::InteractionTraceTick()
 {
+	UWorld* World = Cast<UWorld>(GetWorld());
+	if (!World)
+	{
+		return;
+	}
+
+	AHBMafiaGameState* GameState = World->GetGameState<AHBMafiaGameState>();
+	if (!GameState)
+	{
+		return;
+	}
+
+	// 현재 Phase 가 난투 Phase 가 아니면 상호작용하지 않으므로 판별 실행 X
+	if (GameState->CurrentPhase != EGamePhase::Fight)
+	{
+		return;
+	}
+	
 	const FRotator CurrentRotation = GetControlRotation();
 
 	// 시선 변화 체크 시 기준치를 넘지 않았으면 스킵
