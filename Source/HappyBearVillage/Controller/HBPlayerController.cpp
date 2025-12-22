@@ -28,8 +28,8 @@ void AHBPlayerController::BeginPlay()
 
 	UE_LOG(LogTemp, Log, TEXT("PlayerController BeginPlay"));
 
-	//�� üũ�� �־�� client �߰��ص� ���� X
-	//üũ�� ������ remote pc���� createwidget�� ȣ���ϴµ�, localplayer �� �����Ƿ� ���� �Ұ�
+	//이 체크가 있어야 client 추가해도 오류 X
+	//체크가 없으면 remote pc에서 createwidget를 호출하는데, localplayer 가 없으므로 설정 불가
 	if (!IsLocalController())
 	{
 		UE_LOG(LogTemp, Log, TEXT("no LocalController >>Playercontroller"));
@@ -41,8 +41,8 @@ void AHBPlayerController::BeginPlay()
 
 }
 
-//Pawn Possess�϶�� Server->Client ���� �� ȣ��Ǵ� �Լ�
-//Travel ����, Respawn ����, Possess ���� �� ȣ��
+//Pawn Possess하라고 Server->Client 지정 후 호출되는 함수
+//Travel 이후, Respawn 이후, Possess 갱신 시 호출
 
 //void AHBPlayerController::BeginPlayingState()
 //{
@@ -100,7 +100,7 @@ void AHBPlayerController::SetupUI()
 		return;
 	}
 
-	//�ʿ� ���� � UI�� ����� Ȯ��
+	//맵에 따라 어떤 UI를 띄울지 확인
 	const FString Map = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 	
 
@@ -137,10 +137,10 @@ void AHBPlayerController::CreateTitleUI()
 		return;
 	}
 
-	//��Ÿ������ ����
+	//약타입으로 생성
 	UUserWidget* RawWidget = CreateWidget<UUserWidget>(this, TitleWidgetClass);
 
-	//��Ÿ������ ĳ����
+	//강타입으로 캐스팅
 	TitleWidget = Cast<UHBTitleWidget>(RawWidget);
 	
 	TitleWidget->AddToViewport();
@@ -159,10 +159,10 @@ void AHBPlayerController::CreateLobbyUI()
 		return;
 	}
 
-	//��Ÿ������ ����
+	//약타입으로 생성
 	UUserWidget* RawWidget = CreateWidget<UUserWidget>(this, LobbyWidgetClass);
 
-	//��Ÿ������ ĳ����
+	//강타입으로 캐스팅
 	LobbyWidget = Cast<UHBLobbyWidget>(RawWidget);
 
 	LobbyWidget->AddToViewport();
@@ -181,8 +181,8 @@ void AHBPlayerController::RemoveUI()
 	}
 	SpawnedWidgets.Empty();
 
-	// ��Ÿ�� �����͵� ����
-	// ��Ÿ���� �迭�� ���� X (���� ������ �ߺ� �����Ҽ��� ����)
+	// 강타입 포인터도 정리
+	// 강타입은 배열에 관리 X (같은 위젯을 중복 제거할수도 있음)
 	TitleWidget = nullptr;
 	LobbyWidget = nullptr;
 }
