@@ -10,6 +10,7 @@
  * 
  */
 
+class UMultiplayerSessionsSubsystem;
 class UButton;
 
 
@@ -22,6 +23,7 @@ protected:
 	virtual void NativeConstruct() override;
 
 private:
+
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* StartButton;
