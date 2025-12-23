@@ -794,6 +794,12 @@ void AHBCharacterPlayer::ExitHouse()
 {
 	if (!HasAuthority()) return;
 
+	// 이미 밖이면 중복 처리 방지
+	if (NightState == EPlayerNightState::Outside)
+	{
+		return;
+	}
+
 	AHBMafiaGameState* GS = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (!GS || !GS->IsNight())
 	{
