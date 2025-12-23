@@ -47,6 +47,8 @@ public:
 	FHBMapData GenerateHouseData(int32 HouseCount);
 	FHBMapData GenerateForestData();
 	FHBMapData UpdateMap();
+
+	UTexture2D* GenerateForestTexture2D(class UHBPerlinNoise* InPerlinNoise);
 	
 	void PrintMapData();
 
@@ -60,6 +62,11 @@ private:
 	int32 Height = 0;
 	int32 AreaCount = 0;
 	int32 ForestCount = 0;
+
+	UPROPERTY()
+	UHBPerlinNoise* PerlinNoise;
+	UPROPERTY()
+	UTexture2D* ForestTexture2D;
 
 	FMapNode Nodes[256][256];
 	FMapEdge AreaAdj[256][256];
