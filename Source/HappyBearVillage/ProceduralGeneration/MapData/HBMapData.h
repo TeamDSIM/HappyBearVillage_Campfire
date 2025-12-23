@@ -23,7 +23,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MapData")
 	int32 AreaScale = 4;
-
+	
 	TArray<TArray<TCHAR>> Map;
 	TArray<TArray<FVector>> ForestBorderGridIndices;
+	TWeakObjectPtr<UTexture2D> ForestAsTexture2D;
 };

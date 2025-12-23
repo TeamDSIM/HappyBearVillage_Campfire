@@ -11,7 +11,7 @@
 
 FHBMapData UHBMapDataGenerator::GenerateMapData(FHBNoiseSettings Settings)
 {
-	UHBPerlinNoise* PerlinNoise = NewObject<UHBPerlinNoise>();
+	PerlinNoise = NewObject<UHBPerlinNoise>();
 	PerlinNoise->GeneratePerlinNoise(Settings);
 	
 	GenerateFieldData(PerlinNoise);
@@ -36,6 +36,7 @@ FHBMapData UHBMapDataGenerator::GenerateFieldData(UHBPerlinNoise* InPerlinNoise)
 		{
 			Nodes[Row][Col].Row = Row;
 			Nodes[Row][Col].Col = Col;
+			Nodes[Row][Col].Perlin = UNDEFINED;
 			Nodes[Row][Col].AreaID = UNDEFINED;
 			Nodes[Row][Col].Type = ' ';
 			
@@ -415,6 +416,32 @@ FHBMapData UHBMapDataGenerator::UpdateMap()
 	}
 
 	return MapData;
+}
+
+UTexture2D* UHBMapDataGenerator::GenerateForestTexture2D()
+{
+	ForestTexture2D = UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
+	
+	TArray<FColor> Pixels;
+	Pixels.SetNumUninitialized(Width * Height);
+
+	for (int32 Row=0; Row<Height; ++Row)
+	{
+		for (int32 Col=0; Col<Width; ++Col)
+		{
+			FColor CurColor = (Nodes[Row][Col].Perlin >= 0 || Nodes[Row][Col].Type == 'R') ? FColor(0, 0, 0, 0) : FColor::Red;
+			Pixels[Width * Row + Col] = CurColor;
+		}
+	}
+
+	void* TextureData = ForestTexture2D->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+	FMemory::Memcpy(TextureData, Pixels.GetData(), Pixels.Num() * sizeof(FColor));
+	ForestTexture2D->GetPlatformData()->Mips[0].BulkData.Unlock();
+	ForestTexture2D->UpdateResource();
+
+	MapData.ForestAsTexture2D = ForestTexture2D;
+	
+	return ForestTexture2D;
 }
 
 void UHBMapDataGenerator::PrintMapData()

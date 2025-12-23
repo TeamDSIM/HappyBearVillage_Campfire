@@ -16,7 +16,7 @@ void AHBNoiseTest_Dev::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	GenerateForestTest();
+	GenerateForestTestWithTexture();
 }
 
 void AHBNoiseTest_Dev::NoiseTest()
@@ -128,4 +128,30 @@ void AHBNoiseTest_Dev::MapDataTest()
 	}
 	
 	UE_LOG(LogTemp, Log, TEXT("[MapData] : \n%s"), *MapDataString);
+}
+
+void AHBNoiseTest_Dev::GenerateForestTestWithTexture()
+{
+	UHBPerlinNoise* PerlinNoise = NewObject<UHBPerlinNoise>();
+	UHBMapDataGenerator* MapDataGenerator = NewObject<UHBMapDataGenerator>();
+	UHBMapGenerator* MapGenerator = NewObject<UHBMapGenerator>();
+	
+	FHBNoiseSettings NoiseSettings;
+	NoiseSettings.Resolution = {64, 64};
+	NoiseSettings.GridSize = {4, 4};
+	NoiseSettings.Seed = Seed;
+	
+	PerlinNoise->GeneratePerlinNoise(NoiseSettings);
+
+	FHBMapData MapData = MapDataGenerator->GenerateMapData(NoiseSettings);
+
+	//MapGenerator->GenerateField(MapData, GetWorld());
+	//MapGenerator->GenerateHouse(MapData, GetWorld());
+	//MapGenerator->GenerateForestSpline(MapData, GetWorld());
+
+	UTexture2D* MapTexture = MapDataGenerator->GenerateForestTexture2D();
+
+	MapData = MapDataGenerator->GetMapData();
+	MapGenerator->GenerateVillage(MapData, GetWorld());
+	MapDataGenerator->PrintMapData();
 }
