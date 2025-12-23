@@ -27,6 +27,7 @@ void UHBLobbyWidget::NativeConstruct()
 
 }
 
+
 void UHBLobbyWidget::StartButtonClicked()
 {
 	UE_LOG(LogTemp, Log, TEXT("StartButtonClicked"));
@@ -50,4 +51,14 @@ void UHBLobbyWidget::ExitButtonClicked()
 			HBPC->ExitGame();
 		}
 	}
+}
+
+void UHBLobbyWidget::SetFriendInviteVisible(bool bVisible)
+{
+	if (!Border_FriendList)
+	{
+		return;
+	}
+
+	Border_FriendList->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 }

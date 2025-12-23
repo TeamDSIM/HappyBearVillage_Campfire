@@ -10,6 +10,7 @@
 #include "GameInstance/HBGameInstance.h"
 #include "Engine/World.h"
 #include "MultiplayerSessionsSubsystem.h"
+#include "EnhancedInputComponent.h"
 
 
 AHBPlayerController::AHBPlayerController()
@@ -40,6 +41,21 @@ void AHBPlayerController::BeginPlay()
 	ResetUI();
 	SetupUI();
 
+}
+
+void AHBPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	// Enhanced Input 바인딩
+	if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		if (FriendInviteInputAction)
+		{
+			EIC->BindAction(FriendInviteInputAction, ETriggerEvent::Started,
+				this, &AHBPlayerController::ToggleFriendInvite);
+		}
+	}
 }
 
 //Pawn Possess하라고 Server->Client 지정 후 호출되는 함수
@@ -105,7 +121,7 @@ void AHBPlayerController::SetupUI()
 	const FString Map = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 	
 
-	if (Map == TEXT("TestGameStartMap"))
+	if (Map == TEXT("TitleMap"))
 	{
 		CreateTitleUI();
 		FInputModeUIOnly InputMode;
@@ -121,15 +137,16 @@ void AHBPlayerController::SetupUI()
 		}
 	}
 
-	if (Map == TEXT("TestLobbyMap"))
+	if (Map == TEXT("LobbyMap"))
 	{
+
 		CreateLobbyUI();
-		//FInputModeGameOnly InputMode;
-		//SetInputMode(InputMode);
-		//SetShowMouseCursor(false);
-		FInputModeUIOnly InputMode;
+		FInputModeGameOnly InputMode;
 		SetInputMode(InputMode);
-		SetShowMouseCursor(true);
+		SetShowMouseCursor(false);
+		//FInputModeUIOnly InputMode;
+		//SetInputMode(InputMode);
+		//SetShowMouseCursor(true);
 	}
 
 	if (Map == TEXT("InGameMap"))
@@ -164,7 +181,7 @@ void AHBPlayerController::CreateTitleUI()
 
 void AHBPlayerController::CreateLobbyUI()
 {
-	UE_LOG(LogTemp, Log, TEXT("createlobbyuicalled"));
+	UE_LOG(LogTemp, Log, TEXT("CreateLobbyUICalled"));
 
 	if (!IsLocalController() || LobbyWidget)
 	{
@@ -183,6 +200,7 @@ void AHBPlayerController::CreateLobbyUI()
 	SpawnedWidgets.Add(RawWidget);
 }
 
+
 void AHBPlayerController::RemoveUI()
 {
 	for (UUserWidget* W : SpawnedWidgets)
@@ -198,6 +216,43 @@ void AHBPlayerController::RemoveUI()
 	// 강타입은 배열에 관리 X (같은 위젯을 중복 제거할수도 있음)
 	TitleWidget = nullptr;
 	LobbyWidget = nullptr;
+}
+
+void AHBPlayerController::ToggleFriendInvite()
+{
+	UE_LOG(LogTemp, Log, TEXT("ToggleFriendInvite Called"));
+
+	if (!IsLocalController()) return;
+	if (!LobbyWidget) return;
+
+	bFriendInviteOpen = !bFriendInviteOpen;
+	LobbyWidget->SetFriendInviteVisible(bFriendInviteOpen);
+
+	//토글 켜졌을때
+	if (bFriendInviteOpen)
+	{
+		bShowMouseCursor = true;
+
+		// 로비에서 움직임/시점 막기
+		SetIgnoreMoveInput(true);
+		SetIgnoreLookInput(true);
+
+		FInputModeGameAndUI Mode;
+		Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		SetInputMode(Mode);
+	}
+
+	//토글 꺼졌을때
+	else
+	{
+		bShowMouseCursor = false;
+
+		SetIgnoreMoveInput(false);
+		SetIgnoreLookInput(false);
+
+		FInputModeGameOnly Mode;
+		SetInputMode(Mode);
+	}
 }
 
 void AHBPlayerController::StartGame()
@@ -235,6 +290,6 @@ void AHBPlayerController::ExitGame()
 		MultiplayerSessionsSubsystem->DestroySession();
 	}
 		//@Todo : 맵 이름 변경
-	FName Map = TEXT("/Game/Personal/LEE_J_S/Maps/TestGameStartMap");
+	FName Map = TEXT("/Game/Maps/TitleMap");
 	UGameplayStatics::OpenLevel(this, Map);
 }

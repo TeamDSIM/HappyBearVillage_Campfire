@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Border.h"
 #include "HBLobbyWidget.generated.h"
+
 
 /**
  * 
@@ -18,12 +20,15 @@ UCLASS()
 class HAPPYBEARVILLAGE_API UHBLobbyWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 protected:
 	virtual void NativeConstruct() override;
 
-private:
+public:
+	UFUNCTION()
+	void SetFriendInviteVisible(bool bVisible);
 
+private:
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* StartButton;
@@ -36,4 +41,9 @@ private:
 
 	UFUNCTION()
 	void ExitButtonClicked();
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UBorder> Border_FriendList;
+
+	//bool bFriendInviteOpened=false;
 };
