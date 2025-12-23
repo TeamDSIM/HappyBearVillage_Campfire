@@ -19,7 +19,8 @@ class HAPPYBEARVILLAGE_API UHBMapGenerator : public UObject
 
 public:
 	UHBMapGenerator();
-	
+
+	void GenerateVillage(FHBMapData InMapData, UWorld* InWorld);
 	void GenerateField(FHBMapData InMapData, UWorld* InWorld);
 	void GenerateHouse(FHBMapData InMapData, UWorld* InWorld);
 	void GenerateForestSpline(FHBMapData InMapData, UWorld* InWorld);

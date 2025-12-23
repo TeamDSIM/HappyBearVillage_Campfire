@@ -2,6 +2,8 @@
 
 
 #include "ProceduralGeneration/Map/HBMapGenerator.h"
+
+#include "HBPCGVillageActor.h"
 #include "Engine/World.h"
 #include "ProceduralGeneration/Map/HBForestField.h"
 #include "ProceduralGeneration/Map/HBForestSpline.h"
@@ -28,6 +30,16 @@ UHBMapGenerator::UHBMapGenerator()
 	if (VikingHouseRef.Succeeded())
 	{
 		HouseClasses.Add(VikingHouseRef.Class);
+	}
+}
+
+void UHBMapGenerator::GenerateVillage(FHBMapData InMapData, UWorld* InWorld)
+{
+	if (InMapData.ForestAsTexture2D.IsValid())
+	{
+		AHBPCGVillageActor* PCGActor = InWorld->SpawnActor<AHBPCGVillageActor>(AHBPCGVillageActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
+		PCGActor->InitializePCGInput(InMapData.ForestAsTexture2D.Get());
+		PCGActor->Generate();
 	}
 }
 

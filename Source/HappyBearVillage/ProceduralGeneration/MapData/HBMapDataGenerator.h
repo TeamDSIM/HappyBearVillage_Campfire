@@ -64,9 +64,9 @@ private:
 	int32 ForestCount = 0;
 
 	UPROPERTY()
-	UHBPerlinNoise* PerlinNoise;
+	TObjectPtr<UHBPerlinNoise> PerlinNoise;
 	UPROPERTY()
-	UTexture2D* ForestTexture2D;
+	TObjectPtr<UTexture2D> ForestTexture2D;
 
 	FMapNode Nodes[256][256];
 	FMapEdge AreaAdj[256][256];

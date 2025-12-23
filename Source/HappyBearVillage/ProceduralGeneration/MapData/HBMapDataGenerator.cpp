@@ -441,6 +441,8 @@ UTexture2D* UHBMapDataGenerator::GenerateForestTexture2D(class UHBPerlinNoise* I
 	FMemory::Memcpy(TextureData, Pixels.GetData(), Pixels.Num() * sizeof(FColor));
 	ForestTexture2D->GetPlatformData()->Mips[0].BulkData.Unlock();
 	ForestTexture2D->UpdateResource();
+
+	MapData.ForestAsTexture2D = ForestTexture2D;
 	
 	return ForestTexture2D;
 }
