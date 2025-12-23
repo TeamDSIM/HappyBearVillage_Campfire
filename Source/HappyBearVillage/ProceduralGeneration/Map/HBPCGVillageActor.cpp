@@ -18,9 +18,9 @@ AHBPCGVillageActor::AHBPCGVillageActor()
 
 	PCG = CreateDefaultSubobject<UPCGComponent>(TEXT("PCGComponent"));
 	Bounds = CreateDefaultSubobject<UBoxComponent>(TEXT("PCGBounds"));
-
+	Bounds->SetupAttachment(Mesh);
 	
-	static ConstructorHelpers::FObjectFinder<UPCGGraph> GraphAsset(TEXT("/Game/Personal/JANG_H_W/Tools/PCG/PCG_TextureTest.PCG_TextureTest"));
+	static ConstructorHelpers::FObjectFinder<UPCGGraph> GraphAsset(TEXT("/Game/Personal/JANG_H_W/Tools/PCG/PCG_Village.PCG_Village"));
 	if (GraphAsset.Succeeded())
 	{
 		PCG->SetGraph(GraphAsset.Object);
@@ -68,6 +68,10 @@ void AHBPCGVillageActor::BeginPlay()
 	PerlinNoise->GeneratePerlinNoise(NoiseSettings);
 
 	FHBMapData MapData = MapDataGenerator->GenerateMapData(NoiseSettings);
+
+	MapGenerator->GenerateField(MapData, GetWorld());
+	MapGenerator->GenerateHouse(MapData, GetWorld());
+	MapGenerator->GenerateForestSpline(MapData, GetWorld());
 	
 	UTexture2D* MapTexture = MapDataGenerator->GenerateForestTexture2D();
 

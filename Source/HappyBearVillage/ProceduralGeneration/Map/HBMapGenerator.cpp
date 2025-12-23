@@ -69,7 +69,7 @@ void UHBMapGenerator::GenerateField(FHBMapData InMapData, UWorld* InWorld)
 			TCHAR TileType = MapData.Map[Row][Col];
 
 			FTransform SpawnTransform;
-			SpawnTransform.SetLocation(FVector(Col * FieldElementSize, Row * FieldElementSize, 0));
+			SpawnTransform.SetLocation(FVector(Col * FieldElementSize, Row * FieldElementSize, -FieldElementSize / 2));
 			SpawnTransform.SetRotation(FQuat(FRotator::ZeroRotator));
 			SpawnTransform.SetScale3D(FVector::OneVector * (FieldElementSize / 100));
 			
@@ -117,7 +117,7 @@ void UHBMapGenerator::GenerateHouse(FHBMapData InMapData, UWorld* InWorld)
 			TCHAR TileType = MapData.Map[Row][Col];
 
 			TSubclassOf<AActor> RandomClass = HouseClasses[FMath::RandRange(0, HouseClasses.Num() - 1)]; // ToDo : 동기화 과정에서 Rand 함수 대체 필요
-			FVector SpawnLocation = FVector((Col + 1.5f) * FieldElementSize, (Row + 1.5f) * FieldElementSize, FieldElementSize / 2);
+			FVector SpawnLocation = FVector((Col + 1.5f) * FieldElementSize, (Row + 1.5f) * FieldElementSize, 0);
 			
 			if (TileType == 'H')
 			{
