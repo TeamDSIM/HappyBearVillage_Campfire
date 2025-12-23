@@ -7,6 +7,10 @@
 #include "Elements/PCGTextureSampler.h"
 #include "Components/BoxComponent.h"
 
+#include "ProceduralGeneration/Noise/HBPerlinNoise.h"
+#include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
+#include "ProceduralGeneration/Map/HBMapGenerator.h"
+
 AHBPCGVillageActor::AHBPCGVillageActor()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
@@ -51,5 +55,22 @@ void AHBPCGVillageActor::Generate()
 void AHBPCGVillageActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UHBPerlinNoise* PerlinNoise = NewObject<UHBPerlinNoise>();
+	UHBMapDataGenerator* MapDataGenerator = NewObject<UHBMapDataGenerator>();
+	UHBMapGenerator* MapGenerator = NewObject<UHBMapGenerator>();
 	
+	FHBNoiseSettings NoiseSettings;
+	NoiseSettings.Resolution = {64, 64};
+	NoiseSettings.GridSize = {4, 4};
+	NoiseSettings.Seed = 0.125;
+	
+	PerlinNoise->GeneratePerlinNoise(NoiseSettings);
+
+	FHBMapData MapData = MapDataGenerator->GenerateMapData(NoiseSettings);
+	
+	UTexture2D* MapTexture = MapDataGenerator->GenerateForestTexture2D();
+
+	InitializePCGInput(MapTexture);
+	MapGenerator->GenerateVillage(MapData, GetWorld());
 }

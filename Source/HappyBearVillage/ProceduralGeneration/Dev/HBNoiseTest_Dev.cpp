@@ -140,14 +140,18 @@ void AHBNoiseTest_Dev::GenerateForestTestWithTexture()
 	NoiseSettings.Resolution = {64, 64};
 	NoiseSettings.GridSize = {4, 4};
 	NoiseSettings.Seed = Seed;
+	
+	PerlinNoise->GeneratePerlinNoise(NoiseSettings);
 
 	FHBMapData MapData = MapDataGenerator->GenerateMapData(NoiseSettings);
 
-	MapGenerator->GenerateField(MapData, GetWorld());
-	MapGenerator->GenerateHouse(MapData, GetWorld());
+	//MapGenerator->GenerateField(MapData, GetWorld());
+	//MapGenerator->GenerateHouse(MapData, GetWorld());
+	//MapGenerator->GenerateForestSpline(MapData, GetWorld());
 
-	UTexture2D* MapTexture = MapDataGenerator->GenerateForestTexture2D(PerlinNoise);
+	UTexture2D* MapTexture = MapDataGenerator->GenerateForestTexture2D();
 
 	MapData = MapDataGenerator->GetMapData();
 	MapGenerator->GenerateVillage(MapData, GetWorld());
+	MapDataGenerator->PrintMapData();
 }
