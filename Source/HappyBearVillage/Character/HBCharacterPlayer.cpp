@@ -13,6 +13,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Stat/HBPlayerStatComponent.h"
 #include "Subsystem/HBGameFlowSubsystem.h"
+#include "Subsystem/HBGameVoteSubsystem.h"
 #include "UI/HBUserHUDWidget.h"
 
 AHBCharacterPlayer::AHBCharacterPlayer()
@@ -218,7 +219,7 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
 	}
-	
+
 
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	if (EnhancedInputComponent)
@@ -266,7 +267,7 @@ void AHBCharacterPlayer::Move(const FInputActionValue& Value)
 	{
 		return;
 	}
-	
+
 	const FVector2D MovementValue = Value.Get<FVector2D>();
 	if (Controller)
 	{
@@ -331,11 +332,11 @@ void AHBCharacterPlayer::Interaction()
 	}
 
 	// 현재 Phase 가 난투 Phase 가 아니면 상호작용 하지 못하도록 방지
-	if (GameState->CurrentPhase != EGamePhase::Fight  && GameState->CurrentPhase != EGamePhase::Lobby)
+	if (GameState->CurrentPhase != EGamePhase::Fight && GameState->CurrentPhase != EGamePhase::Lobby)
 	{
 		return;
 	}
-	
+
 	if (IsLocallyControlled())
 	{
 		if (InteractionTarget != nullptr)
@@ -385,13 +386,20 @@ void AHBCharacterPlayer::SetRandomBaseColor()
 	{
 		DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
 	}
-	
+
 	if (DynamicMaterial)
 	{
 		// 서버일때만 랜덤 색상 변수 생성
 		if (HasAuthority())
 		{
 			PlayerColor = FLinearColor::MakeRandomColor();
+
+			// PlayerState 의 Color 값 동기화
+			AHBPlayerState* PawnState = Cast<AHBPlayerState>(GetPlayerState());
+			if (PawnState)
+			{
+				PawnState->SyncPlayerColorFromPlayerStat(PlayerColor);
+			}
 		}
 
 		// CharacterBaseColor 변수에 RandomColor 변수 부여
@@ -439,7 +447,7 @@ void AHBCharacterPlayer::InteractionTraceTick()
 	{
 		return;
 	}
-	
+
 	const FRotator CurrentRotation = GetControlRotation();
 
 	// 시선 변화 체크 시 기준치를 넘지 않았으면 스킵
@@ -587,6 +595,16 @@ void AHBCharacterPlayer::AttackHitConfirm(AActor* HitActor)
 		// 부딫힌 대상에게 TakeDamage 로 데미지 전달
 		FDamageEvent DamageEvent;
 		HitActor->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
+
+		AHBMafiaGameState* GameState = GetWorld()->GetGameState<AHBMafiaGameState>();
+		if (GameState && GameState->CurrentPhase == EGamePhase::Fight)
+		{
+			UHBGameVoteSubsystem* VoteSubsystem = GetGameInstance()->GetSubsystem<UHBGameVoteSubsystem>();
+			if (VoteSubsystem)
+			{
+				// @PHYTODO : Top3 갱신 로직
+			}
+		}
 	}
 }
 
@@ -697,6 +715,7 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 
 			GameState->OnGamePhaseChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdatePhase);
 			GameState->OnRemainingTimeChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateRemainingTime);
+			GameState->OnTopDamagePlayersChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateCurrentFightInfo);
 		}
 	}
 }

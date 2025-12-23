@@ -4,6 +4,7 @@
 #include "UI/HBFightHUD.h"
 
 #include "HBDamagedPlayerHUD.h"
+#include "GameState/HBMafiaGameState.h"
 
 UHBFightHUD::UHBFightHUD(const FObjectInitializer& ObjectInitializer)
 {
@@ -23,18 +24,18 @@ void UHBFightHUD::NativeConstruct()
 	ensure(ThirdDamagedPlayerWidget);
 }
 
-void UHBFightHUD::UpdateCurrentInfo(AHBCharacterPlayer* InPlayer, int32 InRank)
+void UHBFightHUD::UpdateCurrentInfo(AHBPlayerState* InPlayer, FDamageRankEntry InEntry, int32 InRank)
 {
-	if (InRank == 1)
+	if (InRank == 0)
 	{
-		FirstDamagedPlayerWidget->UpdateCurrentInfo(InPlayer);
+		FirstDamagedPlayerWidget->UpdateCurrentInfo(InPlayer, InEntry);
+	}
+	else if (InRank == 1)
+	{
+		SecondDamagedPlayerWidget->UpdateCurrentInfo(InPlayer, InEntry);
 	}
 	else if (InRank == 2)
 	{
-		SecondDamagedPlayerWidget->UpdateCurrentInfo(InPlayer);
-	}
-	else if (InRank == 3)
-	{
-		ThirdDamagedPlayerWidget->UpdateCurrentInfo(InPlayer);
+		ThirdDamagedPlayerWidget->UpdateCurrentInfo(InPlayer, InEntry);
 	}
 }

@@ -11,7 +11,7 @@
 
 // HasAuthority 는 액터에서만 사용 가능
 // 서버 판별을 위한 구문을 함수로 선언
-bool IsServer(UWorld* World)
+bool UHBGameFlowSubsystem::IsServer(UWorld* World)
 {
 	return World && (World->GetNetMode() != NM_Client);
 }

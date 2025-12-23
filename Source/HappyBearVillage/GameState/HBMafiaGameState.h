@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Character/HBCharacterPlayer.h"
 #include "GameFramework/GameStateBase.h"
 #include "HBMafiaGameState.generated.h"
 
@@ -10,8 +11,10 @@
  * 
  */
 
+class AHBPlayerState;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGamePhaseChanged, EGamePhase)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnRemainingTimeChanged, float /*RemainingTime*/)
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnTopDamagePlayersChanged, AHBPlayerState*, FDamageRankEntry, int32)
 
 
 // 각 페이즈를 나타내는 enum 클래스
@@ -29,6 +32,18 @@ enum class EGamePhase : uint8
 	End UMETA(DisplayName = "End"),
 };
 
+USTRUCT(BlueprintType)
+struct FDamageRankEntry
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<AHBPlayerState> PlayerState;
+
+	UPROPERTY(BlueprintReadOnly)
+	float TotalTakenDamaged;
+};
+
 
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBMafiaGameState : public AGameStateBase
@@ -38,12 +53,18 @@ class HAPPYBEARVILLAGE_API AHBMafiaGameState : public AGameStateBase
 public:
 	AHBMafiaGameState();
 
+	virtual void Tick(float DeltaSeconds) override;
+
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
 	FOnGamePhaseChanged OnGamePhaseChanged;
 	FOnRemainingTimeChanged OnRemainingTimeChanged;
+	FOnTopDamagePlayersChanged OnTopDamagePlayersChanged;
+
+public:
+	void SetTopDamagePlayers(const TArray<FDamageRankEntry>& NewTopDamagePlayers);
 	
 public:
 	// @PHYTODO : 나중에 다 컴포넌트로 생성해서 옮겨주기
@@ -53,9 +74,19 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_RemainingTime, BlueprintReadOnly)
 	float RemainingTime = 0.f;
 
+	// Top3 데미지 유저 출력용
+	UPROPERTY(ReplicatedUsing = OnRep_TopDamagePlayers)
+	TArray<FDamageRankEntry> TopDamagePlayers;
+	
+
+	UFUNCTION()
+	void OnRep_TopDamagePlayers();
+
 	UFUNCTION()
 	void OnRep_GamePhase();
 
 	UFUNCTION()
 	void OnRep_RemainingTime();
+
+	float Timersss = 1.0f;
 };

@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameState/HBMafiaGameState.h"
 #include "UI/HBUserWidget.h"
 #include "HBDamagedPlayerHUD.generated.h"
 
+class AHBPlayerState;
 class AHBCharacterPlayer;
 class UTextBlock;
 class UImage;
@@ -24,7 +26,7 @@ protected:
 	virtual void NativeConstruct() override;
 
 public:
-	void UpdateCurrentInfo(AHBCharacterPlayer* InPlayer);
+	void UpdateCurrentInfo(AHBPlayerState* InPlayer, FDamageRankEntry InEntry);
 	void UpdatePlayerColor(FLinearColor NewColor);
 	void UpdatePlayerName(FString NewName);
 	void UpdateTotalDamaged(float NewTotalDamaged);

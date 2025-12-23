@@ -24,7 +24,7 @@ protected:
 public:
 	void UpdatePhase(EGamePhase NewGamePhase);
 	void UpdateRemainingTime(float NewRemainingTime);
-	void UpdateCurrentFightInfo(AHBCharacterPlayer* InPlayer, int32 InRank);
+	void UpdateCurrentFightInfo(AHBPlayerState* InPlayerState, FDamageRankEntry InEntry, int32 InRank);
 
 	void SetHUDVisibility(bool IsVisible, UHBUserWidget* InHUD);
 

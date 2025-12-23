@@ -16,7 +16,7 @@ void UHBUserHUDWidget::NativeConstruct()
 	FightHUDWidget = Cast<UHBFightHUD>(GetWidgetFromName(TEXT("FightHUD")));
 	if (FightHUDWidget)
 	{
-		FightHUDWidget->RemoveFromParent();
+		//FightHUDWidget->RemoveFromParent();
 	}
 
 	IHBCharacterHUDInterface* HUDPawn = Cast<IHBCharacterHUDInterface>(GetOwningPlayerPawn());
@@ -36,9 +36,10 @@ void UHBUserHUDWidget::UpdateRemainingTime(float NewRemainingTime)
 	PhaseHUDWidget->UpdateCurrentTime(NewRemainingTime);
 }
 
-void UHBUserHUDWidget::UpdateCurrentFightInfo(AHBCharacterPlayer* InPlayer, int32 InRank)
+void UHBUserHUDWidget::UpdateCurrentFightInfo(AHBPlayerState* InPlayerState, FDamageRankEntry InEntry, int32 InRank)
 {
-	FightHUDWidget->UpdateCurrentInfo(InPlayer, InRank);
+	UE_LOG(LogTemp, Log, TEXT("[UHBUserHUDWidget] UpdateCurrentFightInfo InRank : %d"), InRank);
+	FightHUDWidget->UpdateCurrentInfo(InPlayerState, InEntry, InRank);
 }
 
 void UHBUserHUDWidget::SetHUDVisibility(bool IsVisible, UHBUserWidget* InHUD)

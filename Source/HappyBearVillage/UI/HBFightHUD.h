@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameState/HBMafiaGameState.h"
+#include "PlayerState/HBPlayerState.h"
 #include "UI/HBUserWidget.h"
 #include "HBFightHUD.generated.h"
 
@@ -23,7 +25,7 @@ protected:
 	virtual void NativeConstruct() override;
 
 public:
-	void UpdateCurrentInfo(AHBCharacterPlayer* InPlayer, int32 InRank);
+	void UpdateCurrentInfo(AHBPlayerState* InPlayer, FDamageRankEntry InEntry, int32 InRank);
 
 protected:
 	UPROPERTY()

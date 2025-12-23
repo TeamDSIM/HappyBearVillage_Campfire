@@ -46,6 +46,8 @@ private:
 	void UnEquippedAllPlayer(AHBMafiaGameState* InGameState);
 
 
+	bool IsServer(UWorld* World);
+
 	// 각 페이즈 별 시간 관리할 타이머
 	FTimerHandle PhaseTimerHandle;
 	FTimerHandle CountdownTimerHandle;

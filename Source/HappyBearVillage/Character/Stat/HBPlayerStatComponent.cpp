@@ -4,6 +4,8 @@
 #include "Character/Stat/HBPlayerStatComponent.h"
 
 #include "Net/UnrealNetwork.h"
+#include "PlayerState/HBPlayerState.h"
+#include "Subsystem/HBGameVoteSubsystem.h"
 
 // Sets default values for this component's properties
 UHBPlayerStatComponent::UHBPlayerStatComponent()
@@ -32,6 +34,21 @@ float UHBPlayerStatComponent::ApplyDamage(float InDamageAmount)
 {
 	TotalTakenDamage += InDamageAmount;
 	OnTotalTakenDamageChanged.Broadcast(TotalTakenDamage);
+
+	APawn* Pawn = Cast<APawn>(GetOwner());
+	if (Pawn)
+	{
+		AHBPlayerState* PawnState = Cast<AHBPlayerState>(Pawn->GetPlayerState());
+		if (PawnState)
+		{
+			PawnState->SyncTotalTakenDamagedFromPlayerStat(TotalTakenDamage);
+			UHBGameVoteSubsystem* VoteSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UHBGameVoteSubsystem>();
+			if (VoteSubsystem)
+			{
+				VoteSubsystem->NotifyDamageChanged();
+			}
+		}
+	}
 	
 	return TotalTakenDamage;
 }
