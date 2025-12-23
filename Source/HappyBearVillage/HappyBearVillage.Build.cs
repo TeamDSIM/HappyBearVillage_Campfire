@@ -22,7 +22,7 @@ public class HappyBearVillage : ModuleRules
 			"MultiplayerSessions"
         });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "AnimGraphRuntime" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "AnimGraphRuntime", "PCG" });
 
         PublicIncludePaths.AddRange(new string[] { "HappyBearVillage" });
 
