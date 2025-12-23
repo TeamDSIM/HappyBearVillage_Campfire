@@ -8,7 +8,8 @@
 #include "../UI/HBLobbyWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameInstance/HBGameInstance.h"
-
+#include "Engine/World.h"
+#include "MultiplayerSessionsSubsystem.h"
 
 
 AHBPlayerController::AHBPlayerController()
@@ -123,9 +124,21 @@ void AHBPlayerController::SetupUI()
 	if (Map == TEXT("TestLobbyMap"))
 	{
 		CreateLobbyUI();
+		//FInputModeGameOnly InputMode;
+		//SetInputMode(InputMode);
+		//SetShowMouseCursor(false);
+		FInputModeUIOnly InputMode;
+		SetInputMode(InputMode);
+		SetShowMouseCursor(true);
+	}
+
+	if (Map == TEXT("InGameMap"))
+	{
+		InGameHUDComponent->ActivateHUD(this);
 		FInputModeGameOnly InputMode;
 		SetInputMode(InputMode);
 		SetShowMouseCursor(false);
+
 	}
 
 }
@@ -187,4 +200,41 @@ void AHBPlayerController::RemoveUI()
 	LobbyWidget = nullptr;
 }
 
+void AHBPlayerController::StartGame()
+{
+	//호스트인 경우만 작동
+	if (!HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NOT HOST!!!"));
+		return;
+	}
+	//@ Todo : 맵 이름 변경
+	FString Map = TEXT("/Game/Maps/InGameMap");
+		GetWorld()->ServerTravel(Map);
+}
 
+void AHBPlayerController::ExitGame()
+{
+	UE_LOG(LogTemp, Log, TEXT("ExitGame Called"));
+
+	if (UGameInstance* GI = GetGameInstance())
+	{
+		MultiplayerSessionsSubsystem = GI->GetSubsystem<UMultiplayerSessionsSubsystem>();
+	}
+
+	if (!MultiplayerSessionsSubsystem)
+	{
+		UE_LOG(LogTemp, Log, TEXT("not MultiplayerSessionsSubsystem"));
+		return;
+	}
+
+
+	//Host 인 경우
+	if (HasAuthority())
+	{
+		MultiplayerSessionsSubsystem->DestroySession();
+	}
+		//@Todo : 맵 이름 변경
+	FName Map = TEXT("/Game/Personal/LEE_J_S/Maps/TestGameStartMap");
+	UGameplayStatics::OpenLevel(this, Map);
+}

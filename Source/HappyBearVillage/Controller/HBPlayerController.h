@@ -8,6 +8,7 @@
 
 class UHBTitleWidget;
 class UHBLobbyWidget;
+class UMultiplayerSessionsSubsystem;
 
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBPlayerController : public APlayerController
@@ -58,15 +59,21 @@ private:
 	UPROPERTY()
 	TArray<TObjectPtr<UUserWidget>> SpawnedWidgets;
 
+	UPROPERTY()
+	TObjectPtr< UMultiplayerSessionsSubsystem> MultiplayerSessionsSubsystem;
 
 public:
 
 	void ResetUI();
 	void SetupUI();
+	void RemoveUI();
 
 	void CreateTitleUI();
 	void CreateLobbyUI();
-
-	void RemoveUI();
+	
+	UFUNCTION()
+	void StartGame();
+	UFUNCTION()
+	void ExitGame();
 
 };
