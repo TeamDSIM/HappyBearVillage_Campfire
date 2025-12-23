@@ -192,14 +192,32 @@ void UHBGameFlowSubsystem::StartVote()
 void UHBGameFlowSubsystem::StartNight()
 {
 	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start Night"));
+
 	SetPhase(EGamePhase::Night, 15.f);
 
 	AHBMafiaGameState* GameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (GameState)
 	{
+		// Night 시작 브로드캐스트 (UI 등)
 		GameState->OnRep_GamePhase();
+
+		// Night Flow 초기화 (서버)
+		for (APlayerState* PS : GameState->PlayerArray)
+		{
+			if (!PS) continue;
+
+			AController* PC = PS->GetPlayerController();
+			if (!PC) continue;
+
+			AHBCharacterPlayer* Player = Cast<AHBCharacterPlayer>(PC->GetPawn());
+			if (Player)
+			{
+				Player->ResetNightState(); 
+			}
+		}
 	}
 }
+
 
 void UHBGameFlowSubsystem::SetPhase(EGamePhase NewPhase, float Duration)
 {
