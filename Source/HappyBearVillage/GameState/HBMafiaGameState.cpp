@@ -10,22 +10,6 @@
 
 AHBMafiaGameState::AHBMafiaGameState()
 {
-	PrimaryActorTick.bCanEverTick = true;
-}
-
-void AHBMafiaGameState::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	Timersss -= DeltaSeconds;
-	if (Timersss <= 0.0f)
-	{
-		for (int i = 0; i < TopDamagePlayers.Num(); ++i)
-		{
-			AC_LOG(LogHY, Error, TEXT("%.0f"), TopDamagePlayers[i].TotalTakenDamaged);
-		}
-		Timersss += 1.0f;
-	}
 	
 }
 

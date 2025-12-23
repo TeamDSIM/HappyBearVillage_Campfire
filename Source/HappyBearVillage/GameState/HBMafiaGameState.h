@@ -53,8 +53,6 @@ class HAPPYBEARVILLAGE_API AHBMafiaGameState : public AGameStateBase
 public:
 	AHBMafiaGameState();
 
-	virtual void Tick(float DeltaSeconds) override;
-
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
