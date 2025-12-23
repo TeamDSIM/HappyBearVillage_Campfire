@@ -22,8 +22,9 @@ protected:
 	void GenerateFieldTest();
 	void GenerateHouseTest();
 	void GenerateForestTest();
-
 	void MapDataTest();
+
+	void GenerateForestTestWithTexture();
 
 public:
 	UPROPERTY(EditAnywhere)
