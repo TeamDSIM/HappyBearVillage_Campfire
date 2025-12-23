@@ -7,6 +7,7 @@
 
 AHBMafiaGameState::AHBMafiaGameState()
 {
+	
 }
 
 void AHBMafiaGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -25,4 +26,9 @@ void AHBMafiaGameState::OnRep_GamePhase()
 void AHBMafiaGameState::OnRep_RemainingTime()
 {
 	OnRemainingTimeChanged.Broadcast(RemainingTime);
+}
+
+bool AHBMafiaGameState::IsNight() const
+{
+	return CurrentPhase == EGamePhase::Night;
 }

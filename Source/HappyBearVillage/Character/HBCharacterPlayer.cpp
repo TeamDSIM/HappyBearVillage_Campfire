@@ -14,6 +14,7 @@
 #include "Stat/HBPlayerStatComponent.h"
 #include "Subsystem/HBGameFlowSubsystem.h"
 #include "UI/HBUserHUDWidget.h"
+#include "GameState/HBMafiaGameState.h"
 
 AHBCharacterPlayer::AHBCharacterPlayer()
 {
@@ -145,6 +146,16 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 void AHBCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	/* ================= Night Flow : Game Start Init ================= */
+	if (HasAuthority())
+	{
+		// 게임 시작 시에만 사과(외출권) 초기화
+		Stamina = MaxStamina;
+		bExitedHouseThisNight = false;
+		NightState = EPlayerNightState::InHouse;
+	}
+	/* ================================================================ */
 
 	DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
 
@@ -809,4 +820,140 @@ bool AHBCharacterPlayer::ServerRPCAttack_Validate(float AttackStartTime)
 	// 현재 공격 시작 시간과 이전 공격 시작 시간이 애니메이션 길이보다 길어야 true 반환
 	// 짧으면 악의적으로 공격을 빨리 하는거라 판단해서 false
 	return (AttackStartTime - LastAttackStartTime) > AttackTime;
+}
+
+/* ================= Night Flow ================= */
+
+void AHBCharacterPlayer::EnterHouse()
+{
+	if (!HasAuthority()) return;
+
+	// 밤 상태에서만 의미 있음
+	AHBMafiaGameState* GS = GetWorld()->GetGameState<AHBMafiaGameState>();
+	if (!GS || !GS->IsNight())
+	{
+		return;
+	}
+
+	NightState = EPlayerNightState::InHouse;
+
+	// 이번 밤에 한 번도 나간 적 없을 때만 회복 시작
+	if (!bExitedHouseThisNight)
+	{
+		StartStaminaRecovery();
+	}
+}
+
+void AHBCharacterPlayer::ExitHouse()
+{
+	if (!HasAuthority()) return;
+
+	// 이미 밖이면 중복 처리 방지
+	if (NightState == EPlayerNightState::Outside)
+	{
+		return;
+	}
+
+	AHBMafiaGameState* GS = GetWorld()->GetGameState<AHBMafiaGameState>();
+	if (!GS || !GS->IsNight())
+	{
+		// 낮에는 Night Flow 상태를 건드리지 않음
+		return;
+	}
+
+	NightState = EPlayerNightState::Outside;
+
+	// 이번 밤에 외출 기록
+	bExitedHouseThisNight = true;
+
+	// 스태미나(사과) 1개 소모
+	Stamina = FMath::Max(Stamina - 1, 0);
+
+	// 한 번이라도 나갔으니 이번 밤 회복은 완전히 중단
+	StopStaminaRecovery();
+
+	UE_LOG(LogTemp, Warning,
+		TEXT("[NightFlow] ExitHouse | Stamina: %d | ExitedThisNight: true"),
+		Stamina);
+}
+
+void AHBCharacterPlayer::StartStaminaRecovery()
+{
+	if (!HasAuthority()) return;
+
+	// 이미 회복 중이면 중복 실행 방지
+	if (GetWorldTimerManager().IsTimerActive(StaminaRecoverTimerHandle))
+	{
+		return;
+	}
+
+	GetWorldTimerManager().SetTimer(
+		StaminaRecoverTimerHandle,
+		this,
+		&AHBCharacterPlayer::RecoverStaminaTick,
+		StaminaRecoverInterval,
+		true
+	);
+}
+
+void AHBCharacterPlayer::StopStaminaRecovery()
+{
+	if (!HasAuthority()) return;
+
+	GetWorldTimerManager().ClearTimer(StaminaRecoverTimerHandle);
+}
+
+void AHBCharacterPlayer::RecoverStaminaTick()
+{
+	if (!HasAuthority()) return;
+
+	// 이번 밤에 외출한 적 있으면 회복 금지
+	if (bExitedHouseThisNight)
+	{
+		StopStaminaRecovery();
+		return;
+	}
+
+	AHBMafiaGameState* GS = GetWorld()->GetGameState<AHBMafiaGameState>();
+	if (!GS || !GS->IsNight())
+	{
+		StopStaminaRecovery();
+		return;
+	}
+
+	// 집 안에 있을 때만 회복
+	if (NightState != EPlayerNightState::InHouse)
+	{
+		StopStaminaRecovery();
+		return;
+	}
+
+	const int32 OldStamina = Stamina;
+	Stamina = FMath::Min(Stamina + StaminaRecoverAmount, MaxStamina);
+
+	UE_LOG(LogTemp, Log,
+		TEXT("[NightFlow] Recover %d -> %d"),
+		OldStamina, Stamina);
+
+	// 최대치면 회복 종료
+	if (Stamina >= MaxStamina)
+	{
+		StopStaminaRecovery();
+	}
+}
+
+void AHBCharacterPlayer::ResetNightState()
+{
+	if (!HasAuthority()) return;
+
+	// 밤 시작 시 기본 상태 초기화
+	bExitedHouseThisNight = false;
+	NightState = EPlayerNightState::InHouse;
+
+	// 혹시 남아있을지 모르는 타이머 정리
+	StopStaminaRecovery();
+
+	UE_LOG(LogTemp, Log,
+		TEXT("[NightFlow] ResetNightState | Stamina: %d"),
+		Stamina);
 }
