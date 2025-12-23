@@ -32,6 +32,7 @@ void UHBLobbyWidget::NativeConstruct()
 		MultiplayerSessionsSubsystem = GI->GetSubsystem<UMultiplayerSessionsSubsystem>();
 	}
 
+	//Subsystem이 친구 목록을 읽어왔을 때, 이 Widget의 OnFriendsReady가 호출되도록 구독
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->MultiplayerOnReadFriendsComplete.AddUObject(
@@ -83,9 +84,10 @@ void UHBLobbyWidget::SetFriendInviteVisible(bool bVisible)
 
 }
 
-
+//친구목록 갱신 요청
 void UHBLobbyWidget::RequestFriends()
 {
+	
 	if (!MultiplayerSessionsSubsystem)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("RequestFriends: Subsystem is null"));
@@ -99,6 +101,7 @@ void UHBLobbyWidget::RequestFriends()
 		return;
 	}
 
+	//친구 목록 갱신
 	MultiplayerSessionsSubsystem->ReadFriendsList();
 }
 
@@ -115,8 +118,10 @@ void UHBLobbyWidget::OnFriendsReady(const TArray<FHBSteamFriend>& Friends, bool 
 		return;
 	}
 
+	//기존 친구 목록 clear
 	ScrollBox_Friends->ClearChildren();
 
+	// 1. 친구 수만큼 Entry Widget 생성해서 ScrollBox에 추가
 	for (const FHBSteamFriend& F : Friends)
 	{
 		UHBSteamFriendEntryWidget* Entry =
@@ -124,17 +129,23 @@ void UHBLobbyWidget::OnFriendsReady(const TArray<FHBSteamFriend>& Friends, bool 
 
 		if (!Entry) continue;
 
+		// 2. Entry Widgt에 표시할 데이터 세팅
 		Entry->Init(F.DisplayName, F.NetIdStr, F.bIsOnline);
 
-		// 엔트리의 “초대” 클릭 → LobbyWidget으로 전달
+		// 3. 엔트리의 “초대” 클릭 → LobbyWidget으로 전달
 		Entry->OnInviteClicked.AddUObject(this, &ThisClass::HandleInviteClicked);
 
+		// 4. ScrollBox에 추가
 		ScrollBox_Friends->AddChild(Entry);
 	}
 }
 
+//친구 초대 
 void UHBLobbyWidget::HandleInviteClicked(const FString& NetIdStr)
 {
+	// 엔트리 위젯에서 "초대 버튼"을 누르면 여기로 들어옴
+// UI는 Subsystem에게 "이 NetId 친구 초대해"라고 전달만 한다.
+
 	if (!MultiplayerSessionsSubsystem)
 	{
 		return;

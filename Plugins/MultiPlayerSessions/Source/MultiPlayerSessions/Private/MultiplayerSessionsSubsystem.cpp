@@ -500,6 +500,7 @@ void UMultiplayerSessionsSubsystem::OnJoinSessionComplete(FName SessionName, EOn
 // 친구 목록 읽어오기
 bool UMultiplayerSessionsSubsystem::ReadFriendsList()
 {
+	// 1. 현재 사용중인 Subsystem 가져옴
 	IOnlineSubsystem* OSS = IOnlineSubsystem::Get();
 	if (!OSS)
 	{
@@ -507,6 +508,7 @@ bool UMultiplayerSessionsSubsystem::ReadFriendsList()
 		return false;
 	}
 
+	// 2. 친구 목록 interface 가져옴 (api)
 	FriendsInterface = OSS->GetFriendsInterface();
 	if (!FriendsInterface.IsValid())
 	{
@@ -514,9 +516,11 @@ bool UMultiplayerSessionsSubsystem::ReadFriendsList()
 		return false;
 	}
 
+	// 3. Callback 함수 인자를 1번의 요청에 대해 인자로 넘김
 	const FOnReadFriendsListComplete Delegate =
 		FOnReadFriendsListComplete::CreateUObject(this, &ThisClass::OnReadFriendsListComplete);
 
+	// 4. 실제 친구 목록을 읽어온다.
 	const bool bStarted = FriendsInterface->ReadFriendsList(0, TEXT("default"), Delegate);
 
 	if (!bStarted)
@@ -530,6 +534,7 @@ bool UMultiplayerSessionsSubsystem::ReadFriendsList()
 // 특정 친구에게 초대 보내기
 void UMultiplayerSessionsSubsystem::InviteFriendByNetIdStr(const FString& FriendNetIdStr)
 {
+	// UI는 "누구를 초대"만 알려줌. 실제 초대는 Subsystem이 Steam API 호출. 
 	if (!SessionInterface.IsValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Invite failed: SessionInterface invalid"));
@@ -538,13 +543,13 @@ void UMultiplayerSessionsSubsystem::InviteFriendByNetIdStr(const FString& Friend
 
 	FUniqueNetIdPtr FriendId;
 
-	// 1) 캐시에 있으면 그걸 쓰는 게 가장 안정적
+	// 1. 캐시에 있으면 그걸 쓰는 게 가장 안정적
 	if (FUniqueNetIdPtr* Found = CachedFriendIds.Find(FriendNetIdStr))
 	{
 		FriendId = *Found;
 	}
 
-	// 2) 캐시에 없을 경우(예: UI에서 오래된 ID로 호출) - 생성 시도(환경에 따라 실패 가능)
+	// 2. 캐시에 없을 경우(예: UI에서 오래된 ID로 호출) - 생성 시도(환경에 따라 실패 가능)
 	if (!FriendId.IsValid())
 	{
 		if (IOnlineSubsystem* OSS = IOnlineSubsystem::Get())
@@ -562,16 +567,18 @@ void UMultiplayerSessionsSubsystem::InviteFriendByNetIdStr(const FString& Friend
 		return;
 	}
 
+	// 3. 현재 세션(NAME_GameSession)에 대해 해당 친구에게 초대 메시지 전송
 	const bool bSent = SessionInterface->SendSessionInviteToFriend(0, NAME_GameSession, *FriendId);
 	UE_LOG(LogTemp, Log, TEXT("SendSessionInviteToFriend(%s) -> %d"), *FriendNetIdStr, bSent);
 }
+
 
 //친구 목록 콜백 함수
 void UMultiplayerSessionsSubsystem::OnReadFriendsListComplete(
 	int32 LocalUserNum, bool bWasSuccessful, const FString& ListName, const FString& ErrorStr)
 {
 	TArray<FHBSteamFriend> Out;
-	CachedFriendIds.Empty();
+	CachedFriendIds.Empty();//초대 보내기 위해 NetId 캐시 새로 갱신
 
 	if (!bWasSuccessful || !FriendsInterface.IsValid())
 	{
@@ -580,6 +587,7 @@ void UMultiplayerSessionsSubsystem::OnReadFriendsListComplete(
 		return;
 	}
 
+	// 1. 읽어온 친구 List를 배열로 가져옴
 	TArray<TSharedRef<FOnlineFriend>> Friends;
 	if (!FriendsInterface->GetFriendsList(LocalUserNum, ListName, Friends))
 	{
@@ -587,19 +595,25 @@ void UMultiplayerSessionsSubsystem::OnReadFriendsListComplete(
 		return;
 	}
 
+	// 2. UI용 형태 (FHBSteamFriend)로 변환
 	for (const TSharedRef<FOnlineFriend>& F : Friends)
 	{
 		FHBSteamFriend Item;
-		Item.DisplayName = F->GetDisplayName();
-		Item.NetIdStr = F->GetUserId()->ToString();
-		Item.bIsOnline = F->GetPresence().bIsOnline;
+		Item.DisplayName = F->GetDisplayName(); //UI 표시 이름
+		Item.NetIdStr = F->GetUserId()->ToString(); //친구 고유 ID
+		Item.bIsOnline = F->GetPresence().bIsOnline; //온라인 여부
 
 		Out.Add(Item);
+
+		// 3. 초대 보내기 위해 문자열 id0->UniqueNetId 캐시
 		CachedFriendIds.Add(Item.NetIdStr, F->GetUserId());
 	}
 
+	// 4. UI(Lobby Widget)에게 결과 전달
 	MultiplayerOnReadFriendsComplete.Broadcast(Out, true);
 }
+
+// 친구 초대 후 join
 void UMultiplayerSessionsSubsystem::OnSessionUserInviteAccepted(
 	bool bWasSuccessful,
 	int32 ControllerId,
