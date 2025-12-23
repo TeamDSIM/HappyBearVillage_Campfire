@@ -7,6 +7,7 @@
 
 AHBMafiaGameState::AHBMafiaGameState()
 {
+	
 }
 
 void AHBMafiaGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

@@ -758,23 +758,85 @@ bool AHBCharacterPlayer::ServerRPCAttack_Validate(float AttackStartTime)
 	return (AttackStartTime - LastAttackStartTime) > AttackTime;
 }
 
+
+/* ================= Night Flow ================= */
+
 void AHBCharacterPlayer::EnterHouse()
 {
+	if (!HasAuthority()) return;
+
 	NightState = EPlayerNightState::InHouse;
+
+	AHBMafiaGameState* GS = GetWorld()->GetGameState<AHBMafiaGameState>();
+	if (GS && GS->IsNight())
+	{
+		StartStaminaRecovery();
+	}
 }
 
 void AHBCharacterPlayer::ExitHouse()
 {
+	if (!HasAuthority()) return;
+
+	AHBMafiaGameState* GS = GetWorld()->GetGameState<AHBMafiaGameState>();
+
+	NightState = EPlayerNightState::Outside;
+	StopStaminaRecovery();
+
+	if (GS && GS->IsNight())
+	{
+		Stamina = FMath::Max(Stamina - 20.f, 0.f);
+		UE_LOG(LogTemp, Warning, TEXT("[NightFlow] ExitHouse - Stamina: %f"), Stamina);
+	}
+}
+
+void AHBCharacterPlayer::StartStaminaRecovery()
+{
+	if (!HasAuthority()) return;
+
+	if (GetWorldTimerManager().IsTimerActive(StaminaRecoverTimerHandle))
+		return;
+
+	GetWorldTimerManager().SetTimer(
+		StaminaRecoverTimerHandle,
+		this,
+		&AHBCharacterPlayer::RecoverStaminaTick,
+		StaminaRecoverInterval,
+		true
+	);
+}
+
+void AHBCharacterPlayer::StopStaminaRecovery()
+{
+	if (!HasAuthority()) return;
+
+	GetWorldTimerManager().ClearTimer(StaminaRecoverTimerHandle);
+}
+
+void AHBCharacterPlayer::RecoverStaminaTick()
+{
+	if (!HasAuthority()) return;
+
 	AHBMafiaGameState* GS = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (!GS || !GS->IsNight())
 	{
-		NightState = EPlayerNightState::Outside;
+		StopStaminaRecovery();
 		return;
 	}
 
-	NightState = EPlayerNightState::Outside;
+	if (NightState != EPlayerNightState::InHouse)
+	{
+		StopStaminaRecovery();
+		return;
+	}
 
-	Stamina = FMath::Max(Stamina - 20.f, 0.f);
+	const float OldStamina = Stamina;
+	Stamina = FMath::Min(Stamina + StaminaRecoverAmount, MaxStamina);
 
-	UE_LOG(LogTemp, Warning, TEXT("[NightFlow] ExitHouse - Stamina: %f"), Stamina);
+	UE_LOG(LogTemp, Log, TEXT("[NightFlow] Recover %f -> %f"), OldStamina, Stamina);
+
+	if (Stamina >= MaxStamina)
+	{
+		StopStaminaRecovery();
+	}
 }

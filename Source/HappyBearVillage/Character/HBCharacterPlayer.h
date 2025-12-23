@@ -9,7 +9,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Interface/HBCharacterHUDInterface.h"
+#include "TimerManager.h"
 #include "HBCharacterPlayer.generated.h"
+
+
 
 /**
  * 
@@ -18,6 +21,7 @@ class UInputMappingContext;
 class UInputAction;
 class UInputComponent;
 
+/* ================= Night Flow ================= */
 
 UENUM(BlueprintType)
 enum class EPlayerNightState : uint8
@@ -25,6 +29,7 @@ enum class EPlayerNightState : uint8
 	InHouse UMETA(DisplayName = "In House"),
 	Outside UMETA(DisplayName = "Outside")
 };
+/* ================================================= */
 
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBCharacterPlayer : public AHBCharacterBase, public IHBCharacterHUDInterface
@@ -68,17 +73,43 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TObjectPtr<UInputAction> StartAction;
 
-	// ================= Night Flow =================
+	/* ========== Night Flow : State ========== */
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night")
+protected:
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Night")
 	float Stamina = 100.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night")
 	float MaxStamina = 100.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night")
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Night")
 	EPlayerNightState NightState = EPlayerNightState::InHouse;
+
+	/* ========== Night Flow : Stamina Recovery (Timer) ========== */
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night|Stamina")
+	float StaminaRecoverAmount = 5.f;   // 1초당 회복량
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night|Stamina")
+	float StaminaRecoverInterval = 1.f; // 회복 주기(초)
+
+	FTimerHandle StaminaRecoverTimerHandle;
+
+	void StartStaminaRecovery();
+	void StopStaminaRecovery();
+
+	UFUNCTION()
+	void RecoverStaminaTick();
 	
+public:
+	/* ========== Night Flow : House Interaction ========== */
+	UFUNCTION(BlueprintCallable, Category = "Night")
+	void EnterHouse();
+
+	UFUNCTION(BlueprintCallable, Category = "Night")
+	void ExitHouse();
+
+		/* ========== Movement / Action ========== */
 public:
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
@@ -96,13 +127,6 @@ public:
 	
 	UFUNCTION()
 	void Start();
-
-	// ================= Night Flow =================
-	UFUNCTION(BlueprintCallable, Category = "Night")
-	void EnterHouse();
-
-	UFUNCTION(BlueprintCallable, Category = "Night")
-	void ExitHouse();
 
 
 	// 1인칭 카메라
