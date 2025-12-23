@@ -9,7 +9,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Interface/HBCharacterHUDInterface.h"
+#include "TimerManager.h"
 #include "HBCharacterPlayer.generated.h"
+
+
 
 /**
  * 
@@ -17,6 +20,16 @@
 class UInputMappingContext;
 class UInputAction;
 class UInputComponent;
+
+/* ================= Night Flow ================= */
+
+UENUM(BlueprintType)
+enum class EPlayerNightState : uint8
+{
+	InHouse UMETA(DisplayName = "In House"),
+	Outside UMETA(DisplayName = "Outside")
+};
+/* ================================================= */
 
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBCharacterPlayer : public AHBCharacterBase, public IHBCharacterHUDInterface
@@ -59,7 +72,59 @@ protected:
 	// @PHYTODO : 직업 분배 임시 확인용
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TObjectPtr<UInputAction> StartAction;
+
+	/* ========== Night Flow : State ========== */
+
+protected:
+	// 남은 외출 가능 횟수 
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Night")
+	int32 Stamina = 3;
+
+	// 최대 외출 가능 횟수
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night")
+	int32 MaxStamina = 3;
+
+	// 집 안 / 밖 상태
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Night")
+	EPlayerNightState NightState = EPlayerNightState::InHouse;
+
+	// 이번 밤에 집 밖으로 나간 적 있는지
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Night")
+	bool bExitedHouseThisNight = false;
+
+	/* ========== Night Flow : Stamina Recovery (Timer) ========== */
+protected:
+	// 집 안에 있을 때 스태미나 회복
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night|Stamina")
+	int32 StaminaRecoverAmount = 1;
+
+	// 스태미나가 회복되기까지 걸리는 시간 (초)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night|Stamina")
+	float StaminaRecoverInterval = 10.f;
+
+	// 스태미나 회복 타이머
+	FTimerHandle StaminaRecoverTimerHandle;
+
+
+	void StartStaminaRecovery();
+	void StopStaminaRecovery();
+
+	UFUNCTION()
+	void RecoverStaminaTick();
 	
+public:
+	/* ========== Night Flow : House Interaction ========== */
+	UFUNCTION(BlueprintCallable, Category = "Night")
+	void EnterHouse();
+
+	UFUNCTION(BlueprintCallable, Category = "Night")
+	void ExitHouse();
+
+	// 밤이 새로 시작될 때 상태 초기화 (GameState에서 호출)
+	UFUNCTION()
+	void ResetNightState();
+
+		/* ========== Movement / Action ========== */
 public:
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
@@ -77,6 +142,7 @@ public:
 	
 	UFUNCTION()
 	void Start();
+
 
 	// 1인칭 카메라
 	UPROPERTY(VisibleAnywhere, Category = Camera)

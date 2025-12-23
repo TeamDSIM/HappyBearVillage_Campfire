@@ -4,11 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "InputAction.h"
 #include "HBPlayerController.generated.h"
 
 class UHBTitleWidget;
 class UHBLobbyWidget;
 class UMultiplayerSessionsSubsystem;
+
+class UInputMappingContext;
+//class UInputAction;
 
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBPlayerController : public APlayerController
@@ -18,6 +22,7 @@ class HAPPYBEARVILLAGE_API AHBPlayerController : public APlayerController
 protected:
 	AHBPlayerController();
 	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
 	//virtual void BeginPlayingState() override;
 
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
@@ -25,6 +30,14 @@ protected:
 
 	//UPROPERTY()
 	//TObjectPtr<class UHBTitleWidget> HBTitleWidget;
+
+	//키 입력
+	// IMC는 이미 Character에서 추가해서 필요 X
+	// BP에서 지정 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> FriendInviteInputAction;
+
+
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UHBInGameHUDComponent> InGameHUDComponent;
@@ -61,6 +74,10 @@ private:
 
 	UPROPERTY()
 	TObjectPtr< UMultiplayerSessionsSubsystem> MultiplayerSessionsSubsystem;
+
+	void ToggleFriendInvite();
+
+	bool bFriendInviteOpen = false;
 
 public:
 

@@ -228,13 +228,30 @@ void UHBGameFlowSubsystem::StartNight()
 	SetPhase(EGamePhase::Night, 15.f);
 
 	AHBMafiaGameState* GameState = GetWorld()->GetGameState<AHBMafiaGameState>();
-	if (GameState)
+	if (!GameState)
 	{
-		GameState->OnRep_GamePhase();
+		return;
 	}
 
 	UnEquippedAllPlayer(GameState);
+
+	// Night 시작 시 플레이어 Night 상태 초기화
+	for (APlayerState* PS : GameState->PlayerArray)
+	{
+		if (!PS) continue;
+
+		AController* Controller = PS->GetPlayerController();
+		if (!Controller) continue;
+
+		AHBCharacterPlayer* Player = Cast<AHBCharacterPlayer>(Controller->GetPawn());
+		if (!Player) continue;
+
+		Player->ResetNightState();
+	}
+
+	GameState->OnRep_GamePhase();
 }
+
 
 void UHBGameFlowSubsystem::SetPhase(EGamePhase NewPhase, float Duration)
 {
