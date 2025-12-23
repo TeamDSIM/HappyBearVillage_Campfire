@@ -118,11 +118,27 @@ void UHBLobbyWidget::OnFriendsReady(const TArray<FHBSteamFriend>& Friends, bool 
 		return;
 	}
 
+	// 친구 목록 정렬
+	TArray<FHBSteamFriend> SortedFriends = Friends;
+
+	SortedFriends.Sort([](const FHBSteamFriend& A, const FHBSteamFriend& B)
+		{
+			// 1순위: Online 먼저
+			if (A.bIsOnline != B.bIsOnline)
+			{
+				return A.bIsOnline > B.bIsOnline; // true가 앞으로
+			}
+
+			// 2순위(선택): 이름 오름차순
+			return A.DisplayName < B.DisplayName;
+		});
+
+
 	//기존 친구 목록 clear
 	ScrollBox_Friends->ClearChildren();
 
 	// 1. 친구 수만큼 Entry Widget 생성해서 ScrollBox에 추가
-	for (const FHBSteamFriend& F : Friends)
+	for (const FHBSteamFriend& F : SortedFriends)
 	{
 		UHBSteamFriendEntryWidget* Entry =
 			CreateWidget<UHBSteamFriendEntryWidget>(GetOwningPlayer(), FriendEntryWidgetClass);
