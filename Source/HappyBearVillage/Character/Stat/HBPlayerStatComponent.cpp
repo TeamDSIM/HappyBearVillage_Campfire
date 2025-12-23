@@ -36,6 +36,13 @@ float UHBPlayerStatComponent::ApplyDamage(float InDamageAmount)
 	return TotalTakenDamage;
 }
 
+void UHBPlayerStatComponent::ResetTotalTakenDamage()
+{
+	TotalTakenDamage = 0;
+
+	OnRep_TotalTakenDamage();
+}
+
 void UHBPlayerStatComponent::InitCharacterRole()
 {
 	// 랜덤 직업 설정

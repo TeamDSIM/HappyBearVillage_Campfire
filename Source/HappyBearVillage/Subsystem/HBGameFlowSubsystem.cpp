@@ -67,6 +67,9 @@ void UHBGameFlowSubsystem::StartGame()
 					UE_LOG(LogTemp, Log, TEXT("Call Server Start Game / InitCharacterRole"));
 					// 플레이어의 직업 설정
 					PlayerStatComponent->InitCharacterRole();
+
+					// 누적 데미지 초기화
+					PlayerStatComponent->ResetTotalTakenDamage();
 				}
 
 				Character->SetRandomBaseColor();
@@ -115,7 +118,7 @@ void UHBGameFlowSubsystem::StopGame()
 	// 플레이어 목록 불러오기
 	TArray<APlayerState*> Players = GameState->PlayerArray;
 
-	// 플레이어 목록을 돌며 직업 배정
+	// 플레이어 목록을 돌며 스탯 초기화
 	for (int32 i = 0; i < Players.Num(); ++i)
 	{
 		// 컨트롤러 -> CharacterPlayer -> StatComponent 에 접근
@@ -131,6 +134,9 @@ void UHBGameFlowSubsystem::StopGame()
 					UE_LOG(LogTemp, Log, TEXT("Call Server Start Game / InitCharacterRole"));
 					// 플레이어의 직업 설정
 					PlayerStatComponent->ResetCharacterRole();
+					
+					// 누적 데미지 초기화
+					PlayerStatComponent->ResetTotalTakenDamage();
 				}
 
 				Character->ResetBaseColor();
@@ -178,6 +184,29 @@ void UHBGameFlowSubsystem::StartFight()
 	if (GameState)
 	{
 		GameState->OnRep_GamePhase();
+	}
+
+	// 플레이어 목록 불러오기
+	TArray<APlayerState*> Players = GameState->PlayerArray;
+
+	// 플레이어 목록을 돌며 데미지 초기화
+	for (int32 i = 0; i < Players.Num(); ++i)
+	{
+		// 컨트롤러 -> CharacterPlayer -> StatComponent 에 접근
+		AController* PlayerController = Players[i]->GetPlayerController();
+		if (PlayerController)
+		{
+			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
+			if (Character)
+			{
+				UHBPlayerStatComponent* PlayerStatComponent = Character->GetStat();
+				if (PlayerStatComponent)
+				{					
+					// 누적 데미지 초기화
+					PlayerStatComponent->ResetTotalTakenDamage();
+				}
+			}
+		}
 	}
 }
 

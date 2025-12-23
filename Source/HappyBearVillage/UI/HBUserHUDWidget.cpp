@@ -3,6 +3,7 @@
 
 #include "UI/HBUserHUDWidget.h"
 
+#include "HBFightHUD.h"
 #include "HBPhaseHUD.h"
 #include "Interface/HBCharacterHUDInterface.h"
 
@@ -11,6 +12,12 @@ void UHBUserHUDWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	PhaseHUDWidget = Cast<UHBPhaseHUD>(GetWidgetFromName(TEXT("PhaseHUD")));
+	
+	FightHUDWidget = Cast<UHBFightHUD>(GetWidgetFromName(TEXT("FightHUD")));
+	if (FightHUDWidget)
+	{
+		FightHUDWidget->RemoveFromParent();
+	}
 
 	IHBCharacterHUDInterface* HUDPawn = Cast<IHBCharacterHUDInterface>(GetOwningPlayerPawn());
 	if (HUDPawn)
@@ -27,4 +34,21 @@ void UHBUserHUDWidget::UpdatePhase(EGamePhase NewGamePhase)
 void UHBUserHUDWidget::UpdateRemainingTime(float NewRemainingTime)
 {
 	PhaseHUDWidget->UpdateCurrentTime(NewRemainingTime);
+}
+
+void UHBUserHUDWidget::UpdateCurrentFightInfo(AHBCharacterPlayer* InPlayer, int32 InRank)
+{
+	FightHUDWidget->UpdateCurrentInfo(InPlayer, InRank);
+}
+
+void UHBUserHUDWidget::SetHUDVisibility(bool IsVisible, UHBUserWidget* InHUD)
+{
+	if (IsVisible)
+	{
+		InHUD->AddToViewport();
+	}
+	else
+	{
+		InHUD->RemoveFromParent();
+	}
 }

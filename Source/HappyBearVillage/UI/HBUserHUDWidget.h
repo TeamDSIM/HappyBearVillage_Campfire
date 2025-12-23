@@ -7,6 +7,8 @@
 #include "GameState/HBMafiaGameState.h"
 #include "HBUserHUDWidget.generated.h"
 
+class UHBUserWidget;
+class AHBCharacterPlayer;
 /**
  * 
  */
@@ -22,8 +24,14 @@ protected:
 public:
 	void UpdatePhase(EGamePhase NewGamePhase);
 	void UpdateRemainingTime(float NewRemainingTime);
+	void UpdateCurrentFightInfo(AHBCharacterPlayer* InPlayer, int32 InRank);
+
+	void SetHUDVisibility(bool IsVisible, UHBUserWidget* InHUD);
 
 protected:
 	UPROPERTY()
 	TObjectPtr<class UHBPhaseHUD> PhaseHUDWidget;
+
+	UPROPERTY()
+	TObjectPtr<class UHBFightHUD> FightHUDWidget;
 };

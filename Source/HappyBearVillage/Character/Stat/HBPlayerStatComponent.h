@@ -41,6 +41,8 @@ public:
 
 	float ApplyDamage(float InDamageAmount);
 
+	void ResetTotalTakenDamage();
+
 	// 직업 관련 섹션 =====================================================================
 	FORCEINLINE const FHBCharacterRole& GetCharacterRole() const { return CharacterRole; }
 
