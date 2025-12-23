@@ -2,7 +2,7 @@
 
 
 #include "GameState/HBMafiaGameState.h"
-
+#include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
 AHBMafiaGameState::AHBMafiaGameState()
@@ -31,4 +31,17 @@ void AHBMafiaGameState::OnRep_RemainingTime()
 bool AHBMafiaGameState::IsNight() const
 {
 	return CurrentPhase == EGamePhase::Night;
+}
+
+//LobbyWidget 관련 코드입니다.
+void AHBMafiaGameState::AddPlayerState(APlayerState* PlayerState)
+{
+	Super::AddPlayerState(PlayerState);
+	OnLobbyPlayersChanged.Broadcast();
+}
+
+void AHBMafiaGameState::RemovePlayerState(APlayerState* PlayerState)
+{
+	Super::RemovePlayerState(PlayerState);
+	OnLobbyPlayersChanged.Broadcast();
 }

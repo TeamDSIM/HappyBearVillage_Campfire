@@ -7,6 +7,7 @@
 #include "Engine/GameInstance.h"
 #include "MultiplayerSessionsSubsystem.h"
 #include "HBSteamFriendEntryWidget.h"
+#include "GameFramework/PlayerState.h"
 
 //화면에 나타날 준비가 모두 끝난 경우
 void UHBLobbyWidget::NativeConstruct()
@@ -38,6 +39,30 @@ void UHBLobbyWidget::NativeConstruct()
 		MultiplayerSessionsSubsystem->MultiplayerOnReadFriendsComplete.AddUObject(
 			this, &ThisClass::OnFriendsReady
 		);
+	}
+
+	// GameState 얻기
+	CachedMafiaGS = GetWorld() ? GetWorld()->GetGameState<AHBMafiaGameState>() : nullptr;
+	if (!CachedMafiaGS)
+	{
+		// GameState가 아직 없을 수 있으면(타이밍) 타이머로 재시도하는 방식도 가능
+		return;
+	}
+
+	// Join/Leave 시 자동 갱신
+	CachedMafiaGS->OnLobbyPlayersChanged.AddUObject(this, &ThisClass::RefreshPlayersInRoom);
+
+	// 처음 1회 즉시 갱신
+	RefreshPlayersInRoom();
+}
+
+void UHBLobbyWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	if (CachedMafiaGS)
+	{
+		CachedMafiaGS->OnLobbyPlayersChanged.RemoveAll(this);
 	}
 }
 
@@ -168,4 +193,40 @@ void UHBLobbyWidget::HandleInviteClicked(const FString& NetIdStr)
 	}
 
 	MultiplayerSessionsSubsystem->InviteFriendByNetIdStr(NetIdStr);
+}
+
+void UHBLobbyWidget::RefreshPlayersInRoom()
+{
+	if (!CachedMafiaGS || !ScrollBox_LobbyPlayers) return;
+
+	ScrollBox_LobbyPlayers->ClearChildren();
+
+	for (APlayerState* PS : CachedMafiaGS->PlayerArray)
+	{
+		if (!PS) continue;
+		// TextBlock 하나로 이름 표시
+		UTextBlock* NameText = NewObject<UTextBlock>(this);
+		NameText->SetText(FText::FromString(PS->GetPlayerName()));
+		ScrollBox_LobbyPlayers->AddChild(NameText);
+	}
+
+
+	//if (!ScrollBox_LobbyPlayers) return;
+
+	//ScrollBox_LobbyPlayers->ClearChildren();
+
+	//// 방에 있는 모든 PlayerState 순회
+	//AGameStateBase* GS = GetWorld()->GetGameState();
+	//if (!GS) return;
+
+	//for (APlayerState* PS : GS->PlayerArray)
+	//{
+	//	if (!PS) continue;
+
+	//	// TextBlock 하나로 이름 표시
+	//	UTextBlock* NameText = NewObject<UTextBlock>(this);
+	//	NameText->SetText(FText::FromString(PS->GetPlayerName()));
+
+	//	ScrollBox_LobbyPlayers->AddChild(NameText);
+	//}
 }
