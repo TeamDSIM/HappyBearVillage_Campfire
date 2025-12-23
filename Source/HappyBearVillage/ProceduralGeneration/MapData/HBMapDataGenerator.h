@@ -48,7 +48,7 @@ public:
 	FHBMapData GenerateForestData();
 	FHBMapData UpdateMap();
 
-	UTexture2D* GenerateForestTexture2D(class UHBPerlinNoise* InPerlinNoise);
+	UTexture2D* GenerateForestTexture2D();
 	
 	void PrintMapData();
 

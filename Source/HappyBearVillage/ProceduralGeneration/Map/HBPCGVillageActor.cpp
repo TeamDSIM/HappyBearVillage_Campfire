@@ -15,13 +15,12 @@ AHBPCGVillageActor::AHBPCGVillageActor()
 	PCG = CreateDefaultSubobject<UPCGComponent>(TEXT("PCGComponent"));
 	Bounds = CreateDefaultSubobject<UBoxComponent>(TEXT("PCGBounds"));
 
-	/*
-	static ConstructorHelpers::FObjectFinder<UPCGGraph> GraphAsset(TEXT(""));
+	
+	static ConstructorHelpers::FObjectFinder<UPCGGraph> GraphAsset(TEXT("/Game/Personal/JANG_H_W/Tools/PCG/PCG_TextureTest.PCG_TextureTest"));
 	if (GraphAsset.Succeeded())
 	{
 		PCG->SetGraph(GraphAsset.Object);
 	}
-	*/
 }
 
 void AHBPCGVillageActor::InitializePCGInput(UTexture2D* Texture2D)
