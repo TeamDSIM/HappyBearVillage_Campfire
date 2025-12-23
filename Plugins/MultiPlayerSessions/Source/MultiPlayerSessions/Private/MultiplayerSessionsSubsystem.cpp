@@ -6,6 +6,10 @@
 #include "Engine/LocalPlayer.h"
 #include "OnlineSessionSettings.h"
 #include "GameFramework/PlayerController.h"
+#include "Interfaces/OnlineFriendsInterface.h"
+#include "Interfaces/OnlineIdentityInterface.h"
+#include "Interfaces/OnlineSessionInterface.h"
+#include "Interfaces/OnlinePresenceInterface.h"
 
 #include "Engine/Engine.h"
 #include "Engine/GameEngine.h"
@@ -19,7 +23,6 @@ UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
 	CreateSessionCompleteDelegate = FOnCreateSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnCreateSessionComplete);
 	//FindSessionsCompleteDelegate = FOnFindSessionsCompleteDelegate::CreateUObject(this, &ThisClass::OnFindSessionsComplete);
 	JoinSessionCompleteDelegate = FOnJoinSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnJoinSessionComplete);
-
 
 	//SessionInterface 획득
 	if (IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get())
@@ -165,10 +168,15 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 
 	//Steam 연동용
 	SessionSettings.bUsesPresence = true;
-	SessionSettings.bAllowJoinViaPresence = true;
+
 
 	//Steam, Lobby 에서 자주 필요함
 	SessionSettings.bUseLobbiesIfAvailable = true;
+
+	//Steam 초대 가능
+	SessionSettings.bAllowInvites = true;
+
+	SessionSettings.bAllowJoinViaPresence = true;
 
 	//커스텀 키 (find,join 시 MatchType 필터링 시에 사용)
 	SessionSettings.Set(FName("MatchType"), MatchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
@@ -372,6 +380,7 @@ void UMultiplayerSessionsSubsystem::DestroySession()
 }
 
 
+
 //Callback 부분, OSS가 작업이 끝났다고 부르는 함수
 void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
@@ -488,7 +497,109 @@ void UMultiplayerSessionsSubsystem::OnJoinSessionComplete(FName SessionName, EOn
 	}
 }
 
+// 친구 목록 읽어오기
+bool UMultiplayerSessionsSubsystem::ReadFriendsList()
+{
+	IOnlineSubsystem* OSS = IOnlineSubsystem::Get();
+	if (!OSS)
+	{
+		MultiplayerOnReadFriendsComplete.Broadcast({}, false);
+		return false;
+	}
 
+	FriendsInterface = OSS->GetFriendsInterface();
+	if (!FriendsInterface.IsValid())
+	{
+		MultiplayerOnReadFriendsComplete.Broadcast({}, false);
+		return false;
+	}
+
+	const FOnReadFriendsListComplete Delegate =
+		FOnReadFriendsListComplete::CreateUObject(this, &ThisClass::OnReadFriendsListComplete);
+
+	const bool bStarted = FriendsInterface->ReadFriendsList(0, TEXT("default"), Delegate);
+
+	if (!bStarted)
+	{
+		MultiplayerOnReadFriendsComplete.Broadcast({}, false);
+	}
+	return bStarted;
+}
+
+
+// 특정 친구에게 초대 보내기
+void UMultiplayerSessionsSubsystem::InviteFriendByNetIdStr(const FString& FriendNetIdStr)
+{
+	if (!SessionInterface.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invite failed: SessionInterface invalid"));
+		return;
+	}
+
+	FUniqueNetIdPtr FriendId;
+
+	// 1) 캐시에 있으면 그걸 쓰는 게 가장 안정적
+	if (FUniqueNetIdPtr* Found = CachedFriendIds.Find(FriendNetIdStr))
+	{
+		FriendId = *Found;
+	}
+
+	// 2) 캐시에 없을 경우(예: UI에서 오래된 ID로 호출) - 생성 시도(환경에 따라 실패 가능)
+	if (!FriendId.IsValid())
+	{
+		if (IOnlineSubsystem* OSS = IOnlineSubsystem::Get())
+		{
+			if (IOnlineIdentityPtr Identity = OSS->GetIdentityInterface())
+			{
+				FriendId = Identity->CreateUniquePlayerId(FriendNetIdStr);
+			}
+		}
+	}
+
+	if (!FriendId.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invite failed: invalid FriendIdStr=%s"), *FriendNetIdStr);
+		return;
+	}
+
+	const bool bSent = SessionInterface->SendSessionInviteToFriend(0, NAME_GameSession, *FriendId);
+	UE_LOG(LogTemp, Log, TEXT("SendSessionInviteToFriend(%s) -> %d"), *FriendNetIdStr, bSent);
+}
+
+//친구 목록 콜백 함수
+void UMultiplayerSessionsSubsystem::OnReadFriendsListComplete(
+	int32 LocalUserNum, bool bWasSuccessful, const FString& ListName, const FString& ErrorStr)
+{
+	TArray<FHBSteamFriend> Out;
+	CachedFriendIds.Empty();
+
+	if (!bWasSuccessful || !FriendsInterface.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ReadFriendsList failed: %s"), *ErrorStr);
+		MultiplayerOnReadFriendsComplete.Broadcast(Out, false);
+		return;
+	}
+
+	TArray<TSharedRef<FOnlineFriend>> Friends;
+	if (!FriendsInterface->GetFriendsList(LocalUserNum, ListName, Friends))
+	{
+		MultiplayerOnReadFriendsComplete.Broadcast(Out, false);
+		return;
+	}
+
+	for (const TSharedRef<FOnlineFriend>& F : Friends)
+	{
+		FHBSteamFriend Item;
+		Item.DisplayName = F->GetDisplayName();
+		Item.NetIdStr = F->GetUserId()->ToString();
+		Item.bIsOnline = F->GetPresence().bIsOnline;
+
+		Out.Add(Item);
+		CachedFriendIds.Add(Item.NetIdStr, F->GetUserId());
+	}
+
+	MultiplayerOnReadFriendsComplete.Broadcast(Out, true);
+}
 void UMultiplayerSessionsSubsystem::OnSessionUserInviteAccepted(
 	bool bWasSuccessful,
 	int32 ControllerId,
