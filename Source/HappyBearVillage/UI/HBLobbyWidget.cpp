@@ -50,7 +50,7 @@ void UHBLobbyWidget::NativeConstruct()
 	}
 
 	// Join/Leave 시 자동 갱신
-	CachedMafiaGS->OnLobbyPlayersChanged.AddUObject(this, &ThisClass::RefreshPlayersInRoom);
+	CachedMafiaGS->OnLobbyPlayersChanged.AddUObject(this, &ThisClass::HandleLobbyPlayersChanged);
 
 	// 처음 1회 즉시 갱신
 	RefreshPlayersInRoom();
@@ -229,4 +229,10 @@ void UHBLobbyWidget::RefreshPlayersInRoom()
 
 	//	ScrollBox_LobbyPlayers->AddChild(NameText);
 	//}
+}
+
+void UHBLobbyWidget::HandleLobbyPlayersChanged()
+{
+	if (!GetWorld()) return;
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::RefreshPlayersInRoom);
 }

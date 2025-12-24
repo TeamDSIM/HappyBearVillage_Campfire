@@ -81,4 +81,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<AHBMafiaGameState> CachedMafiaGS;
 
+	//다음 틱에서 1회 더 실행용
+	UFUNCTION()
+	void HandleLobbyPlayersChanged();
+
 };
