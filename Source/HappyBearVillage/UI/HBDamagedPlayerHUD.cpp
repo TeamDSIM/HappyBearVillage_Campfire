@@ -3,6 +3,8 @@
 
 #include "UI/HBDamagedPlayerHUD.h"
 
+#include <string>
+
 #include "AssetSelection.h"
 #include "Character/HBCharacterPlayer.h"
 #include "Character/Stat/HBPlayerStatComponent.h"
@@ -35,8 +37,10 @@ void UHBDamagedPlayerHUD::NativeConstruct()
 
 void UHBDamagedPlayerHUD::UpdateCurrentInfo(AHBPlayerState* InPlayer, FDamageRankEntry InEntry)
 {
+	FString TempUserID = FString::Printf(TEXT("%d"), InPlayer->GetUserID());
+	
 	UpdatePlayerColor(InPlayer->GetPlayerColor());
-	UpdatePlayerName(InPlayer->GetName());
+	UpdatePlayerName(TempUserID);
 	UpdateTotalDamaged(InEntry.TotalTakenDamaged);
 }
 

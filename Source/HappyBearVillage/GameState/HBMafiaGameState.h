@@ -85,8 +85,6 @@ public:
 
 	UFUNCTION()
 	void OnRep_RemainingTime();
-
-	float Timersss = 1.0f;
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsNight() const;

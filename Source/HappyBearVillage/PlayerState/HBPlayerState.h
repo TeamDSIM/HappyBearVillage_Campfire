@@ -23,9 +23,11 @@ public:
 public:
 	FORCEINLINE float GetTotalTakenDamaged() const { return TotalTakenDamaged; }
 	FORCEINLINE FLinearColor GetPlayerColor() const { return PlayerColor; }
+	FORCEINLINE int32 GetUserID() const { return UserID; }
 
 	void SyncTotalTakenDamagedFromPlayerStat(float NewDamage);
 	void SyncPlayerColorFromPlayerStat(FLinearColor NewColor);
+	void SetUserID(int32 NewID);
 
 	FOnDamageChanged OnDamageChanged;
 
@@ -35,4 +37,7 @@ protected:
 
 	UPROPERTY(Replicated)
 	FLinearColor PlayerColor = FColor::White;
+
+	UPROPERTY(Replicated)
+	int32 UserID = 0;
 };

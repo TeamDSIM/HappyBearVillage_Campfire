@@ -8,6 +8,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerState.h"
 #include "GameState/HBMafiaGameState.h"
+#include "PlayerState/HBPlayerState.h"
 
 // HasAuthority 는 액터에서만 사용 가능
 // 서버 판별을 위한 구문을 함수로 선언
@@ -70,6 +71,12 @@ void UHBGameFlowSubsystem::StartGame()
 
 					// 누적 데미지 초기화
 					PlayerStatComponent->ResetTotalTakenDamage();
+
+					AHBPlayerState* HBPlayerState = Cast<AHBPlayerState>(Players[i]);
+					if (HBPlayerState)
+					{
+						HBPlayerState->SetUserID(i);
+					}
 				}
 
 				Character->SetRandomBaseColor();

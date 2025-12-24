@@ -11,6 +11,7 @@ void AHBPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 
 	DOREPLIFETIME(AHBPlayerState, TotalTakenDamaged);
 	DOREPLIFETIME(AHBPlayerState, PlayerColor);
+	DOREPLIFETIME(AHBPlayerState, UserID);
 }
 
 void AHBPlayerState::SyncTotalTakenDamagedFromPlayerStat(float NewDamage)
@@ -29,5 +30,13 @@ void AHBPlayerState::SyncPlayerColorFromPlayerStat(FLinearColor NewColor)
 	if (HasAuthority())
 	{
 		PlayerColor = NewColor;
+	}
+}
+
+void AHBPlayerState::SetUserID(int32 NewID)
+{
+	if (HasAuthority())
+	{
+		UserID = NewID;
 	}
 }
