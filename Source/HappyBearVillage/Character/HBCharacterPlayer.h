@@ -12,14 +12,13 @@
 #include "TimerManager.h"
 #include "HBCharacterPlayer.generated.h"
 
-
-
 /**
- * 
+ *
  */
 class UInputMappingContext;
 class UInputAction;
 class UInputComponent;
+class UHBUserHUDWidget;
 
 /* ================= Night Flow ================= */
 
@@ -46,9 +45,6 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
-	//virtual void PossessedBy(AController* NewController) override;
-
-
 	// 입력 섹션 ===========================================
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -73,11 +69,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TObjectPtr<UInputAction> StartAction;
 
+
+
 	/* ========== Night Flow : State ========== */
 
 protected:
-	// 남은 외출 가능 횟수 
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Night")
+	// 남은 외출 가능 횟수 (RepNotify로 HUD 갱신)
+	UPROPERTY(ReplicatedUsing = OnRep_Stamina, EditAnywhere, BlueprintReadOnly, Category = "Night")
 	int32 Stamina = 3;
 
 	// 최대 외출 가능 횟수
@@ -91,6 +89,19 @@ protected:
 	// 이번 밤에 집 밖으로 나간 적 있는지
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Night")
 	bool bExitedHouseThisNight = false;
+
+	// 이전 밤(전날)에 집 밖으로 나갔는지 여부 (회복 규칙 처리용)
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Night")
+	bool bExitedPreviousNight = false;
+
+	// 캐시된 HUD 위젯 (로컬 클라이언트만 사용)
+	UPROPERTY(Transient)
+	TObjectPtr<UHBUserHUDWidget> CachedHUDWidget;
+
+	// Stamina RepNotify
+	UFUNCTION()
+	void OnRep_Stamina();
+
 
 	/* ========== Night Flow : Stamina Recovery (Timer) ========== */
 protected:
@@ -111,7 +122,7 @@ protected:
 
 	UFUNCTION()
 	void RecoverStaminaTick();
-	
+
 public:
 	/* ========== Night Flow : House Interaction ========== */
 	UFUNCTION(BlueprintCallable, Category = "Night")
@@ -124,7 +135,10 @@ public:
 	UFUNCTION()
 	void ResetNightState();
 
-		/* ========== Movement / Action ========== */
+	// 밤이 끝나고 낮으로 넘어갈 때 호출하여 회복 규칙을 처리
+	void ProcessNightEnd();
+
+	/* ========== Movement / Action ========== */
 public:
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
@@ -139,7 +153,7 @@ public:
 	void MouseLook(const FInputActionValue& Value);
 
 	// @PHYTODO : 직업 분배 임시 확인용
-	
+
 	UFUNCTION()
 	void Start();
 
@@ -159,7 +173,7 @@ public:
 	// 1인칭 카메라에서만 보이는 메시
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	TObjectPtr<USkeletalMeshComponent> FPSMeshComponent;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> FPSCurrentWeapon;
 
@@ -202,9 +216,9 @@ protected:
 
 	// 시선 변경 시 trace 할 각도 값
 	UPROPERTY(EditDefaultsOnly, Category = Interaction)
-	float ViewAngleThreshold = 0.5f;	// degrees
+	float ViewAngleThreshold = 0.5f	// degrees
 
-	UPROPERTY()
+	UPROPERTY();
 	TObjectPtr<AActor> InteractionTarget;
 
 	UFUNCTION()
@@ -225,7 +239,7 @@ protected:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRPCNotifyHit(const FHitResult& HitResult, float HitCheckTime);
-	
+
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRPCNotifyMiss(FVector_NetQuantize TraceStart, FVector_NetQuantize TraceEnd, FVector_NetQuantizeNormal TraceDir, float HitCheckTime);
 
@@ -240,7 +254,7 @@ protected:
 
 	void PlayAttackAnimation();
 
-	
+
 	// @PHYTODO : 직업 분배 임시 확인용
 	UFUNCTION(Server, Reliable)
 	void ServerRPCStart();
@@ -248,5 +262,5 @@ protected:
 	// UI 섹션 ====================================================
 protected:
 	virtual void SetupHUDWidget(UHBUserHUDWidget* InHUDWidget) override;
-	
+
 };

@@ -229,7 +229,7 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
 	}
-	
+
 
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	if (EnhancedInputComponent)
@@ -238,10 +238,10 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::Attack);
 		EnhancedInputComponent->BindAction(InteractionAction, ETriggerEvent::Triggered, this,
-		                                   &AHBCharacterPlayer::Interaction);
+			&AHBCharacterPlayer::Interaction);
 
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this,
-		                                   &AHBCharacterPlayer::MouseLook);
+			&AHBCharacterPlayer::MouseLook);
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -256,6 +256,30 @@ void AHBCharacterPlayer::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AHBCharacterPlayer, PlayerColor)
+
+	// Night 관련 프로퍼티도 복제하여 UI 동기화
+	DOREPLIFETIME(AHBCharacterPlayer, Stamina);
+	DOREPLIFETIME(AHBCharacterPlayer, NightState);
+	DOREPLIFETIME(AHBCharacterPlayer, bExitedHouseThisNight);
+	DOREPLIFETIME(AHBCharacterPlayer, bExitedPreviousNight);
+}
+
+void AHBCharacterPlayer::OnRep_Stamina()
+{
+	// RepNotify: Stamina가 바뀌면 로컬 플레이어 HUD에 반영
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+
+	if (CachedHUDWidget)
+	{
+		CachedHUDWidget->UpdateStamina(Stamina);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Verbose, TEXT("[NightFlow] OnRep_Stamina called but CachedHUDWidget is null. Stamina=%d"), Stamina);
+	}
 }
 
 void AHBCharacterPlayer::Move(const FInputActionValue& Value)
@@ -277,7 +301,7 @@ void AHBCharacterPlayer::Move(const FInputActionValue& Value)
 	{
 		return;
 	}
-	
+
 	const FVector2D MovementValue = Value.Get<FVector2D>();
 	if (Controller)
 	{
@@ -342,11 +366,11 @@ void AHBCharacterPlayer::Interaction()
 	}
 
 	// 현재 Phase 가 난투 Phase 가 아니면 상호작용 하지 못하도록 방지
-	if (GameState->CurrentPhase != EGamePhase::Fight  && GameState->CurrentPhase != EGamePhase::Lobby)
+	if (GameState->CurrentPhase != EGamePhase::Fight && GameState->CurrentPhase != EGamePhase::Lobby)
 	{
 		return;
 	}
-	
+
 	if (IsLocallyControlled())
 	{
 		if (InteractionTarget != nullptr)
@@ -396,7 +420,7 @@ void AHBCharacterPlayer::SetRandomBaseColor()
 	{
 		DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
 	}
-	
+
 	if (DynamicMaterial)
 	{
 		// 서버일때만 랜덤 색상 변수 생성
@@ -450,7 +474,7 @@ void AHBCharacterPlayer::InteractionTraceTick()
 	{
 		return;
 	}
-	
+
 	const FRotator CurrentRotation = GetControlRotation();
 
 	// 시선 변화 체크 시 기준치를 넘지 않았으면 스킵
@@ -602,7 +626,7 @@ void AHBCharacterPlayer::AttackHitConfirm(AActor* HitActor)
 }
 
 void AHBCharacterPlayer::DrawDebugAttackRange(const FColor& DrawColor, FVector TraceStart, FVector TraceEnd,
-                                              FVector Forward)
+	FVector Forward)
 {
 #if ENABLE_DRAW_DEBUG
 
@@ -612,7 +636,7 @@ void AHBCharacterPlayer::DrawDebugAttackRange(const FColor& DrawColor, FVector T
 	float CapsuleHalfHeight = AttackRange * 0.5f;
 
 	DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius,
-	                 FRotationMatrix::MakeFromZ(Forward).ToQuat(), DrawColor, false, 5.0f);
+		FRotationMatrix::MakeFromZ(Forward).ToQuat(), DrawColor, false, 5.0f);
 
 #endif
 }
@@ -643,7 +667,7 @@ void AHBCharacterPlayer::ServerRPCNotifyHit_Implementation(const FHitResult& Hit
 
 		// 충돌 시 Notify 이니 디버그 컬러가 Green 만 넣어도 상관없긴 함
 		DrawDebugAttackRange(FColor::Green, HitResult.TraceStart, HitResult.TraceEnd,
-		                     HitActor->GetActorForwardVector());
+			HitActor->GetActorForwardVector());
 	}
 }
 
@@ -659,15 +683,15 @@ bool AHBCharacterPlayer::ServerRPCNotifyHit_Validate(const FHitResult& HitResult
 }
 
 void AHBCharacterPlayer::ServerRPCNotifyMiss_Implementation(FVector_NetQuantize TraceStart,
-                                                            FVector_NetQuantize TraceEnd,
-                                                            FVector_NetQuantizeNormal TraceDir, float HitCheckTime)
+	FVector_NetQuantize TraceEnd,
+	FVector_NetQuantizeNormal TraceDir, float HitCheckTime)
 {
 	// 충돌 실패 시 판정 범위 디버그 그리기
 	DrawDebugAttackRange(FColor::Red, TraceStart, TraceEnd, TraceDir);
 }
 
 bool AHBCharacterPlayer::ServerRPCNotifyMiss_Validate(FVector_NetQuantize TraceStart, FVector_NetQuantize TraceEnd,
-                                                      FVector_NetQuantizeNormal TraceDir, float HitCheckTime)
+	FVector_NetQuantizeNormal TraceDir, float HitCheckTime)
 {
 	// 마지막 공격 시작 시간이 0 (처음 공격)
 	if (LastAttackStartTime == 0.f)
@@ -708,6 +732,13 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 
 			GameState->OnGamePhaseChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdatePhase);
 			GameState->OnRemainingTimeChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateRemainingTime);
+		}
+
+		// HUD와 Stamina 연동: 초기값 전송 및 캐시 (로컬 클라이언트에서만)
+		if (IsLocallyControlled())
+		{
+			CachedHUDWidget = InHUDWidget;
+			InHUDWidget->UpdateStamina(Stamina);
 		}
 	}
 }
@@ -866,7 +897,7 @@ void AHBCharacterPlayer::ExitHouse()
 	// 이번 밤에 외출 기록
 	bExitedHouseThisNight = true;
 
-	// 스태미나(사과) 1개 소모
+	// 스태미나(사과) 1개 소모 — 즉시 소모 규칙
 	Stamina = FMath::Max(Stamina - 1, 0);
 
 	// 한 번이라도 나갔으니 이번 밤 회복은 완전히 중단
@@ -946,7 +977,10 @@ void AHBCharacterPlayer::ResetNightState()
 {
 	if (!HasAuthority()) return;
 
-	// 밤 시작 시 기본 상태 초기화
+	// 이전 밤의 외출 여부를 기록(전날 정보 보관)
+	bExitedPreviousNight = bExitedHouseThisNight;
+
+	// 밤 시작 시 기본 상태 초기화 (이번 밤은 아직 외출 없음)
 	bExitedHouseThisNight = false;
 	NightState = EPlayerNightState::InHouse;
 
@@ -954,6 +988,26 @@ void AHBCharacterPlayer::ResetNightState()
 	StopStaminaRecovery();
 
 	UE_LOG(LogTemp, Log,
-		TEXT("[NightFlow] ResetNightState | Stamina: %d"),
-		Stamina);
+		TEXT("[NightFlow] ResetNightState | Stamina: %d | PrevExited: %s"),
+		Stamina, bExitedPreviousNight ? TEXT("true") : TEXT("false"));
+}
+
+void AHBCharacterPlayer::ProcessNightEnd()
+{
+	if (!HasAuthority()) return;
+
+	// 규칙: "전날(바로 이전 밤)에 외출했으면, 그 다음 밤(현재 밤) 동안 외출하지 않을 경우 스태미나 +1 회복"
+	// 여기서는 '밤이 끝날 때'(-> 낮 시작 시) 호출되어, bExitedPreviousNight 은 바로 직전에 기록된 값,
+	// bExitedHouseThisNight 은 지금 끝난 밤(현 밤)에 외출했는지 여부.
+	if (bExitedPreviousNight && !bExitedHouseThisNight)
+	{
+		const int32 Old = Stamina;
+		Stamina = FMath::Min(Stamina + 1, MaxStamina);
+		UE_LOG(LogTemp, Log,
+			TEXT("[NightFlow] ProcessNightEnd: Recovered %d -> %d (PrevExited true, ThisNight no exit)"),
+			Old, Stamina);
+	}
+
+	// 다음 사이클을 위해 이전 밤 플래그 갱신 (이제 bExitedPreviousNight은 방금 끝난 밤의 외출 여부로 설정)
+	bExitedPreviousNight = bExitedHouseThisNight;
 }

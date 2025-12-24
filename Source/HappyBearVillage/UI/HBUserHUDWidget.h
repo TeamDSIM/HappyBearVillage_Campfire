@@ -23,6 +23,10 @@ public:
 	void UpdatePhase(EGamePhase NewGamePhase);
 	void UpdateRemainingTime(float NewRemainingTime);
 
+	// Stamina UI 갱신을 블루프린트에서 구현하도록 노출
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Night")
+	void UpdateStamina(int32 NewStamina);
+
 protected:
 	UPROPERTY()
 	TObjectPtr<class UHBPhaseHUD> PhaseHUDWidget;
