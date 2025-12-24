@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/GameStateBase.h"
+#include "GameMode/HBVillageGameMode.h"
 #include "Interface/HBInteractableInterface.h"
 #include "Net/UnrealNetwork.h"
 #include "Stat/HBPlayerStatComponent.h"
@@ -744,23 +745,38 @@ void AHBCharacterPlayer::ServerRPCStart_Implementation()
 	UGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance)
 	{
-		UE_LOG(LogTemp, Log, TEXT("ServerRPCStart GameInstance is Valid"));
-		UHBGameFlowSubsystem* GameFlowSubsystem = GameInstance->GetSubsystem<UHBGameFlowSubsystem>();
-		if (GameFlowSubsystem)
+		// 현재 게임 모드 가져오기
+		AHBVillageGameMode* VillageGameMode = Cast<AHBVillageGameMode>(GetWorld()->GetAuthGameMode());
+		if (VillageGameMode)
 		{
 			// 게임이 진행중이면
-			if (GameFlowSubsystem->GetIsGamePlaying())
+			if (VillageGameMode->GetIsGamePlaying())
 			{
-				// 게임 중지
-				GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StopGame();
+				VillageGameMode->StopGame();
 			}
+
 			// 게임이 진행중이지 않으면
 			else
 			{
-				// 게임 실행
-				GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StartGame();
+				VillageGameMode->StartGame();
 			}
 		}
+		// UHBGameFlowSubsystem* GameFlowSubsystem = GameInstance->GetSubsystem<UHBGameFlowSubsystem>();
+		// if (GameFlowSubsystem)
+		// {
+		// 	// 게임이 진행중이면
+		// 	if (GameFlowSubsystem->GetIsGamePlaying())
+		// 	{
+		// 		// 게임 중지
+		// 		GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StopGame();
+		// 	}
+		// 	// 게임이 진행중이지 않으면
+		// 	else
+		// 	{
+		// 		// 게임 실행
+		// 		GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StartGame();
+		// 	}
+		// }
 
 		//OnRep_PlayerColor();
 	}
