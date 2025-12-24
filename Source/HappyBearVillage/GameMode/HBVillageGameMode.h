@@ -26,7 +26,7 @@ public:
 
 private:
 	virtual void StartPlay() override;
-	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void HandleSeamlessTravelPlayer(AController*& C) override;
 
 	// PostLogin 호출 시 스팀 세션 접속 인원과
 	// 현재 PostLogin 횟수 비교
@@ -51,6 +51,8 @@ private:
 	// 각 페이즈 별 시간 관리할 타이머
 	FTimerHandle PhaseTimerHandle;
 	FTimerHandle CountdownTimerHandle;
+
+	FTimerHandle TempTimerHandle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameState", meta = (AllowPrivateAccess = "true"))
 	uint8 bIsGamePlaying : 1;

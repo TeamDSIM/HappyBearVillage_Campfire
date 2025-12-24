@@ -25,8 +25,9 @@ bool AHBVillageGameMode::IsServer(UWorld* World)
 
 AHBVillageGameMode::AHBVillageGameMode()
 {
-	GameModePlayerControlComponent = CreateDefaultSubobject<UHBGameModePlayerControlComponent>(TEXT("GameModePlayerControl"));
-	
+	GameModePlayerControlComponent = CreateDefaultSubobject<UHBGameModePlayerControlComponent>(
+		TEXT("GameModePlayerControl"));
+
 	bIsGamePlaying = false;
 
 	// Default 세팅
@@ -101,7 +102,7 @@ void AHBVillageGameMode::StopGame()
 	}
 
 	bIsGamePlaying = false;
-	
+
 	// 페이즈 관리를 위해 HBMafiaGameState 불러오기
 	AHBMafiaGameState* HBGameState = World->GetGameState<AHBMafiaGameState>();
 	if (!HBGameState)
@@ -126,14 +127,19 @@ void AHBVillageGameMode::StartPlay()
 	Super::StartPlay();
 
 	// PostLogin을 기다려야함
+	// GetWorldTimerManager().SetTimer(
+	// 	TempTimerHandle,
+	// 	this,
+	// 	&AHBVillageGameMode::StartGame, 5.f, false
+	// );
 	//StartGame();
 }
 
-void AHBVillageGameMode::PostLogin(APlayerController* NewPlayer)
+void AHBVillageGameMode::HandleSeamlessTravelPlayer(AController*& C)
 {
-	Super::PostLogin(NewPlayer);
+	Super::HandleSeamlessTravelPlayer(C);
 
-	//
+	HB_LOG(LogHY, Log, TEXT("HandleSeamlessTravelPlayer Call"));
 	CheckStartGame();
 }
 
@@ -141,13 +147,14 @@ void AHBVillageGameMode::CheckStartGame()
 {
 	if (HasAuthority())
 	{
+		HB_LOG(LogHY, Log, TEXT("CheckStartGame Call"));
 		ConnectedPlayerCounts += 1;
 
 		IOnlineSessionPtr SessionInterface = Online::GetSubsystem(GetWorld())->GetSessionInterface();
 		if (SessionInterface.IsValid())
 		{
 			FNamedOnlineSession* Session =
-			SessionInterface->GetNamedSession(NAME_GameSession);
+				SessionInterface->GetNamedSession(NAME_GameSession);
 
 			if (Session)
 			{
@@ -158,7 +165,7 @@ void AHBVillageGameMode::CheckStartGame()
 					MaxPlayers - Session->NumOpenPublicConnections;
 
 				HB_LOG(LogHY, Log, TEXT("Players: %d / %d"),
-					CurrentPlayers, MaxPlayers);
+				       CurrentPlayers, MaxPlayers);
 
 				if (ConnectedPlayerCounts == CurrentPlayers)
 				{
@@ -190,7 +197,7 @@ void AHBVillageGameMode::StartDiscussion()
 {
 	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start Discussion"));
 	SetPhase(EGamePhase::Discussion, 30.f);
-	
+
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (HBGameState)
 	{
