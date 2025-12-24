@@ -130,6 +130,7 @@ void UHBLobbyWidget::RequestFriends()
 	MultiplayerSessionsSubsystem->ReadFriendsList();
 }
 
+
 void UHBLobbyWidget::OnFriendsReady(const TArray<FHBSteamFriend>& Friends, bool bWasSuccessful)
 {
 	if (!bWasSuccessful)
@@ -195,6 +196,7 @@ void UHBLobbyWidget::HandleInviteClicked(const FString& NetIdStr)
 	MultiplayerSessionsSubsystem->InviteFriendByNetIdStr(NetIdStr);
 }
 
+// 로비의 플레이어 목록 갱신, 표시
 void UHBLobbyWidget::RefreshPlayersInRoom()
 {
 	if (!CachedMafiaGS || !ScrollBox_LobbyPlayers) return;
@@ -206,6 +208,7 @@ void UHBLobbyWidget::RefreshPlayersInRoom()
 		if (!PS) continue;
 		// TextBlock 하나로 이름 표시
 		UTextBlock* NameText = NewObject<UTextBlock>(this);
+		// 플레이어 목록 받아오기
 		NameText->SetText(FText::FromString(PS->GetPlayerName()));
 		ScrollBox_LobbyPlayers->AddChild(NameText);
 	}
