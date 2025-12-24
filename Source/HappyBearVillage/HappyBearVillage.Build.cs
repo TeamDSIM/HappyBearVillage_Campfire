@@ -24,7 +24,7 @@ public class HappyBearVillage : ModuleRules
 			"SteamSockets"
         });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "AnimGraphRuntime" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "AnimGraphRuntime", "PCG" });
 
         PublicIncludePaths.AddRange(new string[] { "HappyBearVillage" });
 

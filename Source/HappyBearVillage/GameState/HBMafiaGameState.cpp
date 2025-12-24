@@ -59,3 +59,16 @@ bool AHBMafiaGameState::IsNight() const
 {
 	return CurrentPhase == EGamePhase::Night;
 }
+
+//LobbyWidget ���� �ڵ��Դϴ�.
+void AHBMafiaGameState::AddPlayerState(APlayerState* PlayerState)
+{
+	Super::AddPlayerState(PlayerState);
+	OnLobbyPlayersChanged.Broadcast();
+}
+
+void AHBMafiaGameState::RemovePlayerState(APlayerState* PlayerState)
+{
+	Super::RemovePlayerState(PlayerState);
+	OnLobbyPlayersChanged.Broadcast();
+}

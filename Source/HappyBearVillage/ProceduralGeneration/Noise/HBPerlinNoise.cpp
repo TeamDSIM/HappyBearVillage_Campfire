@@ -212,6 +212,25 @@ void UHBPerlinNoise::PrintNoise()
 	UE_LOG(LogTemp, Log, TEXT("[Noise Array] : \n%s"), *LogText);
 }
 
+TArray<TArray<int32>> UHBPerlinNoise::GetNoiseAsInt32Grid()
+{
+	TArray<TArray<int32>> Result;
+
+	for (int32 Row = 0; Row < NoiseSettings.Resolution.Y; Row++)
+	{
+		TArray<int32> RowData;
+		
+		for (int32 Col = 0; Col < NoiseSettings.Resolution.X; Col++)
+		{
+			RowData.Add(Noise[Row][Col]);
+		}
+
+		Result.Add(RowData);
+	}
+
+	return Result;
+}
+
 TArray<int32> UHBPerlinNoise::GetNoiseAs1D()
 {
 	TArray<int32> Result;

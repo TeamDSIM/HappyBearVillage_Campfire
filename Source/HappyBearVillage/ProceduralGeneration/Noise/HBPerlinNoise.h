@@ -22,6 +22,7 @@ public:
 	void DebugGeneratePerlinNoise(FHBNoiseSettings InNoiseSettings);
 	void PrintNoise();
 
+	TArray<TArray<int32>> GetNoiseAsInt32Grid();
 	TArray<int32> GetNoiseAs1D();
 	int32 GetNoiseElement(int32 Row, int32 Col);
 

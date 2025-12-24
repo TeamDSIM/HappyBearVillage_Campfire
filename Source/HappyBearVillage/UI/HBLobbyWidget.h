@@ -7,6 +7,7 @@
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "HBSteamFriendEntryWidget.h"
+#include "GameState/HBMafiaGameState.h"
 #include "HBLobbyWidget.generated.h"
 
 /**
@@ -15,6 +16,7 @@
 
 class UMultiplayerSessionsSubsystem;
 class UButton;
+class APlayerState;
 
 struct FHBSteamFriend;
 
@@ -25,7 +27,7 @@ class HAPPYBEARVILLAGE_API UHBLobbyWidget : public UUserWidget
 
 protected:
 	virtual void NativeConstruct() override;
-
+	virtual void NativeDestruct() override;
 public:
 	UFUNCTION()
 	void SetFriendInviteVisible(bool bVisible);
@@ -50,6 +52,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> LobbyScrollBoxTitle;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UScrollBox> ScrollBox_LobbyPlayers;
+
 
 	// Subsystem 캐시
 	UPROPERTY()
@@ -67,5 +72,17 @@ private:
 
 	// FriendEntry에서 “초대” 눌렀을 때 처리
 	void HandleInviteClicked(const FString& NetIdStr);
+
+	// 플레이어 목록 갱신 함수
+	UFUNCTION()
+	void RefreshPlayersInRoom();
+
+	// GameState 캐시
+	UPROPERTY()
+	TObjectPtr<AHBMafiaGameState> CachedMafiaGS;
+
+	//다음 틱에서 1회 더 실행용
+	UFUNCTION()
+	void HandleLobbyPlayersChanged();
 
 };

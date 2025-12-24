@@ -16,6 +16,8 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnGamePhaseChanged, EGamePhase)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnRemainingTimeChanged, float /*RemainingTime*/)
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnTopDamagePlayersChanged, AHBPlayerState*, FDamageRankEntry, int32)
 
+//LobbyWidget 관련 코드입니다.
+DECLARE_MULTICAST_DELEGATE(FOnLobbyPlayersChanged);
 
 // 각 페이즈를 나타내는 enum 클래스
 UENUM(BlueprintType)
@@ -88,4 +90,16 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsNight() const;
+
+	//LobbyWidget 관련 코드입니다.
+public:
+	// LobbyWidget이 구독할 이벤트
+	FOnLobbyPlayersChanged OnLobbyPlayersChanged;
+
+protected:
+	// PlayerArray가 변하는 시점(추가/삭제)에 엔진이 호출
+	virtual void AddPlayerState(APlayerState* PlayerState) override;
+	virtual void RemovePlayerState(APlayerState* PlayerState) override;
+
+
 };
