@@ -11,6 +11,7 @@
 #include "Engine/World.h"
 #include "MultiplayerSessionsSubsystem.h"
 #include "EnhancedInputComponent.h"
+#include "UI/HBCharacterStatusWidgetComponent.h"
 
 
 AHBPlayerController::AHBPlayerController()
@@ -155,7 +156,6 @@ void AHBPlayerController::SetupUI()
 		FInputModeGameOnly InputMode;
 		SetInputMode(InputMode);
 		SetShowMouseCursor(false);
-
 	}
 
 }

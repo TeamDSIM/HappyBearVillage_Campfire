@@ -274,7 +274,7 @@ void AHBCharacterPlayer::OnRep_Stamina()
 
 	if (CachedHUDWidget)
 	{
-		CachedHUDWidget->UpdateStamina(Stamina);
+		
 	}
 	else
 	{
@@ -738,7 +738,6 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 		if (IsLocallyControlled())
 		{
 			CachedHUDWidget = InHUDWidget;
-			InHUDWidget->UpdateStamina(Stamina);
 		}
 	}
 }
@@ -877,6 +876,8 @@ void AHBCharacterPlayer::EnterHouse()
 
 void AHBCharacterPlayer::ExitHouse()
 {
+	UE_LOG(LogTemp, Log, TEXT("ExitHouse called"));
+
 	if (!HasAuthority()) return;
 
 	// 이미 밖이면 중복 처리 방지
@@ -899,6 +900,7 @@ void AHBCharacterPlayer::ExitHouse()
 
 	// 스태미나(사과) 1개 소모 — 즉시 소모 규칙
 	Stamina = FMath::Max(Stamina - 1, 0);
+	OnStaminaChanged.Broadcast(Stamina);
 
 	// 한 번이라도 나갔으니 이번 밤 회복은 완전히 중단
 	StopStaminaRecovery();

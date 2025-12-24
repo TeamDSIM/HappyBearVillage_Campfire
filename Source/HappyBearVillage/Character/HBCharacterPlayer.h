@@ -21,6 +21,7 @@ class UInputComponent;
 class UHBUserHUDWidget;
 
 /* ================= Night Flow ================= */
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnStaminaChanged, int32 /* Stamina */)
 
 UENUM(BlueprintType)
 enum class EPlayerNightState : uint8
@@ -72,6 +73,8 @@ protected:
 
 
 	/* ========== Night Flow : State ========== */
+public:
+	FOnStaminaChanged OnStaminaChanged;
 
 protected:
 	// 남은 외출 가능 횟수 (RepNotify로 HUD 갱신)
