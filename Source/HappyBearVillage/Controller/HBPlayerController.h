@@ -23,13 +23,6 @@ protected:
 	AHBPlayerController();
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
-	//virtual void BeginPlayingState() override;
-
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-	//TSubclassOf<class UHBTitleWidget> HBTitleWidgetClass;
-
-	//UPROPERTY()
-	//TObjectPtr<class UHBTitleWidget> HBTitleWidget;
 
 	//키 입력
 	// IMC는 이미 Character에서 추가해서 필요 X

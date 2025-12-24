@@ -15,12 +15,6 @@
 
 AHBPlayerController::AHBPlayerController()
 {
-	//static ConstructorHelpers::FClassFinder<UHBLobbyWidget> HBLobbyWidgetRef(TEXT("/Game/Personal/LEE_J_S/UI/TestLobby.TestLobby_C"));
-	//if (HBLobbyWidgetRef.Succeeded())
-	//{
-	//	HBLobbyWidgetClass = HBLobbyWidgetRef.Class();
-	//}
-
 	InGameHUDComponent = CreateDefaultSubobject<UHBInGameHUDComponent>(TEXT("InGameHUD"));
 }
 
@@ -57,48 +51,6 @@ void AHBPlayerController::SetupInputComponent()
 		}
 	}
 }
-
-//Pawn Possess하라고 Server->Client 지정 후 호출되는 함수
-//Travel 이후, Respawn 이후, Possess 갱신 시 호출
-
-//void AHBPlayerController::BeginPlayingState()
-//{
-//	UE_LOG(LogTemp, Log, TEXT("BeginPlayingState Called"));
-//
-//	Super::BeginPlayingState();
-//
-//	if (!IsLocalController())
-//	{
-//		UE_LOG(LogTemp, Log, TEXT("not localcontroller"));
-//		return;
-//	}
-//
-//
-//	UHBGameInstance* GI = GetGameInstance<UHBGameInstance>();
-//
-//	if (!GI)
-//	{
-//		UE_LOG(LogTemp, Log, TEXT("not gameinstance"));
-//		return;
-//	}
-//	if (!GI->bNewMapLoad)
-//	{
-//		UE_LOG(LogTemp, Log, TEXT("not a new map"));
-//		return;
-//	}
-//
-//
-//	ResetUI();
-//	SetupUI(); 
-//
-//	GI->bNewMapLoad = false; 
-//}
-
-
-
-
-
-
 
 void AHBPlayerController::ResetUI()
 {
