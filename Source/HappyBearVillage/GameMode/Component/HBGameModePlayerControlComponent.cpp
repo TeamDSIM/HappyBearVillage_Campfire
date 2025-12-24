@@ -17,7 +17,7 @@ UHBGameModePlayerControlComponent::UHBGameModePlayerControlComponent()
 }
 
 void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameState)
-{
+{	
 	HB_SUBLOG(LogHY, Log, TEXT("InitPlayers"));
 	
 	// 플레이어 목록 불러오기

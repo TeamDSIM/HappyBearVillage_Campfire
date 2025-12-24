@@ -3,12 +3,17 @@
 
 #include "GameMode/HBVillageGameMode.h"
 
+#include "HappyBearVillage.h"
+#include "OnlineSessionSettings.h"
+#include "OnlineSubsystem.h"
+#include "OnlineSubsystemUtils.h"
 #include "Character/HBCharacterPlayer.h"
 #include "Character/Stat/HBPlayerStatComponent.h"
 #include "Component/HBGameModePlayerControlComponent.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerState.h"
 #include "GameState/HBMafiaGameState.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "PlayerState/HBPlayerState.h"
 
 // HasAuthority 는 액터에서만 사용 가능
@@ -42,6 +47,7 @@ AHBVillageGameMode::AHBVillageGameMode()
 	GameStateClass = AHBMafiaGameState::StaticClass();
 	PlayerStateClass = AHBPlayerState::StaticClass();
 
+	ConnectedPlayerCounts = 0;
 }
 
 void AHBVillageGameMode::StartGame()
@@ -118,7 +124,49 @@ void AHBVillageGameMode::StopGame()
 void AHBVillageGameMode::StartPlay()
 {
 	Super::StartPlay();
-	StartGame();
+
+	// PostLogin을 기다려야함
+	//StartGame();
+}
+
+void AHBVillageGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	//
+	CheckStartGame();
+}
+
+void AHBVillageGameMode::CheckStartGame()
+{
+	if (HasAuthority())
+	{
+		ConnectedPlayerCounts += 1;
+
+		IOnlineSessionPtr SessionInterface = Online::GetSubsystem(GetWorld())->GetSessionInterface();
+		if (SessionInterface.IsValid())
+		{
+			FNamedOnlineSession* Session =
+			SessionInterface->GetNamedSession(NAME_GameSession);
+
+			if (Session)
+			{
+				const int32 MaxPlayers =
+					Session->SessionSettings.NumPublicConnections;
+
+				const int32 CurrentPlayers =
+					MaxPlayers - Session->NumOpenPublicConnections;
+
+				HB_LOG(LogHY, Log, TEXT("Players: %d / %d"),
+					CurrentPlayers, MaxPlayers);
+
+				if (ConnectedPlayerCounts == CurrentPlayers)
+				{
+					StartGame();
+				}
+			}
+		}
+	}
 }
 
 // @PHYTODO : 각 페이즈별 함수

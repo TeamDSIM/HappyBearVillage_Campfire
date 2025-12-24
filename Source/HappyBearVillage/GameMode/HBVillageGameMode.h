@@ -26,6 +26,11 @@ public:
 
 private:
 	virtual void StartPlay() override;
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	// PostLogin 호출 시 스팀 세션 접속 인원과
+	// 현재 PostLogin 횟수 비교
+	void CheckStartGame();
 	
 	// 각 페이즈 별 시작 함수
 	void StartDay(); // 낮 (토론 전 잠시 대기)
@@ -49,6 +54,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameState", meta = (AllowPrivateAccess = "true"))
 	uint8 bIsGamePlaying : 1;
+
+	int32 ConnectedPlayerCounts = 0;
 
 	// 컴포넌트 부착
 private:
