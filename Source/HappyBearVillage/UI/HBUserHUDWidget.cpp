@@ -36,6 +36,11 @@ void UHBUserHUDWidget::UpdateRemainingTime(float NewRemainingTime)
 	PhaseHUDWidget->UpdateCurrentTime(NewRemainingTime);
 }
 
+void UHBUserHUDWidget::UpdateDate(int32 NewDate)
+{
+	PhaseHUDWidget->UpdateCurrentDate(NewDate);
+}
+
 void UHBUserHUDWidget::UpdateCurrentFightInfo(AHBPlayerState* InPlayerState, FDamageRankEntry InEntry, int32 InRank)
 {
 	UE_LOG(LogTemp, Log, TEXT("[UHBUserHUDWidget] UpdateCurrentFightInfo InRank : %d"), InRank);

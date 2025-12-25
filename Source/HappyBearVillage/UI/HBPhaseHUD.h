@@ -25,6 +25,7 @@ protected:
 public:
 	void UpdateCurrentPhase(EGamePhase NewPhase);
 	void UpdateCurrentTime(float NewTime);
+	void UpdateCurrentDate(int32 NewDate);
 
 protected:
 	UPROPERTY()
@@ -32,6 +33,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UTextBlock> TimeText;
+	
+	UPROPERTY()
+	TObjectPtr<UTextBlock> DateText;
 
 	UPROPERTY()
 	FString PhaseString;

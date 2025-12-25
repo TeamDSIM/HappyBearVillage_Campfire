@@ -19,6 +19,9 @@ void UHBPhaseHUD::NativeConstruct()
 	TimeText = Cast<UTextBlock>(GetWidgetFromName(TEXT("Time")));
 	ensure(TimeText);
 	
+	DateText = Cast<UTextBlock>(GetWidgetFromName(TEXT("Date")));
+	ensure(DateText);
+	
 }
 
 void UHBPhaseHUD::UpdateCurrentPhase(EGamePhase NewPhase)
@@ -42,7 +45,16 @@ void UHBPhaseHUD::UpdateCurrentTime(float NewTime)
 {
 	if (TimeText)
 	{
-		TimeText->SetText(FText::FromString(FString::Printf(TEXT("%d : %d")
-			, ((int32)NewTime / 60), ((int32)NewTime % 60))));
+		TimeText->SetText(FText::FromString(FString::Printf(TEXT("%d : %d"),
+			((int32)NewTime / 60), ((int32)NewTime % 60))));
+	}
+}
+
+void UHBPhaseHUD::UpdateCurrentDate(int32 NewDate)
+{
+	if (DateText)
+	{
+		DateText->SetText(FText::FromString(FString::Printf(TEXT("Day %d"),
+			NewDate)));
 	}
 }

@@ -724,9 +724,11 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 		{
 			InHUDWidget->UpdatePhase(GameState->CurrentPhase);
 			InHUDWidget->UpdateRemainingTime(GameState->RemainingTime);
+			InHUDWidget->UpdateDate(GameState->Date);
 
 			GameState->OnGamePhaseChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdatePhase);
 			GameState->OnRemainingTimeChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateRemainingTime);
+			GameState->OnDateChanged.AddUObject(InHUDWidget,&UHBUserHUDWidget::UpdateDate);
 			GameState->OnTopDamagePlayersChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateCurrentFightInfo);
 		}
 	}

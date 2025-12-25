@@ -81,6 +81,9 @@ void AHBVillageGameMode::StartGame()
 	// 플레이어 초기 세팅
 	GameModePlayerControlComponent->InitPlayers(HBGameState);
 
+	// 날짜 세팅
+	HBGameState->Date = 0;
+
 	// @PHYTODO : 페이즈 시작
 	StartDay();
 }
@@ -115,8 +118,10 @@ void AHBVillageGameMode::StopGame()
 
 	HBGameState->CurrentPhase = EGamePhase::Lobby;
 	HBGameState->RemainingTime = 0.f;
+	HBGameState->Date = 0;
 	HBGameState->OnRep_GamePhase();
 	HBGameState->OnRep_RemainingTime();
+	HBGameState->OnRep_Date();
 
 	// 플레이어 정보 초기화
 	GameModePlayerControlComponent->ResetPlayers(HBGameState);
@@ -186,7 +191,9 @@ void AHBVillageGameMode::StartDay()
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (HBGameState)
 	{
+		HBGameState->Date += 1;
 		HBGameState->OnRep_GamePhase();
+		HBGameState->OnRep_Date();
 	}
 
 	// 모든 플레이어 장착 해제
@@ -293,7 +300,7 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 	World->GetTimerManager().SetTimer(
 		PhaseTimerHandle,
 		FTimerDelegate::CreateLambda(
-			[this, NewPhase]()
+			[this, NewPhase, HBGameState]()
 			{
 				switch (NewPhase)
 				{
@@ -302,7 +309,18 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 					break;
 
 				case EGamePhase::Discussion:
-					StartFight();
+					{
+						// 첫날이면 Night 로 스킵
+						if (HBGameState->Date == 1)
+						{
+							StartNight();
+						}
+						// 첫날이 아니면 fight 로 이동
+						else
+						{
+							StartFight();
+						}
+					}
 					break;
 
 				case EGamePhase::Fight:

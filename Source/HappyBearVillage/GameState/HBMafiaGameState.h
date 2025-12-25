@@ -14,6 +14,7 @@
 class AHBPlayerState;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGamePhaseChanged, EGamePhase)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnRemainingTimeChanged, float /*RemainingTime*/)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDateChanged, int32 /*Date*/)
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnTopDamagePlayersChanged, AHBPlayerState*, FDamageRankEntry, int32)
 
 //LobbyWidget 관련 코드입니다.
@@ -61,6 +62,7 @@ public:
 public:
 	FOnGamePhaseChanged OnGamePhaseChanged;
 	FOnRemainingTimeChanged OnRemainingTimeChanged;
+	FOnDateChanged OnDateChanged;
 	FOnTopDamagePlayersChanged OnTopDamagePlayersChanged;
 
 public:
@@ -73,6 +75,10 @@ public:
 
 	UPROPERTY(ReplicatedUsing = OnRep_RemainingTime, BlueprintReadOnly)
 	float RemainingTime = 0.f;
+
+	// 현재 플레이중인 일차
+	UPROPERTY(ReplicatedUsing = OnRep_Date, BlueprintReadOnly)
+	int32 Date = 0;
 
 	// Top3 데미지 유저 출력용
 	UPROPERTY(ReplicatedUsing = OnRep_TopDamagePlayers)
@@ -87,6 +93,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_RemainingTime();
+
+	UFUNCTION()
+	void OnRep_Date();
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsNight() const;
