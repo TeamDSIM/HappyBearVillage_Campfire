@@ -754,7 +754,8 @@ void AHBCharacterPlayer::ServerRPCStart_Implementation()
 			// 게임이 진행중이면
 			if (VillageGameMode->GetIsGamePlaying())
 			{
-				VillageGameMode->StopGame();
+				VillageGameMode->CheatPhaseChange();
+				//VillageGameMode->StopGame();
 			}
 
 			// 게임이 진행중이지 않으면

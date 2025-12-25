@@ -22,6 +22,9 @@ public:
 	void StartGame();
 	void StopGame();
 
+	// 치트용 함수
+	void CheatPhaseChange();
+
 	FORCEINLINE bool GetIsGamePlaying() const { return bIsGamePlaying; }
 
 private:

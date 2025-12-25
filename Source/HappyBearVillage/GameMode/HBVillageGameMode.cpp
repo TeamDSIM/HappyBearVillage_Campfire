@@ -127,6 +127,24 @@ void AHBVillageGameMode::StopGame()
 	GameModePlayerControlComponent->ResetPlayers(HBGameState);
 }
 
+void AHBVillageGameMode::CheatPhaseChange()
+{
+	// 서버에서 처리하도록 예외처리
+	UWorld* World = GetWorld();
+	if (!IsServer(World))
+	{
+		return;
+	}
+
+	// 페이즈 관리를 위해 HBMafiaGameState 불러오기
+	AHBMafiaGameState* HBGameState = World->GetGameState<AHBMafiaGameState>();
+	if (!HBGameState)
+	{
+		return;
+	}
+	SetPhase(HBGameState->CurrentPhase, 1);
+}
+
 void AHBVillageGameMode::StartPlay()
 {
 	Super::StartPlay();
@@ -195,6 +213,10 @@ void AHBVillageGameMode::StartDay()
 		HBGameState->OnRep_GamePhase();
 		HBGameState->OnRep_Date();
 	}
+	else
+	{
+		return;
+	}
 
 	// 모든 플레이어 장착 해제
 	GameModePlayerControlComponent->UnEquippedAllPlayer(HBGameState);
@@ -210,6 +232,10 @@ void AHBVillageGameMode::StartDiscussion()
 	{
 		HBGameState->OnRep_GamePhase();
 	}
+	else
+	{
+		return;
+	}
 }
 
 void AHBVillageGameMode::StartFight()
@@ -222,9 +248,16 @@ void AHBVillageGameMode::StartFight()
 	{
 		HBGameState->OnRep_GamePhase();
 	}
+	else
+	{
+		return;
+	}
 
 	// 모든 플레이어 데미지 초기화
-	GameModePlayerControlComponent->UnEquippedAllPlayer(HBGameState);
+	HB_LOG(LogHY, Log, TEXT("Start Fight Reset Damage"));
+	GameModePlayerControlComponent->ResetPlayersTotalTakenDamage(HBGameState);
+	HBGameState->OnRep_TopDamagePlayers();
+	//GameModePlayerControlComponent->UnEquippedAllPlayer(HBGameState);
 }
 
 void AHBVillageGameMode::StartVote()
@@ -236,6 +269,10 @@ void AHBVillageGameMode::StartVote()
 	if (HBGameState)
 	{
 		HBGameState->OnRep_GamePhase();
+	}
+	else
+	{
+		return;
 	}
 }
 
@@ -293,6 +330,7 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 	HBGameState->RemainingTime = Duration;
 
 	World->GetTimerManager().ClearTimer(CountdownTimerHandle);
+	World->GetTimerManager().ClearTimer(PhaseTimerHandle);
 	StartCountdown(Duration);
 	HBGameState->OnRep_RemainingTime();
 

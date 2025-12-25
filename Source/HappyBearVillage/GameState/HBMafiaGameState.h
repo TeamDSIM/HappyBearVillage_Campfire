@@ -35,6 +35,15 @@ enum class EGamePhase : uint8
 	End UMETA(DisplayName = "End"),
 };
 
+FORCEINLINE EGamePhase operator+(EGamePhase Phase, int32 Offset)
+{
+	const int32 Value = static_cast<int32>(Phase);
+	const int32 Max   = static_cast<int32>(EGamePhase::Lobby);
+
+	int32 Next = (Value + Offset) % Max;
+	return static_cast<EGamePhase>(Next);
+}
+
 USTRUCT(BlueprintType)
 struct FDamageRankEntry
 {
