@@ -11,7 +11,7 @@
 
 FHBMapData UHBMapDataGenerator::GenerateMapData(FHBNoiseSettings Settings)
 {
-	PerlinNoise = NewObject<UHBPerlinNoise>();
+	UHBPerlinNoise* PerlinNoise = NewObject<UHBPerlinNoise>();
 	PerlinNoise->GeneratePerlinNoise(Settings);
 	
 	GenerateFieldData(PerlinNoise);
@@ -247,7 +247,6 @@ FHBMapData UHBMapDataGenerator::GenerateFieldData(UHBPerlinNoise* InPerlinNoise)
 	}
 
 	MapData.Resolution = { Width, Height };
-	MapData.Seed = InPerlinNoise->GetNoiseSettings().Seed;
 	MapData.Map.SetNum(Height);
 	for (int32 i=0; i<Height; ++i)
 	{
