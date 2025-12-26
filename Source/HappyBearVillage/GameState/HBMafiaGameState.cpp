@@ -37,11 +37,6 @@ void AHBMafiaGameState::OnRep_TopDamagePlayers()
 {
 	for (int i = 0; i < TopDamagePlayers.Num(); ++i)
 	{
-		HB_LOG(LogHY, Log, TEXT("ID : %d, RankEntryDamage : %.0f, PlayerStateDamage : %.0f"),
-			TopDamagePlayers[i].PlayerState->GetUserID(),
-			TopDamagePlayers[i].TotalTakenDamaged,
-			TopDamagePlayers[i].PlayerState->GetTotalTakenDamaged()
-			);
 		OnTopDamagePlayersChanged.Broadcast(TopDamagePlayers[i].PlayerState, TopDamagePlayers[i], i);
 	}
 }

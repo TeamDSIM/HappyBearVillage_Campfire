@@ -44,6 +44,7 @@ void UHBGameVoteSubsystem::CalculateTop3DamagePlayers()
 		AHBPlayerState* HBPlayerState = Cast<AHBPlayerState>(Players[i]);
 		if (HBPlayerState)
 		{
+			UE_LOG(LogTemp, Log, TEXT("Player%d : %.0f"), HBPlayerState->GetPlayerId(), HBPlayerState->GetTotalTakenDamaged());
 			RankList.Add({HBPlayerState, HBPlayerState->GetTotalTakenDamaged()});
 		}
 	}

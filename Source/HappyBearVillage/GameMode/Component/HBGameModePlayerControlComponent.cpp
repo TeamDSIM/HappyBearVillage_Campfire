@@ -10,6 +10,7 @@
 #include "GameFramework/PlayerState.h"
 #include "GameState/HBMafiaGameState.h"
 #include "PlayerState/HBPlayerState.h"
+#include "Subsystem/HBGameVoteSubsystem.h"
 
 // Sets default values for this component's properties
 UHBGameModePlayerControlComponent::UHBGameModePlayerControlComponent()
@@ -24,6 +25,8 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 	// 플레이어 목록 불러오기
 	TArray<APlayerState*> Players = InGameState->PlayerArray;
 
+	// 플레이어에게 나눠줄 직업 리스트 초기화
+	PlayerJobs.Empty();
 	InitPlayersJobList(Players.Num());
 	Algo::RandomShuffle(PlayerJobs);
 
@@ -135,9 +138,20 @@ void UHBGameModePlayerControlComponent::ResetPlayersTotalTakenDamage(AHBMafiaGam
 				{					
 					// 누적 데미지 초기화
 					PlayerStatComponent->ResetTotalTakenDamage();
+					AHBPlayerState* HBPlayerState = Cast<AHBPlayerState>(Players[i]);
+					if (HBPlayerState)
+					{
+						HBPlayerState->SyncTotalTakenDamagedFromPlayerStat(PlayerStatComponent->GetTotalTakenDamage());
+					}
 				}
 			}
 		}
+	}
+
+	UHBGameVoteSubsystem* VoteSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UHBGameVoteSubsystem>();
+	if (VoteSubsystem)
+	{
+		VoteSubsystem->NotifyDamageChanged();
 	}
 }
 

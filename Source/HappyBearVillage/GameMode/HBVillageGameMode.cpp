@@ -15,6 +15,7 @@
 #include "GameState/HBMafiaGameState.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "PlayerState/HBPlayerState.h"
+#include "Subsystem/HBGameVoteSubsystem.h"
 
 // HasAuthority 는 액터에서만 사용 가능
 // 서버 판별을 위한 구문을 함수로 선언
@@ -305,6 +306,7 @@ void AHBVillageGameMode::StartNight()
 	}
 
 	HBGameState->OnRep_GamePhase();
+	
 }
 
 

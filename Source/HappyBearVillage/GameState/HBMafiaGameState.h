@@ -92,7 +92,6 @@ public:
 	// Top3 데미지 유저 출력용
 	UPROPERTY(ReplicatedUsing = OnRep_TopDamagePlayers)
 	TArray<FDamageRankEntry> TopDamagePlayers;
-	
 
 	UFUNCTION()
 	void OnRep_TopDamagePlayers();
@@ -118,6 +117,5 @@ protected:
 	// PlayerArray가 변하는 시점(추가/삭제)에 엔진이 호출
 	virtual void AddPlayerState(APlayerState* PlayerState) override;
 	virtual void RemovePlayerState(APlayerState* PlayerState) override;
-
 
 };
