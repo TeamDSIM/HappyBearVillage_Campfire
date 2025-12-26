@@ -79,4 +79,19 @@ public:
 			Job = static_cast<EJobType>(JobNum);
 		}
 	}
+
+	void InitRole(EJobType InJob)
+	{
+		int32 JobNum = static_cast<int32>(Job);
+		Job = InJob;
+
+		if (JobNum >= static_cast<int32>(ERoleType::MAFIA) && JobNum < static_cast<int32>(ERoleType::CITIZEN))
+		{
+			Role = ERoleType::MAFIA;
+		}
+		else if(JobNum >= static_cast<int32>(ERoleType::CITIZEN) && JobNum < static_cast<int32>(ERoleType::END))
+		{
+			Role = ERoleType::CITIZEN;
+		}
+	}
 };

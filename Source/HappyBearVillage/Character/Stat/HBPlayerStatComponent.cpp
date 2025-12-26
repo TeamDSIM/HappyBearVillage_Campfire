@@ -69,6 +69,15 @@ void UHBPlayerStatComponent::InitCharacterRole()
 	OnRep_CharacterRole();
 }
 
+void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
+{
+	// 랜덤 직업 설정
+	CharacterRole.InitRole(InJob);
+
+	// 바뀐 직업 서버 반영
+	OnRep_CharacterRole();
+}
+
 void UHBPlayerStatComponent::ResetCharacterRole()
 {
 	CharacterRole.Job = EJobType::CITIZEN;

@@ -48,6 +48,7 @@ public:
 
 	// 캐릭터 직업 부여
 	void InitCharacterRole();
+	void InitCharacterRole(EJobType Job);
 
 	// 캐릭터 직업 초기화
 	void ResetCharacterRole();

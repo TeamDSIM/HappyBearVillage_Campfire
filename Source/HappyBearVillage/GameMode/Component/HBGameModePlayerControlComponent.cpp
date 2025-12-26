@@ -4,6 +4,7 @@
 #include "GameMode/Component/HBGameModePlayerControlComponent.h"
 
 #include "HappyBearVillage.h"
+#include "Algo/RandomShuffle.h"
 #include "Character/HBCharacterPlayer.h"
 #include "Character/Stat/HBPlayerStatComponent.h"
 #include "GameFramework/PlayerState.h"
@@ -23,6 +24,9 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 	// 플레이어 목록 불러오기
 	TArray<APlayerState*> Players = InGameState->PlayerArray;
 
+	InitPlayersJobList(Players.Num());
+	Algo::RandomShuffle(PlayerJobs);
+
 	// 플레이어 목록을 돌며 직업 배정
 	for (int32 i = 0; i < Players.Num(); ++i)
 	{
@@ -38,7 +42,7 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 				{
 					UE_LOG(LogTemp, Log, TEXT("Call Server Start Game / InitCharacterRole"));
 					// 플레이어의 직업 설정
-					PlayerStatComponent->InitCharacterRole();
+					PlayerStatComponent->InitCharacterRole(PlayerJobs[i]);
 
 					// 누적 데미지 초기화
 					PlayerStatComponent->ResetTotalTakenDamage();
@@ -133,6 +137,27 @@ void UHBGameModePlayerControlComponent::ResetPlayersTotalTakenDamage(AHBMafiaGam
 					PlayerStatComponent->ResetTotalTakenDamage();
 				}
 			}
+		}
+	}
+}
+
+void UHBGameModePlayerControlComponent::InitPlayersJobList(int PlayerNum)
+{
+	// 배치되어야할 마피아 수
+	// 8명이 최대일때 5명까지는 1명, 그이상은 2명
+	int MafiaNum = PlayerNum - 4 <= 1 ? 1 : PlayerNum / 4 + 1;
+
+	// @PHYTodo : 직업 배치 임시로 진행
+	// 일단 현재 마피아와 시민만 배치
+	for (int i = 0; i < PlayerNum; ++i)
+	{
+		if (i < MafiaNum)
+		{
+			PlayerJobs.Add(EJobType::MAFIA);
+		}
+		else
+		{
+			PlayerJobs.Add(EJobType::CITIZEN);
 		}
 	}
 }

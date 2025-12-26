@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Character/Stat/HBCharacterRole.h"
 #include "Components/ActorComponent.h"
 #include "HBGameModePlayerControlComponent.generated.h"
 
@@ -33,5 +34,8 @@ protected:
 	
 
 private:
+private:
+	void InitPlayersJobList(int PlayerNum);
 	
+	TArray<EJobType> PlayerJobs;
 };
