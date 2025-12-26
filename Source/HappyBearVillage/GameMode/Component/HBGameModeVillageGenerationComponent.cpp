@@ -6,7 +6,6 @@
 #include "GameState/HBMafiaGameState.h"
 #include "ProceduralGeneration/Map/HBMapGenerator.h"
 #include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
-#include "ProceduralGeneration/MapData/HBMapSyncInfo.h"
 #include "ProceduralGeneration/Noise/HBPerlinNoise.h"
 #include "Utils/HBUtils.h"
 

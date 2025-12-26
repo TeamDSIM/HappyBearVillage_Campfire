@@ -6,7 +6,6 @@
 #include "Character/HBCharacterPlayer.h"
 #include "GameFramework/GameStateBase.h"
 #include "ProceduralGeneration/MapData/HBMapData.h"
-#include "ProceduralGeneration/MapData/HBMapSyncInfo.h"
 #include "ProceduralGeneration/Sync/HBVillageGenerationSyncData.h"
 #include "HBMafiaGameState.generated.h"
 
