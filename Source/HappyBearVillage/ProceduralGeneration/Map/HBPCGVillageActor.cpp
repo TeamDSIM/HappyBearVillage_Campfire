@@ -46,35 +46,18 @@ void AHBPCGVillageActor::InitializePCGInput(UTexture2D* Texture2D)
 	}
 }
 
+void AHBPCGVillageActor::SetPCGBounds()
+{
+	SetActorLocation(FVector(12600.f, 12600.f, 0.f));
+	Bounds->SetBoxExtent(FVector(12600.f, 12600.f, 1000.f));
+}
+
 void AHBPCGVillageActor::Generate()
 {
-	PCG->Cleanup();
 	PCG->Generate();
 }
 
 void AHBPCGVillageActor::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UHBPerlinNoise* PerlinNoise = NewObject<UHBPerlinNoise>();
-	UHBMapDataGenerator* MapDataGenerator = NewObject<UHBMapDataGenerator>();
-	UHBMapGenerator* MapGenerator = NewObject<UHBMapGenerator>();
-	
-	FHBNoiseSettings NoiseSettings;
-	NoiseSettings.Resolution = {64, 64};
-	NoiseSettings.GridSize = {4, 4};
-	NoiseSettings.Seed = 0.125;
-	
-	PerlinNoise->GeneratePerlinNoise(NoiseSettings);
-
-	FHBMapData MapData = MapDataGenerator->GenerateMapData(NoiseSettings);
-
-	MapGenerator->GenerateField(MapData, GetWorld());
-	MapGenerator->GenerateHouse(MapData, GetWorld());
-	MapGenerator->GenerateForestSpline(MapData, GetWorld());
-	
-	UTexture2D* MapTexture = MapDataGenerator->GenerateForestTexture2D();
-
-	InitializePCGInput(MapTexture);
-	MapGenerator->GenerateVillage(MapData, GetWorld());
 }

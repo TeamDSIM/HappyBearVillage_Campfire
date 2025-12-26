@@ -8,13 +8,20 @@ public:
 	HBUtils() = delete;
 	~HBUtils() = delete;
 
+	static void InitRandomSeed(int32 InSeed);
+	static float GetRandomFloatFromStream(float Min, float Max);
+	static int32 GetRandomInt32FromStream(int32 Min, int32 Max);
+
 	template<typename T>
 	static void Shuffle(TArray<T>& Target)
 	{
 		for (int i=Target.Num() - 1; i>0; --i)
 		{
-			int RandomIndex = FMath::RandHelper(i);		// ToDo : 동기화 과정에 대체 필요
+			int RandomIndex = RandomStream.RandRange(0, i);
 			Swap(Target[i], Target[RandomIndex]);
 		}
 	}
+
+private:
+	static FRandomStream RandomStream;
 };

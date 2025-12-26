@@ -64,5 +64,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UHBGameModePlayerControlComponent> GameModePlayerControlComponent;
 	
-	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UHBGameModeVillageGenerationComponent> GameModeVillageGenerationComponent;
 };

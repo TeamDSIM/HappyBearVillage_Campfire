@@ -7,6 +7,10 @@
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 #include "PlayerState/HBPlayerState.h"
+#include "ProceduralGeneration/Map/HBMapGenerator.h"
+#include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
+#include "ProceduralGeneration/Noise/HBPerlinNoise.h"
+#include "Utils/HBUtils.h"
 
 AHBMafiaGameState::AHBMafiaGameState()
 {
@@ -58,6 +62,29 @@ void AHBMafiaGameState::OnRep_RemainingTime()
 bool AHBMafiaGameState::IsNight() const
 {
 	return CurrentPhase == EGamePhase::Night;
+}
+
+void AHBMafiaGameState::OnRep_VillageGenerationSyncData()
+{
+	HBUtils::InitRandomSeed(VillageGenerationSyncData.RandomStreamSeed);
+
+	UHBPerlinNoise* PerlinNoise = NewObject<UHBPerlinNoise>();
+	UHBMapDataGenerator* MapDataGenerator = NewObject<UHBMapDataGenerator>();
+	UHBMapGenerator* MapGenerator = NewObject<UHBMapGenerator>();
+
+	PerlinNoise->GeneratePerlinNoise(VillageGenerationSyncData.NoiseSettings);
+	MapDataGenerator->GenerateFieldData(PerlinNoise);
+	MapDataGenerator->GenerateHouseData(8);
+	MapDataGenerator->GenerateForestData();
+	MapDataGenerator->GenerateForestTexture2D();
+	MapDataGenerator->UpdateMap();
+
+	FHBMapData MapData = MapDataGenerator->GetMapData();
+
+	MapGenerator->GenerateField(MapData, GetWorld());
+	MapGenerator->GenerateHouse(MapData, GetWorld());
+	MapGenerator->GenerateForestSpline(MapData, GetWorld());
+	MapGenerator->GenerateVillage(MapData, GetWorld());
 }
 
 //LobbyWidget ���� �ڵ��Դϴ�.
