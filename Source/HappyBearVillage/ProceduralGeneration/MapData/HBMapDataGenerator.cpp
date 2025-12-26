@@ -283,10 +283,10 @@ FHBMapData UHBMapDataGenerator::GenerateHouseData(int32 HouseCount)
 	for (int i=1; i<=AreaCount; ++i)
 	{
 		CandidateAreas.Add(i);
-		HBUtils::Shuffle(CandidateNodes[i]);
+		HBUtils::ShuffleWithStream(CandidateNodes[i]);
 	}
 	
-	HBUtils::Shuffle(CandidateAreas);
+	HBUtils::ShuffleWithStream(CandidateAreas);
 	int32 AreaIndex = 0;
 
 	for (int i=0; i<HouseCount; ++i)

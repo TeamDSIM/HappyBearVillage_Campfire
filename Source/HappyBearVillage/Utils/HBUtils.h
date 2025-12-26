@@ -13,7 +13,7 @@ public:
 	static int32 GetRandomInt32FromStream(int32 Min, int32 Max);
 
 	template<typename T>
-	static void Shuffle(TArray<T>& Target)
+	static void ShuffleWithStream(TArray<T>& Target)
 	{
 		for (int i=Target.Num() - 1; i>0; --i)
 		{
@@ -21,6 +21,17 @@ public:
 			Swap(Target[i], Target[RandomIndex]);
 		}
 	}
+
+	template<typename T>
+	static void Shuffle(TArray<T>& Target)
+	{
+		for (int i=Target.Num() - 1; i>0; --i)
+		{
+			int RandomIndex = FMath::RandRange(0, i);
+			Swap(Target[i], Target[RandomIndex]);
+		}
+	}
+	
 
 private:
 	static FRandomStream RandomStream;
