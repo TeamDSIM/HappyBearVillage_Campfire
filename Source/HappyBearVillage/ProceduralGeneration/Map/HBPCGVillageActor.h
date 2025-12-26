@@ -15,6 +15,7 @@ public:
 	AHBPCGVillageActor();
 
 	void InitializePCGInput(UTexture2D* Texture2D);
+	void SetPCGBounds();
 	void Generate();
 
 protected:
