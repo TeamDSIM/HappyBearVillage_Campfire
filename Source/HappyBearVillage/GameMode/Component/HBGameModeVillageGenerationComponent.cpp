@@ -3,27 +3,24 @@
 
 #include "HBGameModeVillageGenerationComponent.h"
 
+#include "HappyBearVillage.h"
+#include "GameFramework/PlayerState.h"
 #include "GameState/HBMafiaGameState.h"
 #include "ProceduralGeneration/Map/HBMapGenerator.h"
 #include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
 #include "ProceduralGeneration/Noise/HBPerlinNoise.h"
 #include "Utils/HBUtils.h"
 
-UHBGameModeVillageGenerationComponent::UHBGameModeVillageGenerationComponent()
-{
+UHBGameModeVillageGenerationComponent::UHBGameModeVillageGenerationComponent() { }
 
-}
-
-void UHBGameModeVillageGenerationComponent::SyncVillage(int32 PlayerCount)
+void UHBGameModeVillageGenerationComponent::SyncVillageGenerationData(AHBMafiaGameState* InGameState)
 {
-	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
-	if (!HBGameState)
+	if (!InGameState)
 	{
 		return;
 	}
-	
+
 	int32 RandomStreamSeed = FMath::RandRange(0, 10000);
-	HBUtils::InitRandomSeed(RandomStreamSeed);
 
 	FHBNoiseSettings NoiseSettings;
 	NoiseSettings.Resolution = {64, 64};
@@ -34,6 +31,6 @@ void UHBGameModeVillageGenerationComponent::SyncVillage(int32 PlayerCount)
 	VillageGenerationSyncData.RandomStreamSeed = RandomStreamSeed;
 	VillageGenerationSyncData.NoiseSettings = NoiseSettings;
 
-	HBGameState->VillageGenerationSyncData = VillageGenerationSyncData;
-	HBGameState->OnRep_VillageGenerationSyncData();
+	InGameState->VillageGenerationData = VillageGenerationSyncData;
+	InGameState->OnRep_VillageGenerationData();
 }

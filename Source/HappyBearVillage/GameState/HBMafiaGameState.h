@@ -6,7 +6,7 @@
 #include "Character/HBCharacterPlayer.h"
 #include "GameFramework/GameStateBase.h"
 #include "ProceduralGeneration/MapData/HBMapData.h"
-#include "ProceduralGeneration/Sync/HBVillageGenerationSyncData.h"
+#include "ProceduralGeneration/Sync/HBVillageGenerationData.h"
 #include "HBMafiaGameState.generated.h"
 
 /**
@@ -99,7 +99,7 @@ public:
 	FOnLobbyPlayersChanged OnLobbyPlayersChanged;
 
 	UFUNCTION()
-	void OnRep_VillageGenerationSyncData();
+	void OnRep_VillageGenerationData();
 
 protected:
 	// PlayerArray가 변하는 시점(추가/삭제)에 엔진이 호출
@@ -107,6 +107,6 @@ protected:
 	virtual void RemovePlayerState(APlayerState* PlayerState) override;
 
 public:
-	UPROPERTY(ReplicatedUsing = OnRep_VillageGenerationSyncData)
-	FHBVillageGenerationSyncData VillageGenerationSyncData;
+	UPROPERTY(ReplicatedUsing = OnRep_VillageGenerationData)
+	FHBVillageGenerationData VillageGenerationData;
 };

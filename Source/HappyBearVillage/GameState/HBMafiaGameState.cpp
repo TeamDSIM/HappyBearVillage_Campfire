@@ -64,15 +64,15 @@ bool AHBMafiaGameState::IsNight() const
 	return CurrentPhase == EGamePhase::Night;
 }
 
-void AHBMafiaGameState::OnRep_VillageGenerationSyncData()
+void AHBMafiaGameState::OnRep_VillageGenerationData()
 {
-	HBUtils::InitRandomSeed(VillageGenerationSyncData.RandomStreamSeed);
+	HBUtils::InitRandomSeed(VillageGenerationData.RandomStreamSeed);
 
 	UHBPerlinNoise* PerlinNoise = NewObject<UHBPerlinNoise>();
 	UHBMapDataGenerator* MapDataGenerator = NewObject<UHBMapDataGenerator>();
 	UHBMapGenerator* MapGenerator = NewObject<UHBMapGenerator>();
 
-	PerlinNoise->GeneratePerlinNoise(VillageGenerationSyncData.NoiseSettings);
+	PerlinNoise->GeneratePerlinNoise(VillageGenerationData.NoiseSettings);
 	MapDataGenerator->GenerateFieldData(PerlinNoise);
 	MapDataGenerator->GenerateHouseData(8);
 	MapDataGenerator->GenerateForestData();

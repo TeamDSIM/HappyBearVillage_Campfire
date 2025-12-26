@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ProceduralGeneration/Sync/HBVillageGenerationData.h"
 #include "HBGameModeVillageGenerationComponent.generated.h"
 
 
@@ -14,6 +15,6 @@ class HAPPYBEARVILLAGE_API UHBGameModeVillageGenerationComponent : public UActor
 
 public:
 	UHBGameModeVillageGenerationComponent();
-
-	void SyncVillage(int32 PlayerCount);
+	
+	void SyncVillageGenerationData(AHBMafiaGameState* InGameState);
 };

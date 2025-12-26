@@ -83,7 +83,7 @@ void AHBVillageGameMode::StartGame()
 	GameModePlayerControlComponent->InitPlayers(HBGameState);
 
 	// 맵 생성 데이터 동기화
-	GameModeVillageGenerationComponent->SyncVillage(HBGameState->PlayerArray.Num());
+	GameModeVillageGenerationComponent->SyncVillageGenerationData();
 	
 	// @PHYTODO : 페이즈 시작
 	StartDay();
