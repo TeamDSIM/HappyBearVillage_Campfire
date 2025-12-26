@@ -270,6 +270,31 @@ void AHBVillageGameMode::StartVote()
 	if (HBGameState)
 	{
 		HBGameState->OnRep_GamePhase();
+
+		// 투표 대상 불러와서 설정
+		if (HBGameState->TopDamagePlayers[0].TotalTakenDamaged == 0)
+		{
+			
+		}
+		// 데미지가 0이라면
+		else
+		{
+			// 컨트롤러 -> CharacterPlayer -> StatComponent 에 접근
+			AController* PlayerController = HBGameState->TopDamagePlayers[0].PlayerState->GetPlayerController();
+			if (PlayerController)
+			{
+				AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
+				if (Character)
+				{
+					UHBPlayerStatComponent* PlayerStatComponent = Character->GetStat();
+					if (PlayerStatComponent)
+					{					
+						PlayerStatComponent->SetIsVoteTarget(true);
+						HB_LOG(LogTemp, Log, TEXT("Player %d is Target"), HBGameState->TopDamagePlayers[0].PlayerState->GetUserID());
+					}
+				}
+			}
+		}
 	}
 	else
 	{

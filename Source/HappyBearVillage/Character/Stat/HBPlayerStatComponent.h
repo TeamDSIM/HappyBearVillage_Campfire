@@ -39,6 +39,9 @@ public:
 	FORCEINLINE bool GetIsVoteTarget() const { return bIsVoteTarget; }
 	FORCEINLINE bool GetIsAlive() const { return bIsAlive; }
 
+	FORCEINLINE void SetIsVoteTarget(bool InIsVoteTarget) { bIsVoteTarget = InIsVoteTarget; }
+	FORCEINLINE void SetIsAlive(bool InIsAlive) { bIsAlive = InIsAlive; }
+
 	float ApplyDamage(float InDamageAmount);
 
 	void ResetTotalTakenDamage();
@@ -53,6 +56,9 @@ public:
 	// 캐릭터 직업 초기화
 	void ResetCharacterRole();
 
+	// 투표 관련 섹션 =====================================================================
+	void ApplyVote(AActor* InActor);
+
 protected:
 	// 캐릭터 기본 스탯
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
@@ -62,16 +68,23 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CharacterRole, Transient, VisibleInstanceOnly, Category = Stat)
 	FHBCharacterRole CharacterRole;
 
-	// 투표 시 캐릭터가 받은 데미지
+	// 난투 시 캐릭터가 받은 데미지
 	UPROPERTY(ReplicatedUsing = OnRep_TotalTakenDamage, Transient, VisibleInstanceOnly, Category = Stat)
 	float TotalTakenDamage = 0.f;
 
+	// 투표 시 캐릭터가 받은 표
+	UPROPERTY(ReplicatedUsing = OnRep_VoteNum, Transient, VisibleInstanceOnly, Category = Stat)
+	int32 VoteNum = 0;
+
+	UPROPERTY()
+	TArray<AActor*> VotedPlayers;
+
 	// 캐릭터 축출 대상 여부
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
+	UPROPERTY(Replicated, Transient, VisibleInstanceOnly, Category = Stat)
 	uint8 bIsVoteTarget : 1;
 
 	// 캐릭터 생존 여부
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
+	UPROPERTY(Replicated, Transient, VisibleInstanceOnly, Category = Stat)
 	uint8 bIsAlive : 1;
 
 protected:
@@ -82,4 +95,11 @@ protected:
 
 	UFUNCTION()
 	void OnRep_CharacterRole();
+
+	UFUNCTION()
+	void OnRep_VoteNum();
+
+private:
+	// 투표한 인원 수 초기화
+	void ClearVotedInfo();
 };

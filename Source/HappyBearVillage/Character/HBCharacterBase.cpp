@@ -3,6 +3,7 @@
 
 #include "Character/HBCharacterBase.h"
 
+#include "GameState/HBMafiaGameState.h"
 #include "Net/UnrealNetwork.h"
 #include "Stat/HBPlayerStatComponent.h"
 #include "UI/HBPlayerRoleWidget.h"
@@ -184,7 +185,22 @@ float AHBCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	Stat->ApplyDamage(DamageAmount);
+	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
+	if (!HBGameState)
+	{
+		return -1;
+	}
+
+	// 데미지 받는 상황이 투표 상황이라면
+	if (HBGameState->CurrentPhase == EGamePhase::Vote)
+	{
+		Stat->ApplyVote(DamageCauser);
+	}
+
+	else
+	{
+		Stat->ApplyDamage(DamageAmount);
+	}
 	
 	return DamageAmount;
 }

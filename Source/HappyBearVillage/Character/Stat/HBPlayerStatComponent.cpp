@@ -3,6 +3,9 @@
 
 #include "Character/Stat/HBPlayerStatComponent.h"
 
+#include "HappyBearVillage.h"
+#include "Editor/WidgetCompilerLog.h"
+#include "GameState/HBMafiaGameState.h"
 #include "Net/UnrealNetwork.h"
 #include "PlayerState/HBPlayerState.h"
 #include "Subsystem/HBGameVoteSubsystem.h"
@@ -11,6 +14,8 @@
 UHBPlayerStatComponent::UHBPlayerStatComponent()
 {
 	bWantsInitializeComponent = true;
+	bIsVoteTarget = false;
+	bIsAlive = true;
 	
 	SetIsReplicatedByDefault(true);
 }
@@ -49,8 +54,9 @@ float UHBPlayerStatComponent::ApplyDamage(float InDamageAmount)
 			}
 		}
 	}
-	
+
 	return TotalTakenDamage;
+	
 }
 
 void UHBPlayerStatComponent::ResetTotalTakenDamage()
@@ -86,12 +92,35 @@ void UHBPlayerStatComponent::ResetCharacterRole()
 	OnRep_CharacterRole();
 }
 
+void UHBPlayerStatComponent::ApplyVote(AActor* InActor)
+{
+	// 투표 대상이 아니라면 반환
+	if (!bIsVoteTarget)
+	{
+		return;
+	}
+	
+	// 때린 플레이어가 이미 투표한 상태라면 반환
+	if (VotedPlayers.Contains(InActor))
+	{
+		return;
+	}
+
+	VotedPlayers.Add(InActor);
+	VoteNum += 1;
+	
+	HB_SUBLOG(LogTemp, Log, TEXT("VoteNum : %d"), VoteNum);
+}
+
 void UHBPlayerStatComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UHBPlayerStatComponent, TotalTakenDamage);
 	DOREPLIFETIME(UHBPlayerStatComponent, CharacterRole);
+	DOREPLIFETIME(UHBPlayerStatComponent, VoteNum);
+	DOREPLIFETIME(UHBPlayerStatComponent, bIsVoteTarget);
+	DOREPLIFETIME(UHBPlayerStatComponent, bIsAlive);
 }
 
 void UHBPlayerStatComponent::OnRep_TotalTakenDamage()
@@ -105,4 +134,14 @@ void UHBPlayerStatComponent::OnRep_CharacterRole()
 	OnPlayerRoleChanged.Broadcast(CharacterRole.Role);
 	OnPlayerJobChanged.Broadcast(CharacterRole.Job);
 	
+}
+
+void UHBPlayerStatComponent::OnRep_VoteNum()
+{
+}
+
+void UHBPlayerStatComponent::ClearVotedInfo()
+{
+	VotedPlayers.Empty();
+	VoteNum = 0;
 }

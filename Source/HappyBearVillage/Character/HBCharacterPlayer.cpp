@@ -261,7 +261,7 @@ void AHBCharacterPlayer::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 }
 
 void AHBCharacterPlayer::Move(const FInputActionValue& Value)
-{
+{	
 	UWorld* World = Cast<UWorld>(GetWorld());
 	if (!World)
 	{
@@ -276,6 +276,11 @@ void AHBCharacterPlayer::Move(const FInputActionValue& Value)
 
 	// 현재 Phase 가 Day(광장 이동 및 초기화 단계) 또는 Discussion(토론 단계) 이면 이동 방지
 	if (GameState->CurrentPhase == EGamePhase::Day || GameState->CurrentPhase == EGamePhase::Discussion)
+	{
+		return;
+	}
+
+	if (Stat->GetIsVoteTarget())
 	{
 		return;
 	}
@@ -296,6 +301,11 @@ void AHBCharacterPlayer::Attack()
 {
 	// 무기를 끼고있지 않으면 반환
 	if (!bWeaponEquipped)
+	{
+		return;
+	}
+	
+	if (Stat->GetIsVoteTarget())
 	{
 		return;
 	}
@@ -345,6 +355,10 @@ void AHBCharacterPlayer::Interaction()
 
 	// 현재 Phase 가 난투 Phase 가 아니면 상호작용 하지 못하도록 방지
 	if (GameState->CurrentPhase != EGamePhase::Fight && GameState->CurrentPhase != EGamePhase::Lobby)
+	{
+		return;
+	}
+	if (Stat->GetIsVoteTarget())
 	{
 		return;
 	}
