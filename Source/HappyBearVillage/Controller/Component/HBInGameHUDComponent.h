@@ -27,6 +27,4 @@ private:
 	
 	UPROPERTY()
 	TObjectPtr<UHBUserHUDWidget> InGameHUD;
-	
-		
 };

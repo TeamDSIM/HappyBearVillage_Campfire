@@ -6,6 +6,7 @@
 #include "HBFightHUD.h"
 #include "HBPhaseHUD.h"
 #include "Interface/HBCharacterHUDInterface.h"
+#include "UI/HBNightStaminaWidget.h"
 
 void UHBUserHUDWidget::NativeConstruct()
 {

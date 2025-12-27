@@ -166,7 +166,23 @@ void UHBGameFlowSubsystem::StartDay()
 	{
 		GameState->OnRep_GamePhase();
 	}
-	
+
+	// 밤이 끝나고 낮이 시작될 때 밤 종료 규칙 처리 (스태미나 회복 규칙 등)
+	// 플레이어 목록을 돌며 밤 종료 후 처리를 호출
+	if (GameState)
+	{
+		for (APlayerState* PS : GameState->PlayerArray)
+		{
+			if (!PS) continue;
+			AController* PlayerController = PS->GetPlayerController();
+			if (!PlayerController) continue;
+			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
+			if (Character)
+			{
+				Character->ProcessNightEnd();
+			}
+		}
+	}
 	UnEquippedAllPlayer(GameState);
 }
 

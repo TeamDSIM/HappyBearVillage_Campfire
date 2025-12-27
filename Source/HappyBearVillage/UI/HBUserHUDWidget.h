@@ -9,6 +9,9 @@
 
 class UHBUserWidget;
 class AHBCharacterPlayer;
+// Forward declaration for the C++ night stamina widget
+class UHBNightStaminaWidget;
+
 /**
  * 
  */
