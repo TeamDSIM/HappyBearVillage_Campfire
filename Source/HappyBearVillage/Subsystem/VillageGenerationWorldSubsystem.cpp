@@ -20,6 +20,7 @@ void UVillageGenerationWorldSubsystem::GenerateVillage(FHBVillageGenerationData 
 
 	MapDataGenerator->GenerateFieldData(PerlinNoise);
 	MapDataGenerator->GenerateHouseData(InVillageGenerationData.HouseColorList.Num());
+	MapDataGenerator->GenerateHouseColorData(InVillageGenerationData.HouseColorList);
 	MapDataGenerator->GenerateForestData();
 	MapDataGenerator->GenerateForestTexture2D();
 	MapDataGenerator->UpdateMap();

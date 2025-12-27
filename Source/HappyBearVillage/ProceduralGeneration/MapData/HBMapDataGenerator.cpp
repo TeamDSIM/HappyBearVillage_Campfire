@@ -339,6 +339,44 @@ FHBMapData UHBMapDataGenerator::GenerateHouseData(int32 HouseCount)
 	return MapData;
 }
 
+FHBMapData UHBMapDataGenerator::GenerateHouseColorData(TArray<FLinearColor> HouseColorList)
+{
+	for (int32 Row=0; Row<Height; ++Row)
+	{
+		TArray<FLinearColor> RowData;
+		
+		for (int32 Col=0; Col<Width; ++Col)
+		{
+			RowData.Add(FLinearColor(0, 0, 0, 0));			
+		}
+
+		MapData.HouseColorLayer.Add(RowData);
+	}
+
+	HBUtils::ShuffleWithStream(HouseColorList);
+	int32 ColorIndex = 0;
+	
+	for (int32 Row=0; Row<Height; ++Row)
+	{
+		for (int32 Col=0; Col<Width; ++Col)
+		{
+			if (MapData.Map[Row][Col] != 'H') continue;
+
+			for (int32 i=0; i<4; ++i)
+			{
+				for (int32 j=0; j<4; ++j)
+				{
+					MapData.HouseColorLayer[Row + i][Col + j] = HouseColorList[ColorIndex];
+				}
+			}
+
+			++ColorIndex;
+		}
+	}
+	
+	return MapData;
+}
+
 FHBMapData UHBMapDataGenerator::GenerateForestData()
 {
 	ForestBorderGridIndices.Add(TArray<FVector>());

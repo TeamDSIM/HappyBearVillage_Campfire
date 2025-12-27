@@ -36,7 +36,7 @@ UHBMapGenerator::UHBMapGenerator()
 
 void UHBMapGenerator::GenerateVillage(FHBMapData InMapData, UWorld* InWorld)
 {
-	if (InMapData.ForestAsTexture2D.IsValid())
+	if (InMapData.ForestAsTexture2D)
 	{
 		AHBPCGVillageActor* PCGActor = InWorld->SpawnActor<AHBPCGVillageActor>(AHBPCGVillageActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
 		PCGActor->InitializePCGInput(InMapData.ForestAsTexture2D.Get());
