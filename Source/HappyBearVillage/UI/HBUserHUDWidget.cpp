@@ -28,6 +28,16 @@ void UHBUserHUDWidget::NativeConstruct()
 
 void UHBUserHUDWidget::UpdatePhase(EGamePhase NewGamePhase)
 {
+	
+	if (NewGamePhase == EGamePhase::Fight)
+	{
+		FightHUDWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+	else if (NewGamePhase != EGamePhase::Fight && NewGamePhase != EGamePhase::Vote)
+	{
+		FightHUDWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	
 	PhaseHUDWidget->UpdateCurrentPhase(NewGamePhase);
 }
 
