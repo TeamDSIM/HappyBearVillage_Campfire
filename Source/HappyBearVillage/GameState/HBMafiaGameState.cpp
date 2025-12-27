@@ -10,6 +10,7 @@
 #include "ProceduralGeneration/Map/HBMapGenerator.h"
 #include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
 #include "ProceduralGeneration/Noise/HBPerlinNoise.h"
+#include "Subsystem/VillageGenerationWorldSubsystem.h"
 #include "Utils/HBUtils.h"
 
 AHBMafiaGameState::AHBMafiaGameState()
@@ -66,25 +67,11 @@ bool AHBMafiaGameState::IsNight() const
 
 void AHBMafiaGameState::OnRep_VillageGenerationData()
 {
-	HBUtils::InitRandomSeed(VillageGenerationData.RandomStreamSeed);
-
-	UHBPerlinNoise* PerlinNoise = NewObject<UHBPerlinNoise>();
-	UHBMapDataGenerator* MapDataGenerator = NewObject<UHBMapDataGenerator>();
-	UHBMapGenerator* MapGenerator = NewObject<UHBMapGenerator>();
-
-	PerlinNoise->GeneratePerlinNoise(VillageGenerationData.NoiseSettings);
-	MapDataGenerator->GenerateFieldData(PerlinNoise);
-	MapDataGenerator->GenerateHouseData(8);
-	MapDataGenerator->GenerateForestData();
-	MapDataGenerator->GenerateForestTexture2D();
-	MapDataGenerator->UpdateMap();
-
-	FHBMapData MapData = MapDataGenerator->GetMapData();
-
-	MapGenerator->GenerateField(MapData, GetWorld());
-	MapGenerator->GenerateHouse(MapData, GetWorld());
-	MapGenerator->GenerateForestSpline(MapData, GetWorld());
-	MapGenerator->GenerateVillage(MapData, GetWorld());
+	UVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UVillageGenerationWorldSubsystem>();
+	if (!VillageGenerationSystem) return;
+	if (VillageGenerationSystem->IsGenerated()) return;
+	
+	VillageGenerationSystem->GenerateVillage(VillageGenerationData);
 }
 
 //LobbyWidget ���� �ڵ��Դϴ�.
