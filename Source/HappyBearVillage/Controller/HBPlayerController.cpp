@@ -175,6 +175,7 @@ void AHBPlayerController::ToggleFriendInvite()
 	UE_LOG(LogTemp, Log, TEXT("ToggleFriendInvite Called"));
 
 	if (!IsLocalController()) return;
+	//로비 위젯이 아니면 이 UI 호출 X
 	if (!LobbyWidget) return;
 
 	bFriendInviteOpen = !bFriendInviteOpen;
