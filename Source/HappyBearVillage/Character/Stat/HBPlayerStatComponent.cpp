@@ -5,6 +5,7 @@
 
 #include "HappyBearVillage.h"
 #include "Editor/WidgetCompilerLog.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameState/HBMafiaGameState.h"
 #include "Net/UnrealNetwork.h"
 #include "PlayerState/HBPlayerState.h"
@@ -138,6 +139,21 @@ void UHBPlayerStatComponent::OnRep_CharacterRole()
 
 void UHBPlayerStatComponent::OnRep_VoteNum()
 {
+}
+
+void UHBPlayerStatComponent::OnRep_IsAlive()
+{
+	AHBCharacterPlayer* CharacterPlayer = Cast<AHBCharacterPlayer>(GetOwner());
+	if (CharacterPlayer)
+	{
+		if (!bIsAlive)
+		{
+			//@PHYTodo: 일단 임시로 메시만 제거
+			CharacterPlayer->GetMesh()->SetSkeletalMesh(nullptr);
+			CharacterPlayer->GetCharacterMovement()->DisableMovement();
+			CharacterPlayer->GetCharacterMovement()->StopMovementImmediately();	
+		}
+	}
 }
 
 void UHBPlayerStatComponent::ClearVotedInfo()

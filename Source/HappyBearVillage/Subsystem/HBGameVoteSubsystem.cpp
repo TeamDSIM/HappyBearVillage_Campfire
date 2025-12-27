@@ -3,7 +3,11 @@
 
 #include "Subsystem/HBGameVoteSubsystem.h"
 
+#include "Character/Stat/HBPlayerStatComponent.h"
+#include "GameMode/HBVillageGameMode.h"
+#include "GameMode/Component/HBGameModePlayerControlComponent.h"
 #include "GameState/HBMafiaGameState.h"
+
 
 // HasAuthority 는 액터에서만 사용 가능
 // 서버 판별을 위한 구문을 함수로 선언
@@ -16,6 +20,44 @@ UHBGameVoteSubsystem::UHBGameVoteSubsystem()
 {
 	bRankingDirty = false;
 	bUpdateSchduled = false;
+
+	CurrentVoteTarget = nullptr;
+}
+
+
+void UHBGameVoteSubsystem::CheckTargetIsDead()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr || !IsServer(World))
+	{
+		return;
+	}
+	
+	if (CurrentVoteTarget == nullptr)
+	{
+		return;
+	}
+	AHBVillageGameMode* HBGameMode = GetWorld()->GetAuthGameMode<AHBVillageGameMode>();
+	if (!HBGameMode)
+	{
+		return;
+	}
+
+	// 생존자 과반수 이상이 투표 하면 (타겟 제외)
+	int32 VoteNum = CurrentVoteTarget->GetStat()->GetVoteNum();
+	int32 CurrentPlayerNum = HBGameMode->GetHBGameModePlayerControlComponent()->GetPlayerNum();
+	if (VoteNum > (CurrentPlayerNum - 1) / 2)
+	{
+		UE_LOG(LogTemp, Log, TEXT("VoteNum More than CurrentPlayerNum half"));
+		CurrentVoteTarget->GetStat()->SetIsAlive(false);
+		
+		HBGameMode->GetHBGameModePlayerControlComponent()->SetPlayerNum(CurrentPlayerNum - 1);
+	}
+
+	else
+	{
+		CurrentVoteTarget->GetStat()->SetIsVoteTarget(false);
+	}
 }
 
 void UHBGameVoteSubsystem::CalculateTop3DamagePlayers()

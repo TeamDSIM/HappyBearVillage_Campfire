@@ -20,6 +20,10 @@ public:
 	UHBGameModePlayerControlComponent();
 
 public:
+	int32 GetPlayerNum() const { return PlayerNum; }
+	void SetPlayerNum(int32 InPlayerNum) { PlayerNum = InPlayerNum; }
+	
+public:
 	// 플레이어 전체 정보 초기설정 / 리셋
 	void InitPlayers(AHBMafiaGameState* InGameState);
 	void ResetPlayers(AHBMafiaGameState* InGameState);
@@ -29,13 +33,16 @@ public:
 
 	// 플레이어 전체 누적 데미지 초기화
 	void ResetPlayersTotalTakenDamage(AHBMafiaGameState* InGameState);
-	
+
 protected:
 	
 
 private:
 private:
-	void InitPlayersJobList(int PlayerNum);
+	void InitPlayersJobList(int InPlayerNum);
+	void InitPlayerNum(int InPlayerNum);
 	
 	TArray<EJobType> PlayerJobs;
+	// 생존중인 플레이어 숫자
+	int32 PlayerNum;
 };

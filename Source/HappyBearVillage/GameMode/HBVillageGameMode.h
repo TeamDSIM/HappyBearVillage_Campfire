@@ -7,6 +7,7 @@
 #include "GameState/HBMafiaGameState.h"
 #include "HBVillageGameMode.generated.h"
 
+class UHBGameModePlayerControlComponent;
 /**
  * 
  */
@@ -26,6 +27,10 @@ public:
 	void CheatPhaseChange();
 
 	FORCEINLINE bool GetIsGamePlaying() const { return bIsGamePlaying; }
+	FORCEINLINE UHBGameModePlayerControlComponent* GetHBGameModePlayerControlComponent() const
+	{
+		return GameModePlayerControlComponent;
+	}
 
 private:
 	virtual void StartPlay() override;
@@ -34,7 +39,7 @@ private:
 	// PostLogin 호출 시 스팀 세션 접속 인원과
 	// 현재 PostLogin 횟수 비교
 	void CheckStartGame();
-	
+
 	// 각 페이즈 별 시작 함수
 	void StartDay(); // 낮 (토론 전 잠시 대기)
 	void StartDiscussion(); // 토론
@@ -66,6 +71,4 @@ private:
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UHBGameModePlayerControlComponent> GameModePlayerControlComponent;
-	
-	
 };

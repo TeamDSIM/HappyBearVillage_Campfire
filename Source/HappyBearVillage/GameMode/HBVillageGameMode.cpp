@@ -291,6 +291,12 @@ void AHBVillageGameMode::StartVote()
 					{					
 						PlayerStatComponent->SetIsVoteTarget(true);
 						HB_LOG(LogTemp, Log, TEXT("Player %d is Target"), HBGameState->TopDamagePlayers[0].PlayerState->GetUserID());
+
+						UHBGameVoteSubsystem* VoteSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UHBGameVoteSubsystem>();
+						if (VoteSubsystem)
+						{
+							VoteSubsystem->SetCurrentVoteTarget(Character);
+						}
 					}
 				}
 			}
@@ -316,6 +322,13 @@ void AHBVillageGameMode::StartNight()
 	// 모든 플레이어 장착 해제
 	GameModePlayerControlComponent->UnEquippedAllPlayer(HBGameState);
 
+	// 투표 대상 초기화
+	UHBGameVoteSubsystem* VoteSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UHBGameVoteSubsystem>();
+	if (VoteSubsystem)
+	{
+		VoteSubsystem->ClearCurrentVoteTarget();
+	}
+	
 	// Night 시작 시 플레이어 Night 상태 초기화
 	for (APlayerState* PS : HBGameState->PlayerArray)
 	{
@@ -393,7 +406,16 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 					break;
 
 				case EGamePhase::Vote:
-					StartNight();
+					{
+						// 밤으로 전환 전에 사망 체크
+						UHBGameVoteSubsystem* VoteSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UHBGameVoteSubsystem>();
+						if (VoteSubsystem)
+						{
+							UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] CheckTarget Is Dead"));
+							VoteSubsystem->CheckTargetIsDead();
+						}
+						StartNight();
+					}
 					break;
 
 				case EGamePhase::Night:

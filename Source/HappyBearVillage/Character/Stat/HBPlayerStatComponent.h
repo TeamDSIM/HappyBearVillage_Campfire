@@ -38,9 +38,14 @@ public:
 	FORCEINLINE float GetTotalTakenDamage() const { return TotalTakenDamage; }
 	FORCEINLINE bool GetIsVoteTarget() const { return bIsVoteTarget; }
 	FORCEINLINE bool GetIsAlive() const { return bIsAlive; }
+	FORCEINLINE int32 GetVoteNum() const { return VoteNum; }
 
 	FORCEINLINE void SetIsVoteTarget(bool InIsVoteTarget) { bIsVoteTarget = InIsVoteTarget; }
-	FORCEINLINE void SetIsAlive(bool InIsAlive) { bIsAlive = InIsAlive; }
+	FORCEINLINE void SetIsAlive(bool InIsAlive)
+	{
+		bIsAlive = InIsAlive;
+		OnRep_IsAlive();
+	}
 
 	float ApplyDamage(float InDamageAmount);
 
@@ -84,7 +89,7 @@ protected:
 	uint8 bIsVoteTarget : 1;
 
 	// 캐릭터 생존 여부
-	UPROPERTY(Replicated, Transient, VisibleInstanceOnly, Category = Stat)
+	UPROPERTY(ReplicatedUsing = OnRep_IsAlive, Transient, VisibleInstanceOnly, Category = Stat)
 	uint8 bIsAlive : 1;
 
 protected:
@@ -98,6 +103,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_VoteNum();
+
+	UFUNCTION()
+	void OnRep_IsAlive();
 
 private:
 	// 투표한 인원 수 초기화

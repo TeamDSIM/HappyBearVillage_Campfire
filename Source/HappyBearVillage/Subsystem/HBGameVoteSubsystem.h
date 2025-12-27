@@ -20,19 +20,33 @@ class HAPPYBEARVILLAGE_API UHBGameVoteSubsystem : public UGameInstanceSubsystem
 
 public:
 	UHBGameVoteSubsystem();
-	
+
 public:
 	void CalculateTop3DamagePlayers();
 
 	void NotifyDamageChanged();
 
+	void ClearCurrentVoteTarget() { CurrentVoteTarget = nullptr; }
+	FORCEINLINE void SetCurrentVoteTarget(AHBCharacterPlayer* InHBCharacterPlayer)
+	{
+		CurrentVoteTarget = InHBCharacterPlayer;
+	}
+
+	FORCEINLINE AHBCharacterPlayer* GetCurrentVoteTarget() { return CurrentVoteTarget; }
+
+	// 투표 과반수 확인
+	void CheckTargetIsDead();
 
 private:
 	bool IsServer(UWorld* World);
-	
+
 protected:
 	uint8 bRankingDirty : 1;
 	uint8 bUpdateSchduled : 1;
 
 	void UpdateRanking();
+
+private:
+	// 이번 투표 대상
+	AHBCharacterPlayer* CurrentVoteTarget;
 };
