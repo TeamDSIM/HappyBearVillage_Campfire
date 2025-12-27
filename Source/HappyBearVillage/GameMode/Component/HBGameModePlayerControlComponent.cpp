@@ -27,6 +27,8 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 
 	// 플레이어에게 나눠줄 직업 리스트 초기화
 	PlayerJobs.Empty();
+	MafiaNum = 0;
+	PlayerNum = 0;
 	InitPlayersJobList(Players.Num());
 	Algo::RandomShuffle(PlayerJobs);
 
@@ -159,7 +161,8 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 {
 	// 배치되어야할 마피아 수
 	// 8명이 최대일때 5명까지는 1명, 그이상은 2명
-	int MafiaNum = InPlayerNum - 4 <= 1 ? 1 : InPlayerNum / 4 + 1;
+	MafiaNum = InPlayerNum - 4 <= 1 ? 1 : InPlayerNum / 4 + 1;
+	
 
 	// @PHYTodo : 직업 배치 임시로 진행
 	// 일단 현재 마피아와 시민만 배치

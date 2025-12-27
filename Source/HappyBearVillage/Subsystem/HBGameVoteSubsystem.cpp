@@ -52,6 +52,15 @@ void UHBGameVoteSubsystem::CheckTargetIsDead()
 		CurrentVoteTarget->GetStat()->SetIsAlive(false);
 		
 		HBGameMode->GetHBGameModePlayerControlComponent()->SetPlayerNum(CurrentPlayerNum - 1);
+		if (CurrentVoteTarget->GetStat()->GetCharacterRole().Role == ERoleType::MAFIA)
+		{
+			HBGameMode->GetHBGameModePlayerControlComponent()->SetMafiaNum(
+				HBGameMode->GetHBGameModePlayerControlComponent()->GetMafiaNum() - 1
+				);
+		}
+
+		// 사람 수가 바뀌었으니 종료 조건 체크
+		HBGameMode->CheckGameEnd();
 	}
 
 	else

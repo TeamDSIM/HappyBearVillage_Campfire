@@ -20,8 +20,12 @@ public:
 	UHBGameModePlayerControlComponent();
 
 public:
-	int32 GetPlayerNum() const { return PlayerNum; }
-	void SetPlayerNum(int32 InPlayerNum) { PlayerNum = InPlayerNum; }
+	FORCEINLINE int32 GetPlayerNum() const { return PlayerNum; }
+	FORCEINLINE int32 GetMafiaNum() const { return MafiaNum; }
+	
+	FORCEINLINE void SetPlayerNum(int32 InPlayerNum) { PlayerNum = InPlayerNum; }
+	FORCEINLINE void SetMafiaNum(int32 InMafiaNum) { MafiaNum = InMafiaNum; }
+	
 	
 public:
 	// 플레이어 전체 정보 초기설정 / 리셋
@@ -44,5 +48,8 @@ private:
 	
 	TArray<EJobType> PlayerJobs;
 	// 생존중인 플레이어 숫자
-	int32 PlayerNum;
+	int32 PlayerNum = 0;
+
+	// 생존중인 마피아 숫자
+	int32 MafiaNum = 0;
 };

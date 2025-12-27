@@ -50,6 +50,10 @@ AHBVillageGameMode::AHBVillageGameMode()
 	PlayerStateClass = AHBPlayerState::StaticClass();
 
 	ConnectedPlayerCounts = 0;
+
+	bIsGameEnd = false;
+	bIsCivilWin = false;
+	bIsMafiaWin = false;
 }
 
 void AHBVillageGameMode::StartGame()
@@ -117,6 +121,10 @@ void AHBVillageGameMode::StopGame()
 	World->GetTimerManager().ClearTimer(PhaseTimerHandle);
 	World->GetTimerManager().ClearTimer(CountdownTimerHandle);
 
+	bIsGameEnd = false;
+	bIsCivilWin = false;
+	bIsMafiaWin = false;
+
 	HBGameState->CurrentPhase = EGamePhase::Lobby;
 	HBGameState->RemainingTime = 0.f;
 	HBGameState->Date = 0;
@@ -144,6 +152,54 @@ void AHBVillageGameMode::CheatPhaseChange()
 		return;
 	}
 	SetPhase(HBGameState->CurrentPhase, 1);
+}
+
+void AHBVillageGameMode::CheckGameEnd()
+{
+	UE_LOG(LogTemp, Log, TEXT("CheckGameEnd Call"));
+	// 남은 마피아 수가 0이면
+	if (GetHBGameModePlayerControlComponent()->GetMafiaNum() == 0)
+	{
+		// 플레이어 승리
+		bIsCivilWin = true;
+
+		// 종료 플래그 설정
+		bIsGameEnd = true;
+	}
+
+	// 남은 시민 수가 마피아랑 같거나 적으면
+	else if (GetHBGameModePlayerControlComponent()->GetPlayerNum() - GetHBGameModePlayerControlComponent()->
+		GetMafiaNum()
+		<= GetHBGameModePlayerControlComponent()->GetMafiaNum())
+	{
+		// 마피아 승리
+		bIsMafiaWin = true;
+
+		// 종료 플래그 설정
+		bIsGameEnd = true;
+	}
+
+	// 종료 플래그가 참일 시 모든 타이머를 멈추고 종료 페이즈로 전환
+	if (bIsGameEnd)
+	{
+		UE_LOG(LogTemp, Log, TEXT("CheckGameEnd Timer Call"));
+		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
+		GetWorld()->GetTimerManager().ClearTimer(PhaseTimerHandle);
+		
+		// 승패 화면 출력
+		
+
+		// 타이머로 일정 시간 뒤 StopGame();
+		GetWorld()->GetTimerManager().SetTimer(
+			EndTimerHandle,
+			FTimerDelegate::CreateLambda(
+				[this]()
+				{
+					StopGame();
+				}
+			), 5.f, false
+		);
+	}
 }
 
 void AHBVillageGameMode::StartPlay()
@@ -274,7 +330,6 @@ void AHBVillageGameMode::StartVote()
 		// 투표 대상 불러와서 설정
 		if (HBGameState->TopDamagePlayers[0].TotalTakenDamaged == 0)
 		{
-			
 		}
 		// 데미지가 0이라면
 		else
@@ -288,11 +343,13 @@ void AHBVillageGameMode::StartVote()
 				{
 					UHBPlayerStatComponent* PlayerStatComponent = Character->GetStat();
 					if (PlayerStatComponent)
-					{					
+					{
 						PlayerStatComponent->SetIsVoteTarget(true);
-						HB_LOG(LogTemp, Log, TEXT("Player %d is Target"), HBGameState->TopDamagePlayers[0].PlayerState->GetUserID());
+						HB_LOG(LogTemp, Log, TEXT("Player %d is Target"),
+						       HBGameState->TopDamagePlayers[0].PlayerState->GetUserID());
 
-						UHBGameVoteSubsystem* VoteSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UHBGameVoteSubsystem>();
+						UHBGameVoteSubsystem* VoteSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<
+							UHBGameVoteSubsystem>();
 						if (VoteSubsystem)
 						{
 							VoteSubsystem->SetCurrentVoteTarget(Character);
@@ -328,7 +385,7 @@ void AHBVillageGameMode::StartNight()
 	{
 		VoteSubsystem->ClearCurrentVoteTarget();
 	}
-	
+
 	// Night 시작 시 플레이어 Night 상태 초기화
 	for (APlayerState* PS : HBGameState->PlayerArray)
 	{
@@ -344,7 +401,6 @@ void AHBVillageGameMode::StartNight()
 	}
 
 	HBGameState->OnRep_GamePhase();
-	
 }
 
 
@@ -408,7 +464,8 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 				case EGamePhase::Vote:
 					{
 						// 밤으로 전환 전에 사망 체크
-						UHBGameVoteSubsystem* VoteSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UHBGameVoteSubsystem>();
+						UHBGameVoteSubsystem* VoteSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<
+							UHBGameVoteSubsystem>();
 						if (VoteSubsystem)
 						{
 							UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] CheckTarget Is Dead"));

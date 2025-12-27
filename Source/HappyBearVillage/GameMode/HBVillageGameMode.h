@@ -21,10 +21,15 @@ public:
 
 	// 게임 시작 시 호출될 함수
 	void StartGame();
+
+	// 게임 종료 시 호출
 	void StopGame();
 
 	// 치트용 함수
 	void CheatPhaseChange();
+
+	// 사람 수 변동 시 호출(승패 확인)
+	void CheckGameEnd();
 
 	FORCEINLINE bool GetIsGamePlaying() const { return bIsGamePlaying; }
 	FORCEINLINE UHBGameModePlayerControlComponent* GetHBGameModePlayerControlComponent() const
@@ -60,12 +65,16 @@ private:
 	FTimerHandle PhaseTimerHandle;
 	FTimerHandle CountdownTimerHandle;
 
-	FTimerHandle TempTimerHandle;
+	FTimerHandle EndTimerHandle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameState", meta = (AllowPrivateAccess = "true"))
 	uint8 bIsGamePlaying : 1;
 
 	int32 ConnectedPlayerCounts = 0;
+
+	uint8 bIsGameEnd : 1;
+	uint8 bIsCivilWin : 1;
+	uint8 bIsMafiaWin : 1;
 
 	// 컴포넌트 부착
 private:
