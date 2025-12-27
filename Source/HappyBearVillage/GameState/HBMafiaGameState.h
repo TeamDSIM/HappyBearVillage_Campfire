@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Character/HBCharacterPlayer.h"
 #include "GameFramework/GameStateBase.h"
+#include "ProceduralGeneration/MapData/HBMapData.h"
+#include "ProceduralGeneration/Sync/HBVillageGenerationData.h"
 #include "HBMafiaGameState.generated.h"
 
 /**
@@ -113,9 +115,15 @@ public:
 	// LobbyWidget이 구독할 이벤트
 	FOnLobbyPlayersChanged OnLobbyPlayersChanged;
 
+	UFUNCTION()
+	void OnRep_VillageGenerationData();
+
 protected:
 	// PlayerArray가 변하는 시점(추가/삭제)에 엔진이 호출
 	virtual void AddPlayerState(APlayerState* PlayerState) override;
 	virtual void RemovePlayerState(APlayerState* PlayerState) override;
 
+public:
+	UPROPERTY(ReplicatedUsing = OnRep_VillageGenerationData)
+	FHBVillageGenerationData VillageGenerationData;
 };

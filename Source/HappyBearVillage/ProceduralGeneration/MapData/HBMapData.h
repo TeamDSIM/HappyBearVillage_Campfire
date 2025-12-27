@@ -19,12 +19,12 @@ public:
 	FIntVector2 Resolution = { 64, 64 };
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MapData")
-	float Seed = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MapData")
 	int32 AreaScale = 4;
 	
 	TArray<TArray<TCHAR>> Map;
+	TArray<TArray<FLinearColor>> HouseColorLayer;
 	TArray<TArray<FVector>> ForestBorderGridIndices;
-	TWeakObjectPtr<UTexture2D> ForestAsTexture2D;
+
+	UPROPERTY(VisibleAnywhere, Category = "MapData")
+	TObjectPtr<UTexture2D> ForestAsTexture2D;
 };

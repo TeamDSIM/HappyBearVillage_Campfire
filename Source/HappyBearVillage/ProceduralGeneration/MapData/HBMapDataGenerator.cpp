@@ -11,7 +11,7 @@
 
 FHBMapData UHBMapDataGenerator::GenerateMapData(FHBNoiseSettings Settings)
 {
-	PerlinNoise = NewObject<UHBPerlinNoise>();
+	UHBPerlinNoise* PerlinNoise = NewObject<UHBPerlinNoise>();
 	PerlinNoise->GeneratePerlinNoise(Settings);
 	
 	GenerateFieldData(PerlinNoise);
@@ -247,7 +247,6 @@ FHBMapData UHBMapDataGenerator::GenerateFieldData(UHBPerlinNoise* InPerlinNoise)
 	}
 
 	MapData.Resolution = { Width, Height };
-	MapData.Seed = InPerlinNoise->GetNoiseSettings().Seed;
 	MapData.Map.SetNum(Height);
 	for (int32 i=0; i<Height; ++i)
 	{
@@ -283,10 +282,10 @@ FHBMapData UHBMapDataGenerator::GenerateHouseData(int32 HouseCount)
 	for (int i=1; i<=AreaCount; ++i)
 	{
 		CandidateAreas.Add(i);
-		HBUtils::Shuffle(CandidateNodes[i]);
+		HBUtils::ShuffleWithStream(CandidateNodes[i]);
 	}
 	
-	HBUtils::Shuffle(CandidateAreas);
+	HBUtils::ShuffleWithStream(CandidateAreas);
 	int32 AreaIndex = 0;
 
 	for (int i=0; i<HouseCount; ++i)
@@ -336,6 +335,44 @@ FHBMapData UHBMapDataGenerator::GenerateHouseData(int32 HouseCount)
 	}
 
 	UpdateMap();
+	
+	return MapData;
+}
+
+FHBMapData UHBMapDataGenerator::GenerateHouseColorData(TArray<FLinearColor> HouseColorList)
+{
+	for (int32 Row=0; Row<Height; ++Row)
+	{
+		TArray<FLinearColor> RowData;
+		
+		for (int32 Col=0; Col<Width; ++Col)
+		{
+			RowData.Add(FLinearColor(0, 0, 0, 0));			
+		}
+
+		MapData.HouseColorLayer.Add(RowData);
+	}
+
+	HBUtils::ShuffleWithStream(HouseColorList);
+	int32 ColorIndex = 0;
+	
+	for (int32 Row=0; Row<Height; ++Row)
+	{
+		for (int32 Col=0; Col<Width; ++Col)
+		{
+			if (MapData.Map[Row][Col] != 'H') continue;
+
+			for (int32 i=0; i<4; ++i)
+			{
+				for (int32 j=0; j<4; ++j)
+				{
+					MapData.HouseColorLayer[Row + i][Col + j] = HouseColorList[ColorIndex];
+				}
+			}
+
+			++ColorIndex;
+		}
+	}
 	
 	return MapData;
 }

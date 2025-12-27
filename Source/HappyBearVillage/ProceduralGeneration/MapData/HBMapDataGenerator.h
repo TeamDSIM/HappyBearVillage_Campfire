@@ -45,6 +45,7 @@ public:
 	FHBMapData GenerateMapData(FHBNoiseSettings Settings);
 	FHBMapData GenerateFieldData(class UHBPerlinNoise* InPerlinNoise);
 	FHBMapData GenerateHouseData(int32 HouseCount);
+	FHBMapData GenerateHouseColorData(TArray<FLinearColor> HouseColorList);
 	FHBMapData GenerateForestData();
 	FHBMapData UpdateMap();
 
@@ -58,21 +59,19 @@ private:
 	bool IsForestBorder(FMapNode* Node);
 
 private:
+	FHBMapData MapData;
+	
+	UPROPERTY(VisibleAnywhere, Category = "MapData")
+    TObjectPtr<UTexture2D> ForestTexture2D;
+    	
+	FMapNode Nodes[256][256];
+	FMapEdge AreaAdj[256][256];
+	
 	int32 Width = 0;
 	int32 Height = 0;
 	int32 AreaCount = 0;
 	int32 ForestCount = 0;
 
-	UPROPERTY()
-	TObjectPtr<UHBPerlinNoise> PerlinNoise;
-	UPROPERTY()
-	TObjectPtr<UTexture2D> ForestTexture2D;
-
-	FMapNode Nodes[256][256];
-	FMapEdge AreaAdj[256][256];
-
 	TArray<FMapNode*> AreaBorderNodes;
 	TArray<TArray<FVector>> ForestBorderGridIndices;
-
-	FHBMapData MapData;
 };

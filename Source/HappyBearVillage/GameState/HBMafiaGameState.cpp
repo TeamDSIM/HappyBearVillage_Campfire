@@ -7,6 +7,11 @@
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 #include "PlayerState/HBPlayerState.h"
+#include "ProceduralGeneration/Map/HBMapGenerator.h"
+#include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
+#include "ProceduralGeneration/Noise/HBPerlinNoise.h"
+#include "Subsystem/VillageGenerationWorldSubsystem.h"
+#include "Utils/HBUtils.h"
 
 AHBMafiaGameState::AHBMafiaGameState()
 {
@@ -59,6 +64,15 @@ void AHBMafiaGameState::OnRep_Date()
 bool AHBMafiaGameState::IsNight() const
 {
 	return CurrentPhase == EGamePhase::Night;
+}
+
+void AHBMafiaGameState::OnRep_VillageGenerationData()
+{
+	UVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UVillageGenerationWorldSubsystem>();
+	if (!VillageGenerationSystem) return;
+	if (VillageGenerationSystem->IsGenerated()) return;
+	
+	VillageGenerationSystem->GenerateVillage(VillageGenerationData);
 }
 
 //LobbyWidget ���� �ڵ��Դϴ�.

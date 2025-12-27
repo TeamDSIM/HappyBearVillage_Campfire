@@ -10,6 +10,7 @@
 #include "Character/HBCharacterPlayer.h"
 #include "Character/Stat/HBPlayerStatComponent.h"
 #include "Component/HBGameModePlayerControlComponent.h"
+#include "Component/HBGameModeVillageGenerationComponent.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerState.h"
 #include "GameState/HBMafiaGameState.h"
@@ -26,9 +27,9 @@ bool AHBVillageGameMode::IsServer(UWorld* World)
 
 AHBVillageGameMode::AHBVillageGameMode()
 {
-	GameModePlayerControlComponent = CreateDefaultSubobject<UHBGameModePlayerControlComponent>(
-		TEXT("GameModePlayerControl"));
-
+	GameModePlayerControlComponent = CreateDefaultSubobject<UHBGameModePlayerControlComponent>(TEXT("GameModePlayerControl"));
+	GameModeVillageGenerationComponent = CreateDefaultSubobject<UHBGameModeVillageGenerationComponent>(TEXT("GameModeVillageGeneration"));
+	
 	bIsGamePlaying = false;
 
 	// Default 세팅
@@ -89,6 +90,8 @@ void AHBVillageGameMode::StartGame()
 	// 날짜 세팅
 	HBGameState->Date = 0;
 
+	GameModeVillageGenerationComponent->SyncVillageGenerationData(HBGameState);
+	
 	// @PHYTODO : 페이즈 시작
 	StartDay();
 }

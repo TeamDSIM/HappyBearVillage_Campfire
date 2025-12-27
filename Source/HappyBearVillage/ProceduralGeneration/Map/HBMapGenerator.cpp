@@ -8,6 +8,7 @@
 #include "ProceduralGeneration/Map/HBForestField.h"
 #include "ProceduralGeneration/Map/HBForestSpline.h"
 #include "ProceduralGeneration/Map/HBRoadField.h"
+#include "Utils/HBUtils.h"
 
 UHBMapGenerator::UHBMapGenerator()
 {
@@ -35,10 +36,11 @@ UHBMapGenerator::UHBMapGenerator()
 
 void UHBMapGenerator::GenerateVillage(FHBMapData InMapData, UWorld* InWorld)
 {
-	if (InMapData.ForestAsTexture2D.IsValid())
+	if (InMapData.ForestAsTexture2D)
 	{
 		AHBPCGVillageActor* PCGActor = InWorld->SpawnActor<AHBPCGVillageActor>(AHBPCGVillageActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
 		PCGActor->InitializePCGInput(InMapData.ForestAsTexture2D.Get());
+		PCGActor->SetPCGBounds();
 		PCGActor->Generate();
 	}
 }
@@ -116,7 +118,7 @@ void UHBMapGenerator::GenerateHouse(FHBMapData InMapData, UWorld* InWorld)
 		{
 			TCHAR TileType = MapData.Map[Row][Col];
 
-			TSubclassOf<AActor> RandomClass = HouseClasses[FMath::RandRange(0, HouseClasses.Num() - 1)]; // ToDo : 동기화 과정에서 Rand 함수 대체 필요
+			TSubclassOf<AActor> RandomClass = HouseClasses[HBUtils::GetRandomInt32FromStream(0, HouseClasses.Num() - 1)];
 			FVector SpawnLocation = FVector((Col + 1.5f) * FieldElementSize, (Row + 1.5f) * FieldElementSize, 0);
 			
 			if (TileType == 'H')
