@@ -388,7 +388,7 @@ void AHBVillageGameMode::StartNight()
 		return;
 	}
 
-	//CharacterRelocationComponent->RelocateCharactersToHouse(HBGameState);
+	CharacterRelocationComponent->RelocateCharactersToHouse(HBGameState);
 	
 	// 모든 플레이어 장착 해제
 	GameModePlayerControlComponent->UnEquippedAllPlayer(HBGameState);
