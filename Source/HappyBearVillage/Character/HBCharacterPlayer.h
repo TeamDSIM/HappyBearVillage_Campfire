@@ -180,6 +180,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> FPSCurrentWeapon;
 
+	UPROPERTY(VisibleAnywhere, Category = State)
+	TObjectPtr<class UCharacterRagdollComponent> RagdollComponent; 
+
 	// 플레이어 색상 섹션 ===================================
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterial;

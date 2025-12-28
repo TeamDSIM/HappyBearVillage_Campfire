@@ -6,6 +6,7 @@
 #include "EngineUtils.h"
 #include "InputMappingContext.h"
 #include "Animation/HBPlayerCharacterAnimInstance.h"
+#include "Component/CharacterRagdollComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/GameStateBase.h"
@@ -20,7 +21,7 @@
 
 AHBCharacterPlayer::AHBCharacterPlayer()
 {
-	// FPS ¸Þ½¬ ¼³Á¤
+	// FPS ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	FPSMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FPSMesh"));
 	FPSMeshComponent->SetupAttachment(GetMesh());
 	FPSMeshComponent->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::FirstPerson;
@@ -33,11 +34,11 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	GetMesh()->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::WorldSpaceRepresentation;
 	FPSMeshComponent->SetCollisionProfileName(FName("NoCollision"));
 
-	// FPS Ä«¸Þ¶ó ¼³Á¤
+	// FPS Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½
 	FPSCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FPSCamera"));
 	FPSCameraComponent->SetupAttachment(FPSMeshComponent);
 
-	// Ä«¸Þ¶ó ¿ÀÇÁ¼Â ±¸ÇØ¼­ ¸Ó¸®¿¡ ºÙÀÌ±â
+	// Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½Ó¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì±ï¿½
 	FPSCameraComponent->SetRelativeLocationAndRotation(FVector(0.0f, -75.0f, 560.0f), FRotator(0.0f, 90.0f, -90.0f));
 	FPSCameraComponent->bUsePawnControlRotation = true;
 
@@ -46,7 +47,9 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	FPSCameraComponent->FirstPersonFieldOfView = FPSFieldOfView;
 	FPSCameraComponent->FirstPersonScale = FPSViewScale;
 
-	// Çâ»óµÈ ÀÔ·Â ¼³Á¤
+	RagdollComponent = CreateDefaultSubobject<UCharacterRagdollComponent>(TEXT("Ragdoll"));
+
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(
 		TEXT("/Game/Character/Input/IMC_Player.IMC_Player"));
 	if (InputMappingContextRef.Succeeded())
@@ -89,7 +92,7 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 		JumpAction = JumpActionRef.Object;
 	}
 
-	// @PHYTODO : ÀÓ½Ã Á÷¾÷ ºÐ¹è
+	// @PHYTODO : ï¿½Ó½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¹ï¿½
 	static ConstructorHelpers::FObjectFinder<UInputAction> StartActionRef(
 		TEXT("/Game/Character/Input/Action/IA_Start.IA_Start"));
 	if (StartActionRef.Succeeded())
@@ -97,7 +100,7 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 		StartAction = StartActionRef.Object;
 	}
 
-	// ¸Þ½Ã ¼³Á¤
+	// ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshRef(
 		TEXT("/Game/Assets/Character/Mesh/Bear_Add_Mat.Bear_Add_Mat"));
 	if (MeshRef.Succeeded())
@@ -126,14 +129,14 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 		AttackMontage = AttackMontageRef.Object;
 	}
 
-	// Ä³¸¯ÅÍ ¸Þ½Ã ¼³Á¤
+	// Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	GetMesh()->SetRelativeScale3D(FVector(0.2f, 0.2f, 0.2f));
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -86.0f));
 	GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 	GetMesh()->SetAnimInstanceClass(AnimInstanceClass);
 	FPSMeshComponent->SetAnimInstanceClass(AnimInstanceClass);
 
-	// 1ÀÎÄª ¹«±â ¸Þ½Ã ¼³Á¤
+	// 1ï¿½ï¿½Äª ï¿½ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	FPSCurrentWeapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FPSWeapon"));
 	FPSCurrentWeapon->SetupAttachment(FPSMeshComponent, TEXT("RightHandWeaponSocket"));
 	FPSCurrentWeapon->SetCollisionProfileName(TEXT("NoCollision"));
@@ -141,7 +144,7 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	FPSCurrentWeapon->SetOnlyOwnerSee(true);
 	FPSCurrentWeapon->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::FirstPerson;
 
-	// °ø°Ý °¡´É ¿©ºÎ ÃÊ±âÈ­
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
 	bCanAttack = true;
 }
 
@@ -152,7 +155,7 @@ void AHBCharacterPlayer::BeginPlay()
 	/* ================= Night Flow : Game Start Init ================= */
 	if (HasAuthority())
 	{
-		// °ÔÀÓ ½ÃÀÛ ½Ã¿¡¸¸ »ç°ú(¿ÜÃâ±Ç) ÃÊ±âÈ­
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½) ï¿½Ê±ï¿½È­
 		Stamina = MaxStamina;
 		bExitedHouseThisNight = false;
 		NightState = EPlayerNightState::InHouse;
@@ -161,8 +164,8 @@ void AHBCharacterPlayer::BeginPlay()
 
 	DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
 
-	// InputMappingContext ¼³Á¤
-	// @PHYTODO : ÀÌ°Å PossessedBy ·Î ¿Å°ÜÁà¾ß ÇÔ
+	// InputMappingContext ï¿½ï¿½ï¿½ï¿½
+	// @PHYTODO : ï¿½Ì°ï¿½ PossessedBy ï¿½ï¿½ ï¿½Å°ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 	// APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	// if (PlayerController)
 	// {
@@ -248,7 +251,7 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
-		// @PHYTODO : ÀÓ½Ã Á÷¾÷ ºÐ¹è
+		// @PHYTODO : ï¿½Ó½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¹ï¿½
 		EnhancedInputComponent->BindAction(StartAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::Start);
 	}
 }
@@ -259,7 +262,7 @@ void AHBCharacterPlayer::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 
 	DOREPLIFETIME(AHBCharacterPlayer, PlayerColor)
 
-	// Night °ü·Ã ÇÁ·ÎÆÛÆ¼µµ º¹Á¦ÇÏ¿© UI µ¿±âÈ­
+	// Night ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ UI ï¿½ï¿½ï¿½ï¿½È­
 	DOREPLIFETIME(AHBCharacterPlayer, Stamina);
 	DOREPLIFETIME(AHBCharacterPlayer, NightState);
 	DOREPLIFETIME(AHBCharacterPlayer, bExitedHouseThisNight);
@@ -268,7 +271,7 @@ void AHBCharacterPlayer::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 
 void AHBCharacterPlayer::OnRep_Stamina()
 {
-	// RepNotify: Stamina°¡ ¹Ù²î¸é ·ÎÄÃ ÇÃ·¹ÀÌ¾î HUD¿¡ ¹Ý¿µ
+	// RepNotify: Staminaï¿½ï¿½ ï¿½Ù²ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ HUDï¿½ï¿½ ï¿½Ý¿ï¿½
 	if (!IsLocallyControlled())
 	{
 		return;
@@ -298,7 +301,7 @@ void AHBCharacterPlayer::Move(const FInputActionValue& Value)
 		return;
 	}
 
-	// ÇöÀç Phase °¡ Day(±¤Àå ÀÌµ¿ ¹× ÃÊ±âÈ­ ´Ü°è) ¶Ç´Â Discussion(Åä·Ð ´Ü°è) ÀÌ¸é ÀÌµ¿ ¹æÁö
+	// ï¿½ï¿½ï¿½ï¿½ Phase ï¿½ï¿½ Day(ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ ï¿½Ê±ï¿½È­ ï¿½Ü°ï¿½) ï¿½Ç´ï¿½ Discussion(ï¿½ï¿½ï¿½ ï¿½Ü°ï¿½) ï¿½Ì¸ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (GameState->CurrentPhase == EGamePhase::Day || GameState->CurrentPhase == EGamePhase::Discussion)
 	{
 		return;
@@ -320,10 +323,10 @@ void AHBCharacterPlayer::Move(const FInputActionValue& Value)
 	}
 }
 
-// °ø°Ý ±¸Çö
+// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 void AHBCharacterPlayer::Attack()
 {
-	// ¹«±â¸¦ ³¢°íÀÖÁö ¾ÊÀ¸¸é ¹ÝÈ¯
+	// ï¿½ï¿½ï¿½â¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
 	if (!bWeaponEquipped)
 	{
 		return;
@@ -338,10 +341,10 @@ void AHBCharacterPlayer::Attack()
 	{
 		if (!HasAuthority())
 		{
-			// °ø°Ý Áß °ø°Ý ¸øÇÏ°Ô ¸·À½
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½
 			bCanAttack = false;
 
-			// °ø°Ý ¾Ö´Ï¸ÞÀÌ¼Ç Á¾·á ½Ã ½ÇÇàµÉ µ¨¸®°ÔÀÌÆ® ÇÔ¼ö ¹ÙÀÎµù
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 			FTimerHandle Handle;
 
 			GetWorldTimerManager().SetTimer(
@@ -354,11 +357,11 @@ void AHBCharacterPlayer::Attack()
 				), AttackTime, false, -1.f
 			);
 
-			// Å¬¶óÀÌ¾ðÆ®ÀÇ ¾Ö´Ï¸ÞÀÌ¼Ç Àç»ý
+			// Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½
 			PlayAttackAnimation();
 		}
 
-		// ServerRPC °ø°Ý ½ÇÇà
+		// ServerRPC ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		ServerRPCAttack(GetWorld()->GetGameState()->GetServerWorldTimeSeconds());
 	}
 }
@@ -377,7 +380,7 @@ void AHBCharacterPlayer::Interaction()
 		return;
 	}
 
-	// ÇöÀç Phase °¡ ³­Åõ Phase °¡ ¾Æ´Ï¸é »óÈ£ÀÛ¿ë ÇÏÁö ¸øÇÏµµ·Ï ¹æÁö
+	// ï¿½ï¿½ï¿½ï¿½ Phase ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Phase ï¿½ï¿½ ï¿½Æ´Ï¸ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (GameState->CurrentPhase != EGamePhase::Fight && GameState->CurrentPhase != EGamePhase::Lobby)
 	{
 		return;
@@ -415,7 +418,7 @@ void AHBCharacterPlayer::MouseLook(const FInputActionValue& Value)
 
 void AHBCharacterPlayer::Start()
 {
-	// ¼­¹öÀÌ¸é Á÷¾÷ ºÐ¹è
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¹ï¿½
 	if (!HasAuthority())
 	{
 		return;
@@ -431,7 +434,7 @@ void AHBCharacterPlayer::OnRep_PlayerColor()
 
 void AHBCharacterPlayer::SetRandomBaseColor()
 {
-	// DynamicMaterial º¸Àå
+	// DynamicMaterial ï¿½ï¿½ï¿½ï¿½
 	if (!DynamicMaterial && GetMesh())
 	{
 		DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
@@ -439,12 +442,12 @@ void AHBCharacterPlayer::SetRandomBaseColor()
 
 	if (DynamicMaterial)
 	{
-		// ¼­¹öÀÏ¶§¸¸ ·£´ý »ö»ó º¯¼ö »ý¼º
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		if (HasAuthority())
 		{
 			PlayerColor = FLinearColor::MakeRandomColor();
 
-			// PlayerState ÀÇ Color °ª µ¿±âÈ­
+			// PlayerState ï¿½ï¿½ Color ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½È­
 			AHBPlayerState* PawnState = Cast<AHBPlayerState>(GetPlayerState());
 			if (PawnState)
 			{
@@ -452,14 +455,14 @@ void AHBCharacterPlayer::SetRandomBaseColor()
 			}
 		}
 
-		// CharacterBaseColor º¯¼ö¿¡ RandomColor º¯¼ö ºÎ¿©
+		// CharacterBaseColor ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ RandomColor ï¿½ï¿½ï¿½ï¿½ ï¿½Î¿ï¿½
 		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
 	}
 }
 
 void AHBCharacterPlayer::ResetBaseColor()
 {
-	// DynamicMaterial º¸Àå
+	// DynamicMaterial ï¿½ï¿½ï¿½ï¿½
 	if (!DynamicMaterial && GetMesh())
 	{
 		DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
@@ -467,13 +470,13 @@ void AHBCharacterPlayer::ResetBaseColor()
 
 	if (DynamicMaterial)
 	{
-		// ¼­¹öÀÏ¶§¸¸ ·£´ý »ö»ó º¯¼ö »ý¼º
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		if (HasAuthority())
 		{
 			PlayerColor = FLinearColor::White;
 		}
 
-		// CharacterBaseColor º¯¼ö¿¡ RandomColor º¯¼ö ºÎ¿©
+		// CharacterBaseColor ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ RandomColor ï¿½ï¿½ï¿½ï¿½ ï¿½Î¿ï¿½
 		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
 	}
 }
@@ -492,7 +495,7 @@ void AHBCharacterPlayer::InteractionTraceTick()
 		return;
 	}
 
-	// ÇöÀç Phase °¡ ³­Åõ Phase °¡ ¾Æ´Ï¸é »óÈ£ÀÛ¿ëÇÏÁö ¾ÊÀ¸¹Ç·Î ÆÇº° ½ÇÇà X
+	// ï¿½ï¿½ï¿½ï¿½ Phase ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Phase ï¿½ï¿½ ï¿½Æ´Ï¸ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ ï¿½Çºï¿½ ï¿½ï¿½ï¿½ï¿½ X
 	if (GameState->CurrentPhase != EGamePhase::Fight && GameState->CurrentPhase != EGamePhase::Lobby)
 	{
 		return;
@@ -500,7 +503,7 @@ void AHBCharacterPlayer::InteractionTraceTick()
 
 	const FRotator CurrentRotation = GetControlRotation();
 
-	// ½Ã¼± º¯È­ Ã¼Å© ½Ã ±âÁØÄ¡¸¦ ³ÑÁö ¾Ê¾ÒÀ¸¸é ½ºÅµ
+	// ï¿½Ã¼ï¿½ ï¿½ï¿½È­ Ã¼Å© ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Åµ
 	if (CurrentRotation.Equals(LastControlRotation, ViewAngleThreshold))
 	{
 		return;
@@ -511,7 +514,7 @@ void AHBCharacterPlayer::InteractionTraceTick()
 	FVector Start = FPSCameraComponent->GetComponentLocation();
 	FVector End = Start + (FPSCameraComponent->GetForwardVector() * InteractionDistance);
 
-	// Æ®·¹ÀÌ½º ÁøÇà
+	// Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	FHitResult Hit;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
@@ -567,25 +570,25 @@ void AHBCharacterPlayer::SetWeaponMesh()
 
 void AHBCharacterPlayer::AttackHitCheck()
 {
-	// ÇöÀç ÆùÀÌ Á¢¼ÓµÈ ÇÃ·¹ÀÌ¾î Å¬¶óÀÌ¾ðÆ®¿¡ ÀÇÇØ Á¦¾îÁßÀÎÁö È®ÀÎ
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Óµï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
 	if (IsLocallyControlled())
 	{
-		// Ãæµ¹ ÆÇÁ¤ ±¸ÇÏ±â
+		// ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½
 		FHitResult OutHitResult;
 		FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
-		// °ø°Ý °ü·Ã ½ºÅÈ ±¸ÇÏ±â (»ç°Å¸®, ¹üÀ§, µ¥¹ÌÁö µî)
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½ (ï¿½ï¿½Å¸ï¿½, ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
 		float AttackRange = Stat->GetBaseStat().AttackRange;
 		float AttackRadius = Stat->GetBaseStat().AttackRadius;
 		float AttackDamage = Stat->GetBaseStat().AttackDamage;
 
-		// ÇÃ·¹ÀÌ¾î Forward º¤ÅÍ, °ø°Ý ½ÃÀÛ/³¡ ÁöÁ¡ º¤ÅÍ ±¸ÇÏ±â
+		// ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ Forward ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½
 		FVector Forward = GetActorForwardVector();
 		FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
 		FVector End = Start + GetActorForwardVector() * AttackRange;
 
-		// Sweep À¸·Î Ãæµ¹
-		// @Todo: single ÇÒÁö, multi ÇÒÁö (ÀÏ´Ü single·Î ±¸Çö)
+		// Sweep ï¿½ï¿½ï¿½ï¿½ ï¿½æµ¹
+		// @Todo: single ï¿½ï¿½ï¿½ï¿½, multi ï¿½ï¿½ï¿½ï¿½ (ï¿½Ï´ï¿½ singleï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 		bool HitDetected = GetWorld()->SweepSingleByChannel(
 			OutHitResult,
 			Start,
@@ -596,38 +599,38 @@ void AHBCharacterPlayer::AttackHitCheck()
 			Params
 		);
 
-		// Ãæµ¹ Ã¼Å© ÁøÇà ½Ã°£ ±¸ÇÔ
+		// ï¿½æµ¹ Ã¼Å© ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½
 		float HitCheckTime = GetWorld()->GetGameState()->GetServerWorldTimeSeconds();
 
-		// ¼­¹ö°¡ ¾Æ´Ï¶ó¸é
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´Ï¶ï¿½ï¿½
 		if (!HasAuthority())
 		{
-			// Ãæµ¹ Çß´Ù¸é
+			// ï¿½æµ¹ ï¿½ß´Ù¸ï¿½
 			if (HitDetected)
 			{
-				// ¼­¹öRPC ·Î Ãæµ¹ ³ëÆ¼ÆÄÀÌ Àü¼Û
+				// ï¿½ï¿½ï¿½ï¿½RPC ï¿½ï¿½ ï¿½æµ¹ ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				ServerRPCNotifyHit(OutHitResult, HitCheckTime);
 			}
 
-			// Ãæµ¹ ¾ÈÇß´Ù¸é
+			// ï¿½æµ¹ ï¿½ï¿½ï¿½ß´Ù¸ï¿½
 			else
 			{
-				// ¼­¹öRPC ·Î ¹Ì½º ³ëÆ¼ÆÄÀÌ Àü¼Û
+				// ï¿½ï¿½ï¿½ï¿½RPC ï¿½ï¿½ ï¿½Ì½ï¿½ ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				ServerRPCNotifyMiss(Start, End, Forward, HitCheckTime);
 			}
 		}
 
-		// ¼­¹ö¶ó¸é
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		else
 		{
-			// ÆÇÁ¤ ¹üÀ§ µð¹ö±× Ç¥½Ã
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
 			FColor DebugColor = HitDetected ? FColor::Green : FColor::Red;
 			DrawDebugAttackRange(DebugColor, Start, End, Forward);
 
-			// Ãæµ¹ Çß´Ù¸é
+			// ï¿½æµ¹ ï¿½ß´Ù¸ï¿½
 			if (HitDetected)
 			{
-				// µ¥¹ÌÁö ÆÇÁ¤
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				AttackHitConfirm(OutHitResult.GetActor());
 			}
 		}
@@ -636,13 +639,13 @@ void AHBCharacterPlayer::AttackHitCheck()
 
 void AHBCharacterPlayer::AttackHitConfirm(AActor* HitActor)
 {
-	// ¼­¹ö¶ó¸é
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (HasAuthority())
 	{
-		// °ø°Ý µ¥¹ÌÁö °¡Á®¿À±â
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		float AttackDamage = Stat->GetBaseStat().AttackDamage;
 
-		// ºÎ‹HÈù ´ë»ó¿¡°Ô TakeDamage ·Î µ¥¹ÌÁö Àü´Þ
+		// ï¿½Î‹Hï¿½ï¿½ ï¿½ï¿½ó¿¡°ï¿½ TakeDamage ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		FDamageEvent DamageEvent;
 		HitActor->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
 
@@ -652,7 +655,7 @@ void AHBCharacterPlayer::AttackHitConfirm(AActor* HitActor)
 			UHBGameVoteSubsystem* VoteSubsystem = GetGameInstance()->GetSubsystem<UHBGameVoteSubsystem>();
 			if (VoteSubsystem)
 			{
-				// @PHYTODO : Top3 °»½Å ·ÎÁ÷
+				// @PHYTODO : Top3 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			}
 		}
 	}
@@ -676,21 +679,21 @@ void AHBCharacterPlayer::DrawDebugAttackRange(const FColor& DrawColor, FVector T
 
 void AHBCharacterPlayer::ServerRPCNotifyHit_Implementation(const FHitResult& HitResult, float HitCheckTime)
 {
-	// Ãæµ¹ÇÑ ¾×ÅÍ °ªÀ» °¡Á®¿È
+	// ï¿½æµ¹ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	AActor* HitActor = HitResult.GetActor();
 
-	// ¾×ÅÍ °ªÀÌ Á¸ÀçÇÏ¸é
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½
 	if (HitActor)
 	{
-		// Ãæµ¹ ¹ß»ý À§Ä¡, Ãæµ¹ ¹ß»ýÇÑ ¾×ÅÍÀÇ ¹Ù¿îµù ¹Ú½º, ¹Ù¿îµù ¹Ú½ºÀÇ °¡¿îµ¥ ÁöÁ¡
+		// ï¿½æµ¹ ï¿½ß»ï¿½ ï¿½ï¿½Ä¡, ï¿½æµ¹ ï¿½ß»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¿ï¿½ï¿½ ï¿½Ú½ï¿½, ï¿½Ù¿ï¿½ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½îµ¥ ï¿½ï¿½ï¿½ï¿½
 		FVector HitLocation = HitResult.Location;
 		FBox HitBox = HitActor->GetComponentsBoundingBox();
 		FVector ActorBoxCenter = HitBox.GetCenter();
 
-		// Ãæµ¹ ¹ß»ý À§Ä¡¿Í ¹Ù¿îµù ¹Ú½ºÀÇ Áß°£ ÁöÁ¡ÀÌ Ãæµ¹ Ã¼Å© ÃÖ¼Ò °Å¸®º¸´Ù °¡±î¿ì¸é
+		// ï¿½æµ¹ ï¿½ß»ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Ù¿ï¿½ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½æµ¹ Ã¼Å© ï¿½Ö¼ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (FVector::DistSquared(HitLocation, ActorBoxCenter) <= AcceptCheckDistance * AcceptCheckDistance)
 		{
-			// Ãæµ¹ ½Ã ÀÌº¥Æ® ÁøÇà
+			// ï¿½æµ¹ ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½
 			AttackHitConfirm(HitActor);
 		}
 		else
@@ -698,7 +701,7 @@ void AHBCharacterPlayer::ServerRPCNotifyHit_Implementation(const FHitResult& Hit
 			UE_LOG(LogTemp, Warning, TEXT("HitTest Reject"));
 		}
 
-		// Ãæµ¹ ½Ã Notify ÀÌ´Ï µð¹ö±× ÄÃ·¯°¡ Green ¸¸ ³Ö¾îµµ »ó°ü¾ø±ä ÇÔ
+		// ï¿½æµ¹ ï¿½ï¿½ Notify ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½ Green ï¿½ï¿½ ï¿½Ö¾îµµ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 		DrawDebugAttackRange(FColor::Green, HitResult.TraceStart, HitResult.TraceEnd,
 			HitActor->GetActorForwardVector());
 	}
@@ -706,12 +709,12 @@ void AHBCharacterPlayer::ServerRPCNotifyHit_Implementation(const FHitResult& Hit
 
 bool AHBCharacterPlayer::ServerRPCNotifyHit_Validate(const FHitResult& HitResult, float HitCheckTime)
 {
-	// ¸¶Áö¸· °ø°Ý ½ÃÀÛ ½Ã°£ÀÌ 0 (Ã³À½ °ø°Ý)
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ 0 (Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 	if (LastAttackStartTime == 0.f)
 	{
 		return true;
 	}
-	// Ãæµ¹ Ã¼Å© ½Ã°£ÀÌ¶û ¸¶Áö¸· °ø°ÝÇÑ ½Ã°£ÀÇ Â÷ÀÌ°¡ ÃÖ¼Ò Ã¼Å© °£°Ýº¸´Ù Ä¿¾ß Ã¼Å© ÁøÇà
+	// ï¿½æµ¹ Ã¼Å© ï¿½Ã°ï¿½ï¿½Ì¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì°ï¿½ ï¿½Ö¼ï¿½ Ã¼Å© ï¿½ï¿½ï¿½Ýºï¿½ï¿½ï¿½ Ä¿ï¿½ï¿½ Ã¼Å© ï¿½ï¿½ï¿½ï¿½
 	return (HitCheckTime - LastAttackStartTime) > AcceptMinCheckTime;
 }
 
@@ -719,25 +722,25 @@ void AHBCharacterPlayer::ServerRPCNotifyMiss_Implementation(FVector_NetQuantize 
 	FVector_NetQuantize TraceEnd,
 	FVector_NetQuantizeNormal TraceDir, float HitCheckTime)
 {
-	// Ãæµ¹ ½ÇÆÐ ½Ã ÆÇÁ¤ ¹üÀ§ µð¹ö±× ±×¸®±â
+	// ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½
 	DrawDebugAttackRange(FColor::Red, TraceStart, TraceEnd, TraceDir);
 }
 
 bool AHBCharacterPlayer::ServerRPCNotifyMiss_Validate(FVector_NetQuantize TraceStart, FVector_NetQuantize TraceEnd,
 	FVector_NetQuantizeNormal TraceDir, float HitCheckTime)
 {
-	// ¸¶Áö¸· °ø°Ý ½ÃÀÛ ½Ã°£ÀÌ 0 (Ã³À½ °ø°Ý)
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ 0 (Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 	if (LastAttackStartTime == 0.f)
 	{
 		return true;
 	}
-	// Ãæµ¹ Ã¼Å© ½Ã°£ÀÌ¶û ¸¶Áö¸· °ø°ÝÇÑ ½Ã°£ÀÇ Â÷ÀÌ°¡ ÃÖ¼Ò Ã¼Å© °£°Ýº¸´Ù Ä¿¾ß Ã¼Å© ÁøÇà
+	// ï¿½æµ¹ Ã¼Å© ï¿½Ã°ï¿½ï¿½Ì¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì°ï¿½ ï¿½Ö¼ï¿½ Ã¼Å© ï¿½ï¿½ï¿½Ýºï¿½ï¿½ï¿½ Ä¿ï¿½ï¿½ Ã¼Å© ï¿½ï¿½ï¿½ï¿½
 	return (HitCheckTime - LastAttackStartTime) > AcceptMinCheckTime;
 }
 
 void AHBCharacterPlayer::PlayAttackAnimation()
 {
-	// Ä³¸¯ÅÍ ¸Þ½Ã °ø°Ý ¸ùÅ¸ÁÖ Àç»ý
+	// Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance)
 	{
@@ -745,7 +748,7 @@ void AHBCharacterPlayer::PlayAttackAnimation()
 		AnimInstance->Montage_Play(AttackMontage);
 	}
 
-	// @Todo: 1ÀÎÄª °ø°Ý ¸ùÅ¸ÁÖ Àç»ý
+	// @Todo: 1ï¿½ï¿½Äª ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½
 	UAnimInstance* FPSAnimInstance = FPSMeshComponent->GetAnimInstance();
 	if (FPSAnimInstance)
 	{
@@ -756,7 +759,7 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 {
 	if (InHUDWidget)
 	{
-		//@PHYTODO : ½Ã°£ °æ°ú¿¡ µû¸¥ Ã³¸® ÁøÇà
+		//@PHYTODO : ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		AHBMafiaGameState* GameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 		if (GameState)
 		{
@@ -770,7 +773,7 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 			GameState->OnTopDamagePlayersChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateCurrentFightInfo);
 		}
 
-		// HUD¿Í Stamina ¿¬µ¿: ÃÊ±â°ª Àü¼Û ¹× Ä³½Ã (·ÎÄÃ Å¬¶óÀÌ¾ðÆ®¿¡¼­¸¸)
+		// HUDï¿½ï¿½ Stamina ï¿½ï¿½ï¿½ï¿½: ï¿½Ê±â°ª ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Ä³ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 		if (IsLocallyControlled())
 		{
 			CachedHUDWidget = InHUDWidget;
@@ -778,11 +781,11 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 	}
 }
 
-// @PHYTODO : Á÷¾÷ ºÐ¹è ÀÓ½Ã È®ÀÎ¿ë
+// @PHYTODO : ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¹ï¿½ ï¿½Ó½ï¿½ È®ï¿½Î¿ï¿½
 void AHBCharacterPlayer::ServerRPCStart_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("ServerRPCStart Call"));
-	// ¼­¹ö°¡ ¾Æ´Ï¶ó¸é
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´Ï¶ï¿½ï¿½
 	if (!HasAuthority())
 	{
 		return;
@@ -791,18 +794,18 @@ void AHBCharacterPlayer::ServerRPCStart_Implementation()
 	UGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance)
 	{
-		// ÇöÀç °ÔÀÓ ¸ðµå °¡Á®¿À±â
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		AHBVillageGameMode* VillageGameMode = Cast<AHBVillageGameMode>(GetWorld()->GetAuthGameMode());
 		if (VillageGameMode)
 		{
-			// °ÔÀÓÀÌ ÁøÇàÁßÀÌ¸é
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½
 			if (VillageGameMode->GetIsGamePlaying())
 			{
 				VillageGameMode->CheatPhaseChange();
 				//VillageGameMode->StopGame();
 			}
 
-			// °ÔÀÓÀÌ ÁøÇàÁßÀÌÁö ¾ÊÀ¸¸é
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			else
 			{
 				VillageGameMode->StartGame();
@@ -811,16 +814,16 @@ void AHBCharacterPlayer::ServerRPCStart_Implementation()
 		// UHBGameFlowSubsystem* GameFlowSubsystem = GameInstance->GetSubsystem<UHBGameFlowSubsystem>();
 		// if (GameFlowSubsystem)
 		// {
-		// 	// °ÔÀÓÀÌ ÁøÇàÁßÀÌ¸é
+		// 	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½
 		// 	if (GameFlowSubsystem->GetIsGamePlaying())
 		// 	{
-		// 		// °ÔÀÓ ÁßÁö
+		// 		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		// 		GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StopGame();
 		// 	}
-		// 	// °ÔÀÓÀÌ ÁøÇàÁßÀÌÁö ¾ÊÀ¸¸é
+		// 	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		// 	else
 		// 	{
-		// 		// °ÔÀÓ ½ÇÇà
+		// 		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		// 		GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StartGame();
 		// 	}
 		// }
@@ -831,7 +834,7 @@ void AHBCharacterPlayer::ServerRPCStart_Implementation()
 
 void AHBCharacterPlayer::ClientRPCPlayAnimation_Implementation(AHBCharacterPlayer* CharacterToPlay)
 {
-	// CharacterToPlay °¡ À¯È¿ÇÏ¸é °ø°Ý ¾Ö´Ï¸ÞÀÌ¼Ç Àç»ý
+	// CharacterToPlay ï¿½ï¿½ ï¿½ï¿½È¿ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½
 	if (CharacterToPlay)
 	{
 		CharacterToPlay->PlayAttackAnimation();
@@ -840,19 +843,19 @@ void AHBCharacterPlayer::ClientRPCPlayAnimation_Implementation(AHBCharacterPlaye
 
 void AHBCharacterPlayer::ServerRPCAttack_Implementation(float AttackStartTime)
 {
-	// °ø°Ý Áß °ø°ÝÀ» ¸·±â À§ÇØ ÇÃ·¡±×¸¦ false·Î º¯°æ
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½×¸ï¿½ falseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	bCanAttack = false;
 
-	// ¼­¹ö¿¡¼­´Â OnRep È£ÃâÀÌ ¾ÈµÇ´Ï ¸í½ÃÀû È£Ãâ
-	// ÀÏ´Ü ¹Ù²î´Â °ªÀÌ ¾øÀ¸´Ï Pass
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ OnRep È£ï¿½ï¿½ï¿½ï¿½ ï¿½ÈµÇ´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½
+	// ï¿½Ï´ï¿½ ï¿½Ù²ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Pass
 
-	// °ø°Ý ½ÃÀÛ ½Ã°£°ú ÇöÀç ¼­¹ö ½Ã°£ÀÇ Â÷ÀÌ¸¦ ±¸ÇÔ (°ø°Ý »çÀÌÀÇ µô·¹ÀÌ)
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 	AttackTimeDifference = GetWorld()->GetTimeSeconds() - AttackStartTime;
 
-	// ÇØ´ç ½Ã°£À» 0ÃÊ¿¡¼­ ½ÇÁ¦ °ø°Ý ¾Ö´Ï¸ÞÀÌ¼Ç ±æÀÌº¸´Ù »ìÂ¦ ÂªÀº ½Ã°£À¸·Î ¹üÀ§ ÇÑÁ¤ (Clamp)
+	// ï¿½Ø´ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ 0ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½Â¦ Âªï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (Clamp)
 	AttackTimeDifference = FMath::Clamp(AttackTimeDifference, 0.f, AttackTime - 0.1f);
 
-	// °ø°Ý ³¡³ª¸é ´Ù½Ã °ø°Ý °¡´É ¿©ºÎ º¯°æÇØÁÖ´Â Å¸ÀÌ¸Ó ¼³Á¤
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ Å¸ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
 	FTimerHandle Handle;
 	GetWorldTimerManager().SetTimer(
 		Handle,
@@ -864,26 +867,26 @@ void AHBCharacterPlayer::ServerRPCAttack_Implementation(float AttackStartTime)
 		), AttackTime - AttackTimeDifference, false, -1.f
 	);
 
-	// ¸¶Áö¸· °ø°Ý ½ÃÀÛ ½Ã°£À» ÀÌ¹ø °ø°Ý ½ÃÀÛ ½Ã°£À¸·Î º¯°æ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	LastAttackStartTime = AttackStartTime;
 
-	// °ø°Ý ¾Ö´Ï¸ÞÀÌ¼Ç Àç»ý (¼­¹ö)
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½)
 	PlayAttackAnimation();
 
-	// ´Ù¸¥ Å¬¶óÀÌ¾ðÆ®µéÀÇ ¾Ö´Ï¸ÞÀÌ¼Ç Àç»ý (°ø°Ý ¹ß»ý Å¬¶ó X, ¼­¹ö X)
-	// ÇöÀç ¿ùµå¿¡ ÀÖ´Â PlayerController µéÀ» ¹Þ¾Æ¿È
+	// ï¿½Ù¸ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ Å¬ï¿½ï¿½ X, ï¿½ï¿½ï¿½ï¿½ X)
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½å¿¡ ï¿½Ö´ï¿½ PlayerController ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½
 	for (APlayerController* PlayerController : TActorRange<APlayerController>(GetWorld()))
 	{
-		// PlayerController °¡ À¯È¿ÇÏ°í ÇöÀç »ç¿ëÁßÀÎ ÄÁÆ®·Ñ·¯°¡ ¾Æ´Ï¸é
+		// PlayerController ï¿½ï¿½ ï¿½ï¿½È¿ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½Ñ·ï¿½ï¿½ï¿½ ï¿½Æ´Ï¸ï¿½
 		if (PlayerController && GetController() != PlayerController)
 		{
-			// ÇöÀç ·ÎÄÃ ÄÁÆ®·Ñ·¯°¡ ¾Æ´Ï¸é
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½Ñ·ï¿½ï¿½ï¿½ ï¿½Æ´Ï¸ï¿½
 			if (!PlayerController->IsLocalController())
 			{
 				AHBCharacterPlayer* OtherPlayer = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
 				if (OtherPlayer)
 				{
-					// Å¬¶óÀÌ¾ðÆ®ÀÇ PlayAnimation À» Àç»ý
+					// Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ PlayAnimation ï¿½ï¿½ ï¿½ï¿½ï¿½
 					OtherPlayer->ClientRPCPlayAnimation(this);
 				}
 			}
@@ -893,14 +896,14 @@ void AHBCharacterPlayer::ServerRPCAttack_Implementation(float AttackStartTime)
 
 bool AHBCharacterPlayer::ServerRPCAttack_Validate(float AttackStartTime)
 {
-	// °ø°Ý ½Ã°£ÀÌ À¯È¿ÇÑÁö Ã¼Å©
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
 	if (LastAttackStartTime == 0.f)
 	{
 		return true;
 	}
 
-	// ÇöÀç °ø°Ý ½ÃÀÛ ½Ã°£°ú ÀÌÀü °ø°Ý ½ÃÀÛ ½Ã°£ÀÌ ¾Ö´Ï¸ÞÀÌ¼Ç ±æÀÌº¸´Ù ±æ¾î¾ß true ¹ÝÈ¯
-	// ÂªÀ¸¸é ¾ÇÀÇÀûÀ¸·Î °ø°ÝÀ» »¡¸® ÇÏ´Â°Å¶ó ÆÇ´ÜÇØ¼­ false
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ true ï¿½ï¿½È¯
+	// Âªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´Â°Å¶ï¿½ ï¿½Ç´ï¿½ï¿½Ø¼ï¿½ false
 	return (AttackStartTime - LastAttackStartTime) > AttackTime;
 }
 
@@ -910,7 +913,7 @@ void AHBCharacterPlayer::EnterHouse()
 {
 	if (!HasAuthority()) return;
 
-	// ¹ã »óÅÂ¿¡¼­¸¸ ÀÇ¹Ì ÀÖÀ½
+	// ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¹ï¿½ ï¿½ï¿½ï¿½ï¿½
 	AHBMafiaGameState* GS = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (!GS || !GS->IsNight())
 	{
@@ -919,7 +922,7 @@ void AHBCharacterPlayer::EnterHouse()
 
 	NightState = EPlayerNightState::InHouse;
 
-	// ÀÌ¹ø ¹ã¿¡ ÇÑ ¹øµµ ³ª°£ Àû ¾øÀ» ¶§¸¸ È¸º¹ ½ÃÀÛ
+	// ï¿½Ì¹ï¿½ ï¿½ã¿¡ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (!bExitedHouseThisNight)
 	{
 		StartStaminaRecovery();
@@ -932,7 +935,7 @@ void AHBCharacterPlayer::ExitHouse()
 
 	if (!HasAuthority()) return;
 
-	// ÀÌ¹Ì ¹ÛÀÌ¸é Áßº¹ Ã³¸® ¹æÁö
+	// ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ßºï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (NightState == EPlayerNightState::Outside)
 	{
 		return;
@@ -941,20 +944,20 @@ void AHBCharacterPlayer::ExitHouse()
 	AHBMafiaGameState* GS = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (!GS || !GS->IsNight())
 	{
-		// ³·¿¡´Â Night Flow »óÅÂ¸¦ °Çµå¸®Áö ¾ÊÀ½
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Night Flow ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½Çµå¸®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		return;
 	}
 
 	NightState = EPlayerNightState::Outside;
 
-	// ÀÌ¹ø ¹ã¿¡ ¿ÜÃâ ±â·Ï
+	// ï¿½Ì¹ï¿½ ï¿½ã¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 	bExitedHouseThisNight = true;
 
-	// ½ºÅÂ¹Ì³ª(»ç°ú) 1°³ ¼Ò¸ð ? Áï½Ã ¼Ò¸ð ±ÔÄ¢
+	// ï¿½ï¿½ï¿½Â¹Ì³ï¿½(ï¿½ï¿½ï¿½) 1ï¿½ï¿½ ï¿½Ò¸ï¿½ ? ï¿½ï¿½ï¿½ ï¿½Ò¸ï¿½ ï¿½ï¿½Ä¢
 	Stamina = FMath::Max(Stamina - 1, 0);
 	OnStaminaChanged.Broadcast(Stamina);
 
-	// ÇÑ ¹øÀÌ¶óµµ ³ª°¬À¸´Ï ÀÌ¹ø ¹ã È¸º¹Àº ¿ÏÀüÈ÷ Áß´Ü
+	// ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ ï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß´ï¿½
 	StopStaminaRecovery();
 
 	UE_LOG(LogTemp, Warning,
@@ -966,7 +969,7 @@ void AHBCharacterPlayer::StartStaminaRecovery()
 {
 	if (!HasAuthority()) return;
 
-	// ÀÌ¹Ì È¸º¹ ÁßÀÌ¸é Áßº¹ ½ÇÇà ¹æÁö
+	// ï¿½Ì¹ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ßºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (GetWorldTimerManager().IsTimerActive(StaminaRecoverTimerHandle))
 	{
 		return;
@@ -992,7 +995,7 @@ void AHBCharacterPlayer::RecoverStaminaTick()
 {
 	if (!HasAuthority()) return;
 
-	// ÀÌ¹ø ¹ã¿¡ ¿ÜÃâÇÑ Àû ÀÖÀ¸¸é È¸º¹ ±ÝÁö
+	// ï¿½Ì¹ï¿½ ï¿½ã¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (bExitedHouseThisNight)
 	{
 		StopStaminaRecovery();
@@ -1006,7 +1009,7 @@ void AHBCharacterPlayer::RecoverStaminaTick()
 		return;
 	}
 
-	// Áý ¾È¿¡ ÀÖÀ» ¶§¸¸ È¸º¹
+	// ï¿½ï¿½ ï¿½È¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½
 	if (NightState != EPlayerNightState::InHouse)
 	{
 		StopStaminaRecovery();
@@ -1020,7 +1023,7 @@ void AHBCharacterPlayer::RecoverStaminaTick()
 		TEXT("[NightFlow] Recover %d -> %d"),
 		OldStamina, Stamina);
 
-	// ÃÖ´ëÄ¡¸é È¸º¹ Á¾·á
+	// ï¿½Ö´ï¿½Ä¡ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (Stamina >= MaxStamina)
 	{
 		StopStaminaRecovery();
@@ -1031,14 +1034,14 @@ void AHBCharacterPlayer::ResetNightState()
 {
 	if (!HasAuthority()) return;
 
-	// ÀÌÀü ¹ãÀÇ ¿ÜÃâ ¿©ºÎ¸¦ ±â·Ï(Àü³¯ Á¤º¸ º¸°ü)
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 	bExitedPreviousNight = bExitedHouseThisNight;
 
-	// ¹ã ½ÃÀÛ ½Ã ±âº» »óÅÂ ÃÊ±âÈ­ (ÀÌ¹ø ¹ãÀº ¾ÆÁ÷ ¿ÜÃâ ¾øÀ½)
+	// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½âº» ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ (ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 	bExitedHouseThisNight = false;
 	NightState = EPlayerNightState::InHouse;
 
-	// È¤½Ã ³²¾ÆÀÖÀ»Áö ¸ð¸£´Â Å¸ÀÌ¸Ó Á¤¸®
+	// È¤ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ð¸£´ï¿½ Å¸ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
 	StopStaminaRecovery();
 
 	UE_LOG(LogTemp, Log,
@@ -1050,9 +1053,9 @@ void AHBCharacterPlayer::ProcessNightEnd()
 {
 	if (!HasAuthority()) return;
 
-	// ±ÔÄ¢: "Àü³¯(¹Ù·Î ÀÌÀü ¹ã)¿¡ ¿ÜÃâÇßÀ¸¸é, ±× ´ÙÀ½ ¹ã(ÇöÀç ¹ã) µ¿¾È ¿ÜÃâÇÏÁö ¾ÊÀ» °æ¿ì ½ºÅÂ¹Ì³ª +1 È¸º¹"
-	// ¿©±â¼­´Â '¹ãÀÌ ³¡³¯ ¶§'(-> ³· ½ÃÀÛ ½Ã) È£ÃâµÇ¾î, bExitedPreviousNight Àº ¹Ù·Î Á÷Àü¿¡ ±â·ÏµÈ °ª,
-	// bExitedHouseThisNight Àº Áö±Ý ³¡³­ ¹ã(Çö ¹ã)¿¡ ¿ÜÃâÇß´ÂÁö ¿©ºÎ.
+	// ï¿½ï¿½Ä¢: "ï¿½ï¿½ï¿½ï¿½(ï¿½Ù·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¹Ì³ï¿½ +1 È¸ï¿½ï¿½"
+	// ï¿½ï¿½ï¿½â¼­ï¿½ï¿½ 'ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½'(-> ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½) È£ï¿½ï¿½Ç¾ï¿½, bExitedPreviousNight ï¿½ï¿½ ï¿½Ù·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ïµï¿½ ï¿½ï¿½,
+	// bExitedHouseThisNight ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½(ï¿½ï¿½ ï¿½ï¿½)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 	if (bExitedPreviousNight && !bExitedHouseThisNight)
 	{
 		const int32 Old = Stamina;
@@ -1062,6 +1065,6 @@ void AHBCharacterPlayer::ProcessNightEnd()
 			Old, Stamina);
 	}
 
-	// ´ÙÀ½ »çÀÌÅ¬À» À§ÇØ ÀÌÀü ¹ã ÇÃ·¡±× °»½Å (ÀÌÁ¦ bExitedPreviousNightÀº ¹æ±Ý ³¡³­ ¹ãÀÇ ¿ÜÃâ ¿©ºÎ·Î ¼³Á¤)
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Å¬ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ bExitedPreviousNightï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î·ï¿½ ï¿½ï¿½ï¿½ï¿½)
 	bExitedPreviousNight = bExitedHouseThisNight;
 }
