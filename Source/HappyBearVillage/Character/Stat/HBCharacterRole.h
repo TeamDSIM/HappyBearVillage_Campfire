@@ -82,15 +82,19 @@ public:
 
 	void InitRole(EJobType InJob)
 	{
-		int32 JobNum = static_cast<int32>(Job);
+		int32 JobNum = static_cast<int32>(InJob);
 		Job = InJob;
+		
+		UE_LOG(LogTemp, Log, TEXT("InitRole Call / JobNum = %d"), JobNum);
 
-		if (JobNum >= static_cast<int32>(ERoleType::MAFIA) && JobNum < static_cast<int32>(ERoleType::CITIZEN))
+		if (JobNum >= static_cast<int32>(EJobType::MAFIA) && JobNum < static_cast<int32>(EJobType::CITIZEN))
 		{
+			UE_LOG(LogTemp, Log, TEXT("JobNum : %d, Role = MAFIA"), JobNum);
 			Role = ERoleType::MAFIA;
 		}
-		else if(JobNum >= static_cast<int32>(ERoleType::CITIZEN) && JobNum < static_cast<int32>(ERoleType::END))
+		else if(JobNum >= static_cast<int32>(EJobType::CITIZEN) && JobNum < static_cast<int32>(EJobType::END))
 		{
+			UE_LOG(LogTemp, Log, TEXT("JobNum : %d, Role = CIVIL"), JobNum);
 			Role = ERoleType::CITIZEN;
 		}
 	}

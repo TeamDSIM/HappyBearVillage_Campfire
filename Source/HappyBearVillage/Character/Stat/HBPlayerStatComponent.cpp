@@ -79,6 +79,7 @@ void UHBPlayerStatComponent::InitCharacterRole()
 void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 {
 	// 랜덤 직업 설정
+	UE_LOG(LogTemp, Log, TEXT(" PlayerJobs : %d"), static_cast<int32>(InJob));
 	CharacterRole.InitRole(InJob);
 
 	// 바뀐 직업 서버 반영

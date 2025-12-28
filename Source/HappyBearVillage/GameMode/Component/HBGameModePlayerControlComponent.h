@@ -45,8 +45,10 @@ private:
 private:
 	void InitPlayersJobList(int InPlayerNum);
 	void InitPlayerNum(int InPlayerNum);
-	
+
+	UPROPERTY()
 	TArray<EJobType> PlayerJobs;
+	
 	// 생존중인 플레이어 숫자
 	int32 PlayerNum = 0;
 

@@ -45,7 +45,7 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 				UHBPlayerStatComponent* PlayerStatComponent = Character->GetStat();
 				if (PlayerStatComponent)
 				{
-					UE_LOG(LogTemp, Log, TEXT("Call Server Start Game / InitCharacterRole"));
+					UE_LOG(LogTemp, Log, TEXT("nitCharacterRole, PlayerJobs[%d] : %d"), i, static_cast<int32>(PlayerJobs[i]));
 					// 플레이어의 직업 설정
 					PlayerStatComponent->InitCharacterRole(PlayerJobs[i]);
 
@@ -159,6 +159,7 @@ void UHBGameModePlayerControlComponent::ResetPlayersTotalTakenDamage(AHBMafiaGam
 
 void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 {
+	
 	// 배치되어야할 마피아 수
 	// 8명이 최대일때 5명까지는 1명, 그이상은 2명
 	MafiaNum = InPlayerNum - 4 <= 1 ? 1 : InPlayerNum / 4 + 1;
@@ -170,10 +171,12 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 	{
 		if (i < MafiaNum)
 		{
+			UE_LOG(LogTemp, Log, TEXT("MAFIA"));
 			PlayerJobs.Add(EJobType::MAFIA);
 		}
 		else
 		{
+			UE_LOG(LogTemp, Log, TEXT("CITIZEN"));
 			PlayerJobs.Add(EJobType::CITIZEN);
 		}
 	}
