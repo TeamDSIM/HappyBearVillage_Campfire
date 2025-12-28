@@ -86,10 +86,9 @@ void AHBVillageGameMode::StartGame()
 		return;
 	}
 	
-	GameModeVillageGenerationComponent->SyncVillageGenerationData(HBGameState);
-
 	// 플레이어 초기 세팅
 	GameModePlayerControlComponent->InitPlayers(HBGameState);
+	GameModeVillageGenerationComponent->SyncVillageGenerationData(HBGameState);
 
 	// 날짜 세팅
 	HBGameState->Date = 0;
