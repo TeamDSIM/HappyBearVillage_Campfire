@@ -16,4 +16,6 @@ public:
 	UHBCharacterRelocationComponent();
 
 	void RelocateCharactersToHouse(class AHBMafiaGameState* InGameState);
+
+	void RelocateCharacterToCouncil(class AHBMafiaGameState* InGameState);
 };

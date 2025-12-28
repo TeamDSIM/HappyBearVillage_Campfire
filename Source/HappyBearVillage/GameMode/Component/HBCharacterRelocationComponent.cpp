@@ -42,3 +42,30 @@ void UHBCharacterRelocationComponent::RelocateCharactersToHouse(AHBMafiaGameStat
 		Character->SetActorLocation(HouseLocation);
 	}
 }
+
+void UHBCharacterRelocationComponent::RelocateCharacterToCouncil(AHBMafiaGameState* InGameState)
+{
+	if (!InGameState) return;
+	if (!GetOwner() || !GetWorld()) return;
+
+	//  서버에서만 실행
+	if (!GetOwner()->HasAuthority())
+		return;
+
+	//회의장 위치로 이동
+	const FVector CouncilLocation = FVector(200000.0f, 0.0f, 92.0f);
+
+	for (APlayerState* PlayerState : InGameState->PlayerArray)
+	{
+		if (!PlayerState) continue;
+
+		AController* Controller = PlayerState->GetPlayerController();
+		if (!Controller) continue;
+
+		AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(Controller->GetPawn());
+		if (!Character) continue;
+
+		// 순간이동
+		Character->SetActorLocation(CouncilLocation);
+	}
+}

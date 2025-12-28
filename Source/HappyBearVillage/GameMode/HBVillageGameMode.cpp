@@ -294,6 +294,8 @@ void AHBVillageGameMode::StartDiscussion()
 	if (HBGameState)
 	{
 		HBGameState->OnRep_GamePhase();
+		CharacterRelocationComponent->RelocateCharacterToCouncil(HBGameState);
+
 	}
 	else
 	{
