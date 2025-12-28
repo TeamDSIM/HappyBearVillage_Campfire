@@ -4,6 +4,7 @@
 #include "Character/Stat/HBPlayerStatComponent.h"
 
 #include "HappyBearVillage.h"
+#include "Character/Component/HBCharacterRagdollComponent.h"
 #include "Editor/WidgetCompilerLog.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameState/HBMafiaGameState.h"
@@ -149,8 +150,7 @@ void UHBPlayerStatComponent::OnRep_IsAlive()
 	{
 		if (!bIsAlive)
 		{
-			//@PHYTodo: 일단 임시로 메시만 제거
-			CharacterPlayer->GetMesh()->SetSkeletalMesh(nullptr);
+			CharacterPlayer->GetComponentByClass<UHBCharacterRagdollComponent>()->ApplyRagdoll();
 			CharacterPlayer->GetCharacterMovement()->DisableMovement();
 			CharacterPlayer->GetCharacterMovement()->StopMovementImmediately();	
 		}
