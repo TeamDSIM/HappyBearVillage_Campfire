@@ -74,6 +74,10 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerRPCSetEquipped(bool bEquipped);
 
+	//무기 장착 여부 함수
+public:
+	bool IsWeaponEquipped();
+
 public:
 	FORCEINLINE UStaticMeshComponent* GetCurrentWeapon() { return CurrentWeapon; }
 

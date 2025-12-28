@@ -17,6 +17,7 @@
 #include "Subsystem/HBGameVoteSubsystem.h"
 #include "UI/HBUserHUDWidget.h"
 #include "GameState/HBMafiaGameState.h"
+#include "Character/Component/HBCharacterMafiaAttackComponent.h"
 
 AHBCharacterPlayer::AHBCharacterPlayer()
 {
@@ -143,6 +144,9 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 
 	// 공격 가능 여부 초기화
 	bCanAttack = true;
+
+	//무기 탈/착용
+	MafiaAttackComp = CreateDefaultSubobject<UHBCharacterMafiaAttackComponent>(TEXT("MafiaAttackComp"));
 }
 
 void AHBCharacterPlayer::BeginPlay()
@@ -250,6 +254,11 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// @PHYTODO : 임시 직업 분배
 		EnhancedInputComponent->BindAction(StartAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::Start);
+
+		// 무기 탈/착
+		EnhancedInputComponent->BindAction(ToggleWeaponAction, ETriggerEvent::Triggered, this,
+			&AHBCharacterPlayer::ToggleWeapon);
+
 	}
 }
 
@@ -422,6 +431,12 @@ void AHBCharacterPlayer::Start()
 	}
 
 	ServerRPCStart();
+}
+
+void AHBCharacterPlayer::ToggleWeapon()
+{
+	if (MafiaAttackComp)
+		MafiaAttackComp->ToggleWeapon();
 }
 
 void AHBCharacterPlayer::OnRep_PlayerColor()

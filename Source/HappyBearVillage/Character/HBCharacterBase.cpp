@@ -112,6 +112,14 @@ void AHBCharacterBase::ServerRPCSetEquipped_Implementation(bool bEquipped)
 	SetWeaponMesh();
 }
 
+bool AHBCharacterBase::IsWeaponEquipped()
+{
+	if (bWeaponEquipped)
+		return true;
+	else
+		return false;	
+}
+
 void AHBCharacterBase::EquipWeapon()
 {
 	if (HasAuthority())

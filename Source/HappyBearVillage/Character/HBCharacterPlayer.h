@@ -19,6 +19,7 @@ class UInputMappingContext;
 class UInputAction;
 class UInputComponent;
 class UHBUserHUDWidget;
+class UHBCharacterMafiaAttackComponent;
 
 /* ================= Night Flow ================= */
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnStaminaChanged, int32 /* Stamina */)
@@ -46,6 +47,7 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
+
 	// 입력 섹션 ===========================================
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -70,7 +72,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TObjectPtr<UInputAction> StartAction;
 
-
+	//무기 탈/착용
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	TObjectPtr<UInputAction> ToggleWeaponAction;
 
 	/* ========== Night Flow : State ========== */
 public:
@@ -159,6 +163,9 @@ public:
 
 	UFUNCTION()
 	void Start();
+
+	UFUNCTION()
+	void ToggleWeapon();
 
 
 	// 1인칭 카메라
@@ -265,5 +272,9 @@ protected:
 	// UI 섹션 ====================================================
 protected:
 	virtual void SetupHUDWidget(UHBUserHUDWidget* InHUDWidget) override;
+
+	//무기 탈/착용
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UHBCharacterMafiaAttackComponent> MafiaAttackComp;
 
 };
