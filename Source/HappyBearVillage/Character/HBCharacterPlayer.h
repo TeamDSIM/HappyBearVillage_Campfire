@@ -181,7 +181,7 @@ public:
 	TObjectPtr<UStaticMeshComponent> FPSCurrentWeapon;
 
 	UPROPERTY(VisibleAnywhere, Category = State)
-	TObjectPtr<class UCharacterRagdollComponent> RagdollComponent; 
+	TObjectPtr<class UHBCharacterRagdollComponent> RagdollComponent; 
 
 	// 플레이어 색상 섹션 ===================================
 	UPROPERTY()

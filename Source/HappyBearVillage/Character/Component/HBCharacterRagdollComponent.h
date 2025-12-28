@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "CharacterRagdollComponent.generated.h"
+#include "HBCharacterRagdollComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class HAPPYBEARVILLAGE_API UCharacterRagdollComponent : public UActorComponent
+class HAPPYBEARVILLAGE_API UHBCharacterRagdollComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	UCharacterRagdollComponent();
+	UHBCharacterRagdollComponent();
 
 	void ApplyRagdoll();
 };

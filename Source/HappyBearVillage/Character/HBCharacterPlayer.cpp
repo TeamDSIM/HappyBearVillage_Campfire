@@ -6,7 +6,7 @@
 #include "EngineUtils.h"
 #include "InputMappingContext.h"
 #include "Animation/HBPlayerCharacterAnimInstance.h"
-#include "Component/CharacterRagdollComponent.h"
+#include "Component/HBCharacterRagdollComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/GameStateBase.h"
@@ -47,7 +47,7 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	FPSCameraComponent->FirstPersonFieldOfView = FPSFieldOfView;
 	FPSCameraComponent->FirstPersonScale = FPSViewScale;
 
-	RagdollComponent = CreateDefaultSubobject<UCharacterRagdollComponent>(TEXT("Ragdoll"));
+	RagdollComponent = CreateDefaultSubobject<UHBCharacterRagdollComponent>(TEXT("Ragdoll"));
 
 	// ���� �Է� ����
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(
