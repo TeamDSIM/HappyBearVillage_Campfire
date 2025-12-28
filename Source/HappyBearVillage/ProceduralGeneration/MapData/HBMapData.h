@@ -17,9 +17,8 @@ struct FHBMapData
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MapData")
 	FIntVector2 Resolution = { 64, 64 };
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MapData")
-	int32 AreaScale = 4;
+	int32 FieldElementScale = 4;
 	
 	TArray<TArray<TCHAR>> Map;
 	TArray<TArray<FLinearColor>> HouseColorLayer;

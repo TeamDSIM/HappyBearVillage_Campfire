@@ -27,9 +27,6 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")
-	FHBMapData MapData;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")
 	TSubclassOf<AActor> RoadFieldClass;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")

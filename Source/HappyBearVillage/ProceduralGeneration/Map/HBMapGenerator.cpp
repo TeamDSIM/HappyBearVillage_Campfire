@@ -53,12 +53,10 @@ void UHBMapGenerator::GenerateField(FHBMapData InMapData, UWorld* InWorld)
 		return;
 	}
 
-	MapData = InMapData;
+	const int32 Width = InMapData.Resolution.X;
+	const int32 Height = InMapData.Resolution.Y;
 
-	const int32 Width = MapData.Resolution.X;
-	const int32 Height = MapData.Resolution.Y;
-
-	if (Width <= 0 || Height <= 0 || Height != MapData.Map.Num() || Width != MapData.Map[0].Num())
+	if (Width <= 0 || Height <= 0 || Height != InMapData.Map.Num() || Width != InMapData.Map[0].Num())
 	{
 		UE_LOG(LogTemp, Error, TEXT("Invalid MapData"));
 		return;
@@ -68,7 +66,7 @@ void UHBMapGenerator::GenerateField(FHBMapData InMapData, UWorld* InWorld)
 	{
 		for (int32 Col = 0; Col < Width; ++Col)
 		{
-			TCHAR TileType = MapData.Map[Row][Col];
+			TCHAR TileType = InMapData.Map[Row][Col];
 
 			FTransform SpawnTransform;
 			SpawnTransform.SetLocation(FVector(Col * FieldElementSize, Row * FieldElementSize, -FieldElementSize / 2));
@@ -100,13 +98,11 @@ void UHBMapGenerator::GenerateHouse(FHBMapData InMapData, UWorld* InWorld)
 		UE_LOG(LogTemp, Error, TEXT("Generate House Error"));
 		return;
 	}
+	
+	const int32 Width = InMapData.Resolution.X;
+	const int32 Height = InMapData.Resolution.Y;
 
-	MapData = InMapData;
-
-	const int32 Width = MapData.Resolution.X;
-	const int32 Height = MapData.Resolution.Y;
-
-	if (Width <= 0 || Height <= 0 || Height != MapData.Map.Num() || Width != MapData.Map[0].Num())
+	if (Width <= 0 || Height <= 0 || Height != InMapData.Map.Num() || Width != InMapData.Map[0].Num())
 	{
 		UE_LOG(LogTemp, Error, TEXT("Invalid MapData"));
 		return;
@@ -116,7 +112,7 @@ void UHBMapGenerator::GenerateHouse(FHBMapData InMapData, UWorld* InWorld)
 	{
 		for (int32 Col = 0; Col < Width; ++Col)
 		{
-			TCHAR TileType = MapData.Map[Row][Col];
+			TCHAR TileType = InMapData.Map[Row][Col];
 
 			TSubclassOf<AActor> RandomClass = HouseClasses[HBUtils::GetRandomInt32FromStream(0, HouseClasses.Num() - 1)];
 			FVector SpawnLocation = FVector((Col + 1.5f) * FieldElementSize, (Row + 1.5f) * FieldElementSize, 0);
@@ -132,8 +128,6 @@ void UHBMapGenerator::GenerateHouse(FHBMapData InMapData, UWorld* InWorld)
 
 void UHBMapGenerator::GenerateForestSpline(FHBMapData InMapData, UWorld* InWorld)
 {
-	MapData = InMapData;
-
 	for (int i=1; i<InMapData.ForestBorderGridIndices.Num(); ++i)
 	{
 		TArray<FVector> CurForestBorderGridIndices = InMapData.ForestBorderGridIndices[i];

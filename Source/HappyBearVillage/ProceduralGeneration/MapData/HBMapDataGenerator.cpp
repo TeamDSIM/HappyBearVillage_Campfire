@@ -373,7 +373,7 @@ FHBMapData UHBMapDataGenerator::GenerateHouseColorData(TArray<FLinearColor> Hous
 				}
 			}
 
-			FVector HouseLocation = FVector((Col + 1.5f) * MapData.AreaScale * 100, (Row + 1.5f) * MapData.AreaScale * 100, 200);
+			FVector HouseLocation = FVector((Col + 1.5f) * MapData.FieldElementScale * 100, (Row + 1.5f) * MapData.FieldElementScale * 100, 200);
 			MapData.HouseLocationsByColor.Add(HouseColorList[ColorIndex], HouseLocation);
 			
 			++ColorIndex;
