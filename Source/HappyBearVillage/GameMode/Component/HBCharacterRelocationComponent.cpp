@@ -38,7 +38,7 @@ void UHBCharacterRelocationComponent::RelocateCharactersToHouse(AHBMafiaGameStat
 
 		FLinearColor CharacterColor = Character->PlayerColor;
 		FVector HouseLocation = HouseLocationsByColor[CharacterColor];
-		HouseLocation = FVector(HouseLocation.X * 400, HouseLocation.Y * 400, 200); 
+		HouseLocation = FVector(HouseLocation.X, HouseLocation.Y, 200); 
 		Character->SetActorLocation(HouseLocation);
 	}
 }

@@ -5,6 +5,7 @@
 
 #include <queue>
 
+#include "HappyBearVillage.h"
 #include "ProceduralGeneration/Noise/HBNoiseSettings.h"
 #include "ProceduralGeneration/Noise/HBPerlinNoise.h"
 #include "Utils/HBUtils.h"
@@ -372,8 +373,9 @@ FHBMapData UHBMapDataGenerator::GenerateHouseColorData(TArray<FLinearColor> Hous
 				}
 			}
 
-			MapData.HouseLocationsByColor.Add(HouseColorList[ColorIndex], FVector(Row, Col, 0));
-
+			FVector HouseLocation = FVector((Col + 1.5f) * MapData.AreaScale * 100, (Row + 1.5f) * MapData.AreaScale * 100, 200);
+			MapData.HouseLocationsByColor.Add(HouseColorList[ColorIndex], HouseLocation);
+			
 			++ColorIndex;
 		}
 	}
