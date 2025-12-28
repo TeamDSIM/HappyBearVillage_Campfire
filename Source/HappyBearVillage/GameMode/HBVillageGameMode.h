@@ -83,4 +83,7 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UHBGameModeVillageGenerationComponent> GameModeVillageGenerationComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UHBCharacterRelocationComponent> CharacterRelocationComponent;
 };

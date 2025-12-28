@@ -9,6 +9,7 @@
 #include "OnlineSubsystemUtils.h"
 #include "Character/HBCharacterPlayer.h"
 #include "Character/Stat/HBPlayerStatComponent.h"
+#include "Component/HBCharacterRelocationComponent.h"
 #include "Component/HBGameModePlayerControlComponent.h"
 #include "Component/HBGameModeVillageGenerationComponent.h"
 #include "GameFramework/GameStateBase.h"
@@ -29,6 +30,7 @@ AHBVillageGameMode::AHBVillageGameMode()
 {
 	GameModePlayerControlComponent = CreateDefaultSubobject<UHBGameModePlayerControlComponent>(TEXT("GameModePlayerControl"));
 	GameModeVillageGenerationComponent = CreateDefaultSubobject<UHBGameModeVillageGenerationComponent>(TEXT("GameModeVillageGeneration"));
+	CharacterRelocationComponent = CreateDefaultSubobject<UHBCharacterRelocationComponent>(TEXT("CharacterRelocationComponent"));
 	
 	bIsGamePlaying = false;
 
@@ -379,6 +381,8 @@ void AHBVillageGameMode::StartNight()
 		return;
 	}
 
+	CharacterRelocationComponent->RelocateCharactersToHouse(HBGameState);
+	
 	// 모든 플레이어 장착 해제
 	GameModePlayerControlComponent->UnEquippedAllPlayer(HBGameState);
 
