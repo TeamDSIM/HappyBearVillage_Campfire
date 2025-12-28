@@ -362,6 +362,8 @@ FHBMapData UHBMapDataGenerator::GenerateHouseColorData(TArray<FLinearColor> Hous
 		{
 			if (MapData.Map[Row][Col] != 'H') continue;
 
+			MapData.HouseLocationsByColor.Add(HouseColorList[ColorIndex], FVector(Row, Col, 0));
+			
 			for (int32 i=0; i<4; ++i)
 			{
 				for (int32 j=0; j<4; ++j)
@@ -369,6 +371,8 @@ FHBMapData UHBMapDataGenerator::GenerateHouseColorData(TArray<FLinearColor> Hous
 					MapData.HouseColorLayer[Row + i][Col + j] = HouseColorList[ColorIndex];
 				}
 			}
+
+			MapData.HouseLocationsByColor.Add(HouseColorList[ColorIndex], FVector(Row, Col, 0));
 
 			++ColorIndex;
 		}

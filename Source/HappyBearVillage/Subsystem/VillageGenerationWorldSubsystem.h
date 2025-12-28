@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProceduralGeneration/MapData/HBMapData.h"
+#include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
 #include "ProceduralGeneration/Sync/HBVillageGenerationData.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "VillageGenerationWorldSubsystem.generated.h"
@@ -17,6 +19,8 @@ class HAPPYBEARVILLAGE_API UVillageGenerationWorldSubsystem : public UWorldSubsy
 
 public:
 	FORCEINLINE bool IsGenerated() const { return bIsGenerated; }
+	FORCEINLINE FHBMapData GetMapData() const { return MapDataGenerator->GetMapData(); }
+
 	void GenerateVillage(FHBVillageGenerationData InVillageGenerationData);
 
 private:

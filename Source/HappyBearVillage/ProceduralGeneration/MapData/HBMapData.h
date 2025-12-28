@@ -26,5 +26,7 @@ public:
 	TArray<TArray<FVector>> ForestBorderGridIndices;
 
 	UPROPERTY(VisibleAnywhere, Category = "MapData")
+	TMap<FLinearColor, FVector> HouseLocationsByColor;
+	UPROPERTY(VisibleAnywhere, Category = "MapData")
 	TObjectPtr<UTexture2D> ForestAsTexture2D;
 };
