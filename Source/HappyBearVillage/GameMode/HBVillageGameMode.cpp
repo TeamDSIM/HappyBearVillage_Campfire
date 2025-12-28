@@ -359,6 +359,8 @@ void AHBVillageGameMode::StartVote()
 						if (VoteSubsystem)
 						{
 							VoteSubsystem->SetCurrentVoteTarget(Character);
+							HBGameState->TargetVoteNum = 0;
+							HBGameState->OnRep_TargetVoteNum();
 						}
 					}
 				}
@@ -531,9 +533,6 @@ void AHBVillageGameMode::TickCountdown()
 
 		FString PhaseName
 			= StaticEnum<EGamePhase>()->GetNameStringByValue(static_cast<int32>(HBGameState->CurrentPhase));
-
-		UE_LOG(LogTemp, Log, TEXT("[Phase : %s], Remaining Time : %f"),
-		       *PhaseName, HBGameState->RemainingTime);
 
 		if (HBGameState->RemainingTime <= 0.f)
 		{

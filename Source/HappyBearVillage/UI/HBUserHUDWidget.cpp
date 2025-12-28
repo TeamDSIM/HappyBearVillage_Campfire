@@ -71,6 +71,7 @@ void UHBUserHUDWidget::UpdateCurrentFightInfo(AHBPlayerState* InPlayerState, FDa
 
 void UHBUserHUDWidget::UpdateVoteNum(int32 NewVoteNum)
 {
+	UE_LOG(LogTemp, Log, TEXT("HUDWidget Update Vote Num"));
 	VoteHUDWidget->UpdateVoteNum(NewVoteNum);
 }
 
