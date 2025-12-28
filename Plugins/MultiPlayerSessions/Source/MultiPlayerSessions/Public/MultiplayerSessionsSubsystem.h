@@ -101,7 +101,7 @@ private:
 
 	//Create 호출 파라미터
 	//@Todo : 최대 인원 설정
-	int32 LastNumPublicConnections = 4;
+	int32 LastNumPublicConnections = 12;
 	FString LastMatchType = TEXT("FreeForAll");
 
 	bool bCreateSessionOnDestroy = false;
