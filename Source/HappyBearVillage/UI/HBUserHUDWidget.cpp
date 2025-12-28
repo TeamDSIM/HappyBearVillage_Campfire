@@ -44,10 +44,7 @@ void UHBUserHUDWidget::UpdatePhase(EGamePhase NewGamePhase)
 	}
 	else
 	{
-		if(VoteHUDWidget->GetVisibility() == ESlateVisibility::Visible)
-		{
-			VoteHUDWidget->SetVisibility(ESlateVisibility::Collapsed);
-		}
+		VoteHUDWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	
 	PhaseHUDWidget->UpdateCurrentPhase(NewGamePhase);
