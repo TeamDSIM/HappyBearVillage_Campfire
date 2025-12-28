@@ -140,6 +140,10 @@ void UHBPlayerStatComponent::OnRep_CharacterRole()
 
 void UHBPlayerStatComponent::OnRep_VoteNum()
 {
+	if (bIsVoteTarget)
+	{
+		OnPlayerVoteNumChanged.Broadcast(VoteNum);
+	}
 }
 
 void UHBPlayerStatComponent::OnRep_IsAlive()

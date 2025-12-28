@@ -85,14 +85,14 @@ void AHBVillageGameMode::StartGame()
 	{
 		return;
 	}
-	
-	GameModeVillageGenerationComponent->SyncVillageGenerationData(HBGameState);
 
 	// 플레이어 초기 세팅
 	GameModePlayerControlComponent->InitPlayers(HBGameState);
 
 	// 날짜 세팅
 	HBGameState->Date = 0;
+	
+	GameModeVillageGenerationComponent->SyncVillageGenerationData(HBGameState);
 
 	
 	// @PHYTODO : 페이즈 시작
@@ -382,7 +382,7 @@ void AHBVillageGameMode::StartNight()
 		return;
 	}
 
-	CharacterRelocationComponent->RelocateCharactersToHouse(HBGameState);
+	//CharacterRelocationComponent->RelocateCharactersToHouse(HBGameState);
 	
 	// 모든 플레이어 장착 해제
 	GameModePlayerControlComponent->UnEquippedAllPlayer(HBGameState);

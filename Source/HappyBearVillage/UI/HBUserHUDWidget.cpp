@@ -5,6 +5,7 @@
 
 #include "HBFightHUD.h"
 #include "HBPhaseHUD.h"
+#include "HBVoteHUD.h"
 #include "Interface/HBCharacterHUDInterface.h"
 #include "UI/HBNightStaminaWidget.h"
 
@@ -15,10 +16,8 @@ void UHBUserHUDWidget::NativeConstruct()
 	PhaseHUDWidget = Cast<UHBPhaseHUD>(GetWidgetFromName(TEXT("PhaseHUD")));
 	
 	FightHUDWidget = Cast<UHBFightHUD>(GetWidgetFromName(TEXT("FightHUD")));
-	if (FightHUDWidget)
-	{
-		//FightHUDWidget->RemoveFromParent();
-	}
+
+	VoteHUDWidget = Cast<UHBVoteHUD>(GetWidgetFromName(TEXT("VoteHUD")));
 
 	IHBCharacterHUDInterface* HUDPawn = Cast<IHBCharacterHUDInterface>(GetOwningPlayerPawn());
 	if (HUDPawn)
@@ -38,6 +37,18 @@ void UHBUserHUDWidget::UpdatePhase(EGamePhase NewGamePhase)
 	{
 		FightHUDWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
+
+	if (NewGamePhase == EGamePhase::Vote)
+	{
+		VoteHUDWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		if(VoteHUDWidget->GetVisibility() == ESlateVisibility::Visible)
+		{
+			VoteHUDWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
 	
 	PhaseHUDWidget->UpdateCurrentPhase(NewGamePhase);
 }
@@ -56,6 +67,11 @@ void UHBUserHUDWidget::UpdateCurrentFightInfo(AHBPlayerState* InPlayerState, FDa
 {
 	UE_LOG(LogTemp, Log, TEXT("[UHBUserHUDWidget] UpdateCurrentFightInfo InRank : %d"), InRank);
 	FightHUDWidget->UpdateCurrentInfo(InPlayerState, InEntry, InRank);
+}
+
+void UHBUserHUDWidget::UpdateVoteNum(int32 NewVoteNum)
+{
+	VoteHUDWidget->UpdateVoteNum(NewVoteNum);
 }
 
 void UHBUserHUDWidget::SetHUDVisibility(bool IsVisible, UHBUserWidget* InHUD)

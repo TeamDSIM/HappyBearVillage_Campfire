@@ -642,7 +642,7 @@ void AHBCharacterPlayer::AttackHitConfirm(AActor* HitActor)
 		// 공격 데미지 가져오기
 		float AttackDamage = Stat->GetBaseStat().AttackDamage;
 
-		// 부딫힌 대상에게 TakeDamage 로 데미지 전달
+		// 부?H힌 대상에게 TakeDamage 로 데미지 전달
 		FDamageEvent DamageEvent;
 		HitActor->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
 
@@ -769,6 +769,8 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 			GameState->OnDateChanged.AddUObject(InHUDWidget,&UHBUserHUDWidget::UpdateDate);
 			GameState->OnTopDamagePlayersChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateCurrentFightInfo);
 		}
+
+		GetStat()->OnPlayerVoteNumChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateVoteNum);
 
 		// HUD와 Stamina 연동: 초기값 전송 및 캐시 (로컬 클라이언트에서만)
 		if (IsLocallyControlled())
