@@ -229,7 +229,7 @@ protected:
 
 	// 시선 변경 시 trace 할 각도 값
 	UPROPERTY(EditDefaultsOnly, Category = Interaction)
-	float ViewAngleThreshold = 0.5f	// degrees
+	float ViewAngleThreshold = 0.5f;	// degrees
 
 	UPROPERTY();
 	TObjectPtr<AActor> InteractionTarget;

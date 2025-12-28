@@ -26,6 +26,7 @@ void AHBMafiaGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(AHBMafiaGameState, RemainingTime);
 	DOREPLIFETIME(AHBMafiaGameState, Date);
 	DOREPLIFETIME(AHBMafiaGameState, TopDamagePlayers);
+	DOREPLIFETIME(AHBMafiaGameState, TargetVoteNum);
 }
 
 void AHBMafiaGameState::SetTopDamagePlayers(const TArray<FDamageRankEntry>& NewTopDamagePlayers)
@@ -59,6 +60,12 @@ void AHBMafiaGameState::OnRep_RemainingTime()
 void AHBMafiaGameState::OnRep_Date()
 {
 	OnDateChanged.Broadcast(Date);
+}
+
+void AHBMafiaGameState::OnRep_TargetVoteNum()
+{
+	UE_LOG(LogTemp, Log, TEXT("OnRep_TargetVoteNum"));
+	OnTargetVoteNumChanged.Broadcast(TargetVoteNum);
 }
 
 bool AHBMafiaGameState::IsNight() const

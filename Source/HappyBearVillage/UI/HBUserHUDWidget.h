@@ -29,6 +29,7 @@ public:
 	void UpdateRemainingTime(float NewRemainingTime);
 	void UpdateDate(int32 NewDate);
 	void UpdateCurrentFightInfo(AHBPlayerState* InPlayerState, FDamageRankEntry InEntry, int32 InRank);
+	void UpdateVoteNum(int32 NewVoteNum);
 
 	void SetHUDVisibility(bool IsVisible, UHBUserWidget* InHUD);
 
@@ -38,4 +39,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UHBFightHUD> FightHUDWidget;
+	
+	UPROPERTY()
+	TObjectPtr<class UHBVoteHUD> VoteHUDWidget;
+
+	
 };

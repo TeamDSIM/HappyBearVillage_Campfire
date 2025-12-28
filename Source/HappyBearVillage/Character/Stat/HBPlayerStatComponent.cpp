@@ -18,7 +18,7 @@ UHBPlayerStatComponent::UHBPlayerStatComponent()
 	bWantsInitializeComponent = true;
 	bIsVoteTarget = false;
 	bIsAlive = true;
-	
+
 	SetIsReplicatedByDefault(true);
 }
 
@@ -34,7 +34,6 @@ void UHBPlayerStatComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
 }
 
 float UHBPlayerStatComponent::ApplyDamage(float InDamageAmount)
@@ -58,7 +57,6 @@ float UHBPlayerStatComponent::ApplyDamage(float InDamageAmount)
 	}
 
 	return TotalTakenDamage;
-	
 }
 
 void UHBPlayerStatComponent::ResetTotalTakenDamage()
@@ -102,7 +100,7 @@ void UHBPlayerStatComponent::ApplyVote(AActor* InActor)
 	{
 		return;
 	}
-	
+
 	// 때린 플레이어가 이미 투표한 상태라면 반환
 	if (VotedPlayers.Contains(InActor))
 	{
@@ -111,7 +109,9 @@ void UHBPlayerStatComponent::ApplyVote(AActor* InActor)
 
 	VotedPlayers.Add(InActor);
 	VoteNum += 1;
-	
+
+	OnRep_VoteNum();
+
 	HB_SUBLOG(LogTemp, Log, TEXT("VoteNum : %d"), VoteNum);
 }
 
@@ -136,11 +136,21 @@ void UHBPlayerStatComponent::OnRep_CharacterRole()
 	// UI 갱신 시켜야 함
 	OnPlayerRoleChanged.Broadcast(CharacterRole.Role);
 	OnPlayerJobChanged.Broadcast(CharacterRole.Job);
-	
 }
 
 void UHBPlayerStatComponent::OnRep_VoteNum()
 {
+	if (bIsVoteTarget && bIsAlive)
+	{
+		AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
+		if (HBGameState)
+		{
+			UE_LOG(LogTemp, Log, TEXT("OnRep_VoteNum = %d"), VoteNum);
+			HBGameState->TargetVoteNum = VoteNum;
+
+			HBGameState->OnRep_TargetVoteNum();
+		}
+	}
 }
 
 void UHBPlayerStatComponent::OnRep_IsAlive()
@@ -152,7 +162,7 @@ void UHBPlayerStatComponent::OnRep_IsAlive()
 		{
 			CharacterPlayer->GetComponentByClass<UHBCharacterRagdollComponent>()->ApplyRagdoll();
 			CharacterPlayer->GetCharacterMovement()->DisableMovement();
-			CharacterPlayer->GetCharacterMovement()->StopMovementImmediately();	
+			CharacterPlayer->GetCharacterMovement()->StopMovementImmediately();
 		}
 	}
 }

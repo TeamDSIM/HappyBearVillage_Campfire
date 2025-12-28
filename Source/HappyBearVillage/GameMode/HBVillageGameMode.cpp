@@ -86,12 +86,15 @@ void AHBVillageGameMode::StartGame()
 		return;
 	}
 	
+
 	// 플레이어 초기 세팅
 	GameModePlayerControlComponent->InitPlayers(HBGameState);
 	GameModeVillageGenerationComponent->SyncVillageGenerationData(HBGameState);
 
 	// 날짜 세팅
 	HBGameState->Date = 0;
+	
+	GameModeVillageGenerationComponent->SyncVillageGenerationData(HBGameState);
 
 	
 	// @PHYTODO : 페이즈 시작
@@ -360,6 +363,8 @@ void AHBVillageGameMode::StartVote()
 						if (VoteSubsystem)
 						{
 							VoteSubsystem->SetCurrentVoteTarget(Character);
+							HBGameState->TargetVoteNum = 0;
+							HBGameState->OnRep_TargetVoteNum();
 						}
 					}
 				}
@@ -383,7 +388,7 @@ void AHBVillageGameMode::StartNight()
 		return;
 	}
 
-	CharacterRelocationComponent->RelocateCharactersToHouse(HBGameState);
+	//CharacterRelocationComponent->RelocateCharactersToHouse(HBGameState);
 	
 	// 모든 플레이어 장착 해제
 	GameModePlayerControlComponent->UnEquippedAllPlayer(HBGameState);
@@ -532,9 +537,6 @@ void AHBVillageGameMode::TickCountdown()
 
 		FString PhaseName
 			= StaticEnum<EGamePhase>()->GetNameStringByValue(static_cast<int32>(HBGameState->CurrentPhase));
-
-		UE_LOG(LogTemp, Log, TEXT("[Phase : %s], Remaining Time : %f"),
-		       *PhaseName, HBGameState->RemainingTime);
 
 		if (HBGameState->RemainingTime <= 0.f)
 		{

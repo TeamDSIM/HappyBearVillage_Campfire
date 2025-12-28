@@ -148,7 +148,7 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
 	bCanAttack = true;
 
-	//¹«±â Å»/Âø¿ë
+	//ï¿½ï¿½ï¿½ï¿½ Å»/ï¿½ï¿½ï¿½ï¿½
 	MafiaAttackComp = CreateDefaultSubobject<UHBCharacterMafiaAttackComponent>(TEXT("MafiaAttackComp"));
 }
 
@@ -258,7 +258,7 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		// @PHYTODO : ï¿½Ó½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¹ï¿½
 		EnhancedInputComponent->BindAction(StartAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::Start);
 
-		// ¹«±â Å»/Âø
+		// ï¿½ï¿½ï¿½ï¿½ Å»/ï¿½ï¿½
 		EnhancedInputComponent->BindAction(ToggleWeaponAction, ETriggerEvent::Triggered, this,
 			&AHBCharacterPlayer::ToggleWeapon);
 
@@ -660,7 +660,7 @@ void AHBCharacterPlayer::AttackHitConfirm(AActor* HitActor)
 		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		float AttackDamage = Stat->GetBaseStat().AttackDamage;
 
-		// ï¿½Î‹Hï¿½ï¿½ ï¿½ï¿½ó¿¡°ï¿½ TakeDamage ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		// ï¿½ï¿½?Hï¿½ï¿½ ï¿½ï¿½ó¿¡°ï¿½ TakeDamage ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		FDamageEvent DamageEvent;
 		HitActor->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
 
@@ -786,6 +786,7 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 			GameState->OnRemainingTimeChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateRemainingTime);
 			GameState->OnDateChanged.AddUObject(InHUDWidget,&UHBUserHUDWidget::UpdateDate);
 			GameState->OnTopDamagePlayersChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateCurrentFightInfo);
+			GameState->OnTargetVoteNumChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateVoteNum);
 		}
 
 		// HUDï¿½ï¿½ Stamina ï¿½ï¿½ï¿½ï¿½: ï¿½Ê±â°ª ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Ä³ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)

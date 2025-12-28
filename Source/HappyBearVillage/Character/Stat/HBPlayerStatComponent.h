@@ -12,6 +12,7 @@
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTotalTakenDamageChanged, float /*CurrentTotalDamage*/)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerRoleChanged, ERoleType)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerJobChanged, EJobType)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerVoteNumChanged, int32)
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class HAPPYBEARVILLAGE_API UHBPlayerStatComponent : public UActorComponent
@@ -31,6 +32,7 @@ public:
 	FOnTotalTakenDamageChanged OnTotalTakenDamageChanged;
 	FOnPlayerRoleChanged OnPlayerRoleChanged;
 	FOnPlayerJobChanged OnPlayerJobChanged;
+	FOnPlayerVoteNumChanged OnPlayerVoteNumChanged;
 
 public:
 	// 스탯 관련 섹션 =====================================================================

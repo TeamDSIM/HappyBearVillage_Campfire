@@ -17,7 +17,9 @@ class AHBPlayerState;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGamePhaseChanged, EGamePhase)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnRemainingTimeChanged, float /*RemainingTime*/)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnDateChanged, int32 /*Date*/)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnTargetVoteNumChanged, int32 /*TargetVoteNum*/)
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnTopDamagePlayersChanged, AHBPlayerState*, FDamageRankEntry, int32)
+
 
 //LobbyWidget 관련 코드입니다.
 DECLARE_MULTICAST_DELEGATE(FOnLobbyPlayersChanged);
@@ -75,6 +77,7 @@ public:
 	FOnRemainingTimeChanged OnRemainingTimeChanged;
 	FOnDateChanged OnDateChanged;
 	FOnTopDamagePlayersChanged OnTopDamagePlayersChanged;
+	FOnTargetVoteNumChanged OnTargetVoteNumChanged;
 
 public:
 	void SetTopDamagePlayers(const TArray<FDamageRankEntry>& NewTopDamagePlayers);
@@ -95,6 +98,9 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_TopDamagePlayers)
 	TArray<FDamageRankEntry> TopDamagePlayers;
 
+	UPROPERTY(ReplicatedUsing = OnRep_TargetVoteNum)
+	int32 TargetVoteNum = 0;
+
 	UFUNCTION()
 	void OnRep_TopDamagePlayers();
 
@@ -106,6 +112,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_Date();
+
+	UFUNCTION()
+	void OnRep_TargetVoteNum();
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsNight() const;
