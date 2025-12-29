@@ -383,6 +383,7 @@ void AHBVillageGameMode::StartVote()
 						if (VoteSubsystem)
 						{
 							VoteSubsystem->SetCurrentVoteTarget(Character);
+							CharacterRelocationComponent->RelocateCharacterToExecutePlatform(HBGameState);
 							HBGameState->TargetVoteNum = 0;
 							HBGameState->OnRep_TargetVoteNum();
 						}

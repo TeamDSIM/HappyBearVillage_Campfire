@@ -13,6 +13,8 @@
  */
 
 
+class AHBExecutePlatform;
+
 UCLASS()
 class HAPPYBEARVILLAGE_API UHBGameVoteSubsystem : public UGameInstanceSubsystem
 {
@@ -37,6 +39,14 @@ public:
 	// 투표 과반수 확인
 	void CheckTargetIsDead();
 
+	FORCEINLINE AHBExecutePlatform* GetExecutePlatform() const { return ExecutePlatform; }
+	FORCEINLINE void SetExecutePlatform(AHBExecutePlatform* InExecutePlatform)
+	{
+		ExecutePlatform = InExecutePlatform;
+	}
+
+	FORCEINLINE void ClearExecutePlatform() { ExecutePlatform = nullptr; }
+
 private:
 	bool IsServer(UWorld* World);
 
@@ -49,4 +59,7 @@ protected:
 private:
 	// 이번 투표 대상
 	AHBCharacterPlayer* CurrentVoteTarget;
+
+	UPROPERTY()
+	TObjectPtr<AHBExecutePlatform> ExecutePlatform;
 };

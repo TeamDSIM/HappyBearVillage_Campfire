@@ -7,6 +7,8 @@
 #include "GameFramework/PlayerState.h"
 #include "GameState/HBMafiaGameState.h"
 #include "Character/HBCharacterPlayer.h"
+#include "InteractObject/HBExecutePlatform.h"
+#include "Subsystem/HBGameVoteSubsystem.h"
 #include "Subsystem/VillageGenerationWorldSubsystem.h"
 
 UHBCharacterRelocationComponent::UHBCharacterRelocationComponent() { }
@@ -101,5 +103,19 @@ void UHBCharacterRelocationComponent::RelocateCharacterToCouncil(AHBMafiaGameSta
 
         Characters[i]->TeleportTo(TargetLocation, LookAtRotation, false, true);
         Characters[i]->SetActorRotation(LookAtRotation);
+	}
+}
+
+void UHBCharacterRelocationComponent::RelocateCharacterToExecutePlatform(AHBMafiaGameState* InGameState)
+{
+	UHBGameVoteSubsystem* VoteSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UHBGameVoteSubsystem>();
+	if (VoteSubsystem)
+	{
+		AHBCharacterPlayer* Target = VoteSubsystem->GetCurrentVoteTarget();
+		if (Target)
+		{
+			// 처형대 위치로 이동
+			Target->SetActorLocation(VoteSubsystem->GetExecutePlatform()->GetTargetPosition());
+		}
 	}
 }

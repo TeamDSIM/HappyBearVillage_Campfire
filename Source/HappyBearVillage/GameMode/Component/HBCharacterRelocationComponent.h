@@ -18,4 +18,6 @@ public:
 	void RelocateCharactersToHouse(class AHBMafiaGameState* InGameState);
 
 	void RelocateCharacterToCouncil(class AHBMafiaGameState* InGameState);
+
+	void RelocateCharacterToExecutePlatform(AHBMafiaGameState* InGameState);
 };

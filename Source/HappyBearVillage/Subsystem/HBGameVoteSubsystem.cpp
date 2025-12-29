@@ -22,6 +22,8 @@ UHBGameVoteSubsystem::UHBGameVoteSubsystem()
 	bUpdateSchduled = false;
 
 	CurrentVoteTarget = nullptr;
+
+	ExecutePlatform = nullptr;
 }
 
 
