@@ -89,6 +89,14 @@ void UHBUserHUDWidget::UpdateGameEnd(int32 NewMafiaWin)
 	}
 }
 
+void UHBUserHUDWidget::UpdateStamina(int32 NewStamina)
+{
+	if (NightStaminaWidget)
+	{
+		NightStaminaWidget->SetStamina(NewStamina);
+	}
+}
+
 void UHBUserHUDWidget::SetHUDVisibility(bool IsVisible, UHBUserWidget* InHUD)
 {
 	if (IsVisible)

@@ -790,6 +790,8 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 			GameState->OnTopDamagePlayersChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateCurrentFightInfo);
 			GameState->OnTargetVoteNumChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateVoteNum);
 			GameState->OnGameEndChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateGameEnd);
+
+			OnStaminaChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateStamina);
 		}
 
 		// HUD�� Stamina ����: �ʱⰪ ���� �� ĳ�� (���� Ŭ���̾�Ʈ������)

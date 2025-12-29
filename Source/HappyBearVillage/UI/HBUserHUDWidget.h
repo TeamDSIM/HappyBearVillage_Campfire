@@ -31,6 +31,7 @@ public:
 	void UpdateCurrentFightInfo(AHBPlayerState* InPlayerState, FDamageRankEntry InEntry, int32 InRank);
 	void UpdateVoteNum(int32 NewVoteNum);
 	void UpdateGameEnd(int32 NewMafiaWin);
+	void UpdateStamina(int32 NewStamina);
 
 	void SetHUDVisibility(bool IsVisible, UHBUserWidget* InHUD);
 
@@ -46,4 +47,7 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UHBGameEndHUD> GameEndHUDWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UHBNightStaminaWidget> NightStaminaWidget;
 };
