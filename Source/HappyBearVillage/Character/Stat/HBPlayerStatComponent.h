@@ -10,6 +10,7 @@
 
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTotalTakenDamageChanged, float /*CurrentTotalDamage*/)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, int32 /* NightDamage */)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerRoleChanged, ERoleType)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerJobChanged, EJobType)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerVoteNumChanged, int32)
@@ -30,6 +31,7 @@ protected:
 
 public:
 	FOnTotalTakenDamageChanged OnTotalTakenDamageChanged;
+	FOnHealthChanged OnHealthChanged;
 	FOnPlayerRoleChanged OnPlayerRoleChanged;
 	FOnPlayerJobChanged OnPlayerJobChanged;
 	FOnPlayerVoteNumChanged OnPlayerVoteNumChanged;
@@ -50,6 +52,7 @@ public:
 	}
 
 	float ApplyDamage(float InDamageAmount);
+	int32 ApplyNightDamage();
 
 	void ResetTotalTakenDamage();
 
@@ -83,6 +86,9 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_VoteNum, Transient, VisibleInstanceOnly, Category = Stat)
 	int32 VoteNum = 0;
 
+	UPROPERTY(ReplicatedUsing = OnRep_Health, Transient, VisibleAnywhere, Category = Stat)
+	int32 Health = 3;
+
 	UPROPERTY()
 	TArray<AActor*> VotedPlayers;
 
@@ -105,6 +111,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_VoteNum();
+
+	UFUNCTION()
+	void OnRep_Health();
 
 	UFUNCTION()
 	void OnRep_IsAlive();
