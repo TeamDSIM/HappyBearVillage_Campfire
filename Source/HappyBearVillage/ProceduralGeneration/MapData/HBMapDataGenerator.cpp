@@ -53,7 +53,7 @@ FHBMapData UHBMapDataGenerator::GenerateFieldData(UHBPerlinNoise* InPerlinNoise)
 		{
 			Nodes[Row][Col].Perlin = InPerlinNoise->GetNoiseElement(Row, Col);
 			
-			if (Nodes[Row][Col].Perlin >= 0)
+			if (Nodes[Row][Col].Perlin >= 1)
 			{
 				Nodes[Row][Col].Type = 'A';
 			}
@@ -472,7 +472,7 @@ UTexture2D* UHBMapDataGenerator::GenerateForestTexture2D()
 	{
 		for (int32 Col=0; Col<Width; ++Col)
 		{
-			FColor CurColor = (Nodes[Row][Col].Perlin >= 0 || Nodes[Row][Col].Type == 'R') ? FColor(0, 0, 0, 0) : FColor::Red;
+			FColor CurColor = (Nodes[Row][Col].Perlin >= 1 || Nodes[Row][Col].Type == 'R') ? FColor(0, 0, 0, 0) : FColor::Red;
 			Pixels[Width * Row + Col] = CurColor;
 		}
 	}
