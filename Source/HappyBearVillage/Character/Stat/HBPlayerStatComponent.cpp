@@ -61,6 +61,21 @@ float UHBPlayerStatComponent::ApplyDamage(float InDamageAmount)
 	
 }
 
+int32 UHBPlayerStatComponent::ApplyNightDamage()
+{
+	Health -= 1;
+	
+	if (Health <= 0)
+	{
+		Health = 0;
+		OnHealthChanged.Broadcast(Health);
+
+		SetIsAlive(false);
+	}
+
+	return Health;
+}
+
 void UHBPlayerStatComponent::ResetTotalTakenDamage()
 {
 	TotalTakenDamage = 0;
@@ -120,6 +135,7 @@ void UHBPlayerStatComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePr
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UHBPlayerStatComponent, TotalTakenDamage);
+	DOREPLIFETIME(UHBPlayerStatComponent, Health);
 	DOREPLIFETIME(UHBPlayerStatComponent, CharacterRole);
 	DOREPLIFETIME(UHBPlayerStatComponent, VoteNum);
 	DOREPLIFETIME(UHBPlayerStatComponent, bIsVoteTarget);
@@ -140,6 +156,10 @@ void UHBPlayerStatComponent::OnRep_CharacterRole()
 }
 
 void UHBPlayerStatComponent::OnRep_VoteNum()
+{
+}
+
+void UHBPlayerStatComponent::OnRep_Health()
 {
 }
 

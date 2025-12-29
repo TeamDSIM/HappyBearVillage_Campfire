@@ -375,7 +375,7 @@ void AHBVillageGameMode::StartVote()
 void AHBVillageGameMode::StartNight()
 {
 	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start Night"));
-	SetPhase(EGamePhase::Night, 15.f);
+	SetPhase(EGamePhase::Night, 180.f);
 
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (!HBGameState)
