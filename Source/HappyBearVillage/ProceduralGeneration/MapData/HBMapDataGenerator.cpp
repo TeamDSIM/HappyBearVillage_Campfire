@@ -480,6 +480,11 @@ UTexture2D* UHBMapDataGenerator::GenerateForestTexture2D()
 	void* TextureData = ForestTexture2D->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
 	FMemory::Memcpy(TextureData, Pixels.GetData(), Pixels.Num() * sizeof(FColor));
 	ForestTexture2D->GetPlatformData()->Mips[0].BulkData.Unlock();
+	ForestTexture2D->SRGB = false;
+	ForestTexture2D->Filter = TF_Nearest;
+	ForestTexture2D->AddressX = TA_Clamp;
+	ForestTexture2D->AddressY = TA_Clamp;
+	ForestTexture2D->NeverStream = true;
 	ForestTexture2D->UpdateResource();
 
 	MapData.ForestAsTexture2D = ForestTexture2D;
