@@ -53,7 +53,7 @@ FHBMapData UHBMapDataGenerator::GenerateFieldData(UHBPerlinNoise* InPerlinNoise)
 		{
 			Nodes[Row][Col].Perlin = InPerlinNoise->GetNoiseElement(Row, Col);
 			
-			if (Nodes[Row][Col].Perlin >= 0)
+			if (Nodes[Row][Col].Perlin >= 1)
 			{
 				Nodes[Row][Col].Type = 'A';
 			}
@@ -472,7 +472,7 @@ UTexture2D* UHBMapDataGenerator::GenerateForestTexture2D()
 	{
 		for (int32 Col=0; Col<Width; ++Col)
 		{
-			FColor CurColor = (Nodes[Row][Col].Perlin >= 0 || Nodes[Row][Col].Type == 'R') ? FColor(0, 0, 0, 0) : FColor::Red;
+			FColor CurColor = (Nodes[Row][Col].Perlin >= 1 || Nodes[Row][Col].Type == 'R') ? FColor(0, 0, 0, 0) : FColor::Red;
 			Pixels[Width * Row + Col] = CurColor;
 		}
 	}
@@ -480,6 +480,11 @@ UTexture2D* UHBMapDataGenerator::GenerateForestTexture2D()
 	void* TextureData = ForestTexture2D->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
 	FMemory::Memcpy(TextureData, Pixels.GetData(), Pixels.Num() * sizeof(FColor));
 	ForestTexture2D->GetPlatformData()->Mips[0].BulkData.Unlock();
+	ForestTexture2D->SRGB = false;
+	ForestTexture2D->Filter = TF_Nearest;
+	ForestTexture2D->AddressX = TA_Clamp;
+	ForestTexture2D->AddressY = TA_Clamp;
+	ForestTexture2D->NeverStream = true;
 	ForestTexture2D->UpdateResource();
 
 	MapData.ForestAsTexture2D = ForestTexture2D;
