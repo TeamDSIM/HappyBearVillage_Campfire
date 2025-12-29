@@ -149,6 +149,7 @@ void UHBPlayerStatComponent::OnRep_VoteNum()
 			HBGameState->TargetVoteNum = VoteNum;
 
 			HBGameState->OnRep_TargetVoteNum();
+			HBGameState->TargetVoteNum = -1;
 		}
 	}
 }

@@ -101,7 +101,7 @@ public:
 	TArray<FDamageRankEntry> TopDamagePlayers;
 
 	UPROPERTY(ReplicatedUsing = OnRep_TargetVoteNum)
-	int32 TargetVoteNum = 0;
+	int32 TargetVoteNum = -1;
 
 	// 0 은 종료 X, 1 은 마피아, 2 는 시민 승리
 	UPROPERTY(ReplicatedUsing = OnRep_GameEnd)
