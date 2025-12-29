@@ -767,6 +767,8 @@ void AHBCharacterPlayer::PlayAttackAnimation()
 	UAnimInstance* FPSAnimInstance = FPSMeshComponent->GetAnimInstance();
 	if (FPSAnimInstance)
 	{
+		FPSAnimInstance->StopAllMontages(0.f);
+		FPSAnimInstance->Montage_Play(AttackMontage);
 	}
 }
 

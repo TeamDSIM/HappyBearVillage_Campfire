@@ -3,6 +3,7 @@
 
 #include "Character/Animation/HBAnimNotify_AttackHitCheck.h"
 
+#include "GameFramework/Character.h"
 #include "Interface/HBAttackAnimationInterface.h"
 
 void UHBAnimNotify_AttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
@@ -12,10 +13,14 @@ void UHBAnimNotify_AttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAni
 
 	if (MeshComp)
 	{
-		IHBAttackAnimationInterface* AttackPawn = Cast<IHBAttackAnimationInterface>(MeshComp->GetOwner());
-		if (AttackPawn)
+		ACharacter* OwnerCharacter = Cast<ACharacter>(MeshComp->GetOwner());
+		if (OwnerCharacter && MeshComp == OwnerCharacter->GetMesh())
 		{
-			AttackPawn->AttackHitCheck();
+			IHBAttackAnimationInterface* AttackPawn = Cast<IHBAttackAnimationInterface>(MeshComp->GetOwner());
+			if (AttackPawn)
+			{
+				AttackPawn->AttackHitCheck();
+			}
 		}
 	}
 }
