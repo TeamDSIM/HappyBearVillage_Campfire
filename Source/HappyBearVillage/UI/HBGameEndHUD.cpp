@@ -25,5 +25,11 @@ void UHBGameEndHUD::UpdateWinText(FString NewWinText)
 	if (WinText)
 	{
 		WinText->SetText(FText::FromString(FString::Printf(TEXT("%s"), *WinTextString)));
+		PlayFadeIn();
 	}
+}
+
+void UHBGameEndHUD::PlayFadeIn()
+{
+	PlayAnimation(FadeIn);
 }

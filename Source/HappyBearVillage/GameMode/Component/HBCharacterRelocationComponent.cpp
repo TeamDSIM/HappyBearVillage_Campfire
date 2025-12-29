@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerState.h"
 #include "GameState/HBMafiaGameState.h"
 #include "Character/HBCharacterPlayer.h"
+#include "Character/Stat/HBPlayerStatComponent.h"
 #include "InteractObject/HBExecutePlatform.h"
 #include "Subsystem/HBGameVoteSubsystem.h"
 #include "Subsystem/VillageGenerationWorldSubsystem.h"
@@ -38,6 +39,12 @@ void UHBCharacterRelocationComponent::RelocateCharactersToHouse(AHBMafiaGameStat
 			return;
 		}
 
+		// 죽은 사람은 이동 제외
+		if (Character->GetStat()->GetIsAlive() == false)
+		{
+			continue;
+		}
+		
 		FLinearColor CharacterColor = Character->PlayerColor;
 		FVector HouseLocation = HouseLocationsByColor[CharacterColor];
 		HouseLocation = FVector(HouseLocation.X, HouseLocation.Y, 200); 
@@ -83,6 +90,12 @@ void UHBCharacterRelocationComponent::RelocateCharacterToCouncil(AHBMafiaGameSta
 
     for (int32 i = 0; i < NumPlayers; ++i)
     {
+    	// 죽은 사람은 이동 제외
+		if (Characters[i]->GetStat()->GetIsAlive() == false)
+		{
+			continue;
+		}
+    	
         const float AngleDeg = AngleStep * i;
         const float AngleRad = FMath::DegreesToRadians(AngleDeg);
 

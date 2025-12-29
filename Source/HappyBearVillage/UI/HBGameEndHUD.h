@@ -24,9 +24,15 @@ public:
 public:
 	void UpdateWinText(FString NewWinText);
 
+	UFUNCTION()
+	void PlayFadeIn();
+
 public:
 	UPROPERTY()
 	TObjectPtr<UTextBlock> WinText;
+
+	UPROPERTY(meta=(BindWidgetAnim), Transient)
+	TObjectPtr<UWidgetAnimation> FadeIn;
 
 	UPROPERTY()
 	FString WinTextString;	
