@@ -3,6 +3,8 @@
 
 #include "Character/HBCharacterBase.h"
 
+#include "GameMode/HBVillageGameMode.h"
+#include "GameMode/Component/HBGameModePlayerControlComponent.h"
 #include "GameState/HBMafiaGameState.h"
 #include "Net/UnrealNetwork.h"
 #include "Stat/HBPlayerStatComponent.h"
@@ -200,14 +202,27 @@ float AHBCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const
 	}
 
 	// 데미지 받는 상황이 투표 상황이라면
-	if (HBGameState->CurrentPhase == EGamePhase::Vote)
+	if (HBGameState->CurrentPhase == EGamePhase::Fight)
+	{
+		Stat->ApplyDamage(DamageAmount);
+	}
+	else if (HBGameState->CurrentPhase == EGamePhase::Vote)
 	{
 		Stat->ApplyVote(DamageCauser);
 	}
-
-	else
+	else if (HBGameState->CurrentPhase == EGamePhase::Night)
 	{
-		Stat->ApplyDamage(DamageAmount);
+		int32 Health = Stat->ApplyNightDamage();
+		if (Health <= 0)
+		{
+			AHBVillageGameMode* HBGameMode = Cast<AHBVillageGameMode>(GetWorld()->GetAuthGameMode());
+			UHBGameModePlayerControlComponent* PlayerControlComp = HBGameMode->GetHBGameModePlayerControlComponent();
+
+			int32 PlayerNum = PlayerControlComp->GetPlayerNum();
+			PlayerControlComp->SetPlayerNum(PlayerNum - 1);
+
+			HBGameMode->CheckGameEnd();
+		}
 	}
 	
 	return DamageAmount;
