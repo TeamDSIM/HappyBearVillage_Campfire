@@ -2,6 +2,7 @@
 
 
 #include "HBRoadField.h"
+#include "Materials/MaterialInterface.h"
 
 
 AHBRoadField::AHBRoadField()
@@ -13,5 +14,11 @@ AHBRoadField::AHBRoadField()
 	if (CubeMeshAsset.Succeeded())
 	{
 		CubeMeshComponent->SetStaticMesh(CubeMeshAsset.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> FieldMaterialRef(TEXT("/Game/Assets/Fab/Mossy_Rocky_Ground_vcqhcig/Materials/MI_vcqhcig.MI_vcqhcig"));
+	if (FieldMaterialRef.Succeeded())
+	{
+		CubeMeshComponent->SetMaterial(0, FieldMaterialRef.Object);
 	}
 }
