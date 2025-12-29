@@ -97,9 +97,6 @@ void AHBVillageGameMode::StartGame()
 	// 날짜 세팅
 	HBGameState->Date = 0;
 
-	GameModeVillageGenerationComponent->SyncVillageGenerationData(HBGameState);
-
-
 	// @PHYTODO : 페이즈 시작
 	StartDay();
 }
