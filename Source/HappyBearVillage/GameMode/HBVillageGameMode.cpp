@@ -60,6 +60,8 @@ AHBVillageGameMode::AHBVillageGameMode()
 	bIsGameEnd = false;
 	bIsCivilWin = false;
 	bIsMafiaWin = false;
+
+	bUseSeamlessTravel = true;
 }
 
 void AHBVillageGameMode::StartGame()
@@ -145,7 +147,7 @@ void AHBVillageGameMode::StopGame()
 	
 	//@ Todo : 맵 이름 변경
 	FString Map = TEXT("/Game/Maps/LobbyMap");
-	GetWorld()->ServerTravel(Map);
+	GetWorld()->ServerTravel(Map, true);
 }
 
 void AHBVillageGameMode::CheatPhaseChange()

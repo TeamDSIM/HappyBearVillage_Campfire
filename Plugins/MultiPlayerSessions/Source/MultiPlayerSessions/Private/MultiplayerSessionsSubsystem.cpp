@@ -425,7 +425,7 @@ void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName SessionName, b
 		{
 			//todo : 맵 위치 변경 시 주소 수정해줘야함
 			// Listen 서버로 열기
-			World->ServerTravel(TEXT("/Game/Maps/LobbyMap?listen"));
+			World->ServerTravel(TEXT("/Game/Maps/LobbyMap?listen"), true);
 		}
 	}
 

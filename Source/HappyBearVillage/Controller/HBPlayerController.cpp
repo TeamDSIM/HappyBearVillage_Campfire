@@ -218,7 +218,7 @@ void AHBPlayerController::StartGame()
 	}
 	//@ Todo : 맵 이름 변경
 	FString Map = TEXT("/Game/Maps/InGameMap");
-		GetWorld()->ServerTravel(Map);
+		GetWorld()->ServerTravel(Map, true);
 }
 
 void AHBPlayerController::ExitGame()
