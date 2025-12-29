@@ -16,7 +16,7 @@ AHBRoadField::AHBRoadField()
 		CubeMeshComponent->SetStaticMesh(CubeMeshAsset.Object);
 	}
 
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> FieldMaterialRef(TEXT("/Game/Assets/Fab/Mossy_Rocky_Ground_vcqhcig/Materials/MI_vcqhcig.MI_vcqhcig"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> FieldMaterialRef(TEXT("/Game/Assets/Fab/Ground/Materials/MI_xdhhdgq.MI_xdhhdgq"));
 	if (FieldMaterialRef.Succeeded())
 	{
 		CubeMeshComponent->SetMaterial(0, FieldMaterialRef.Object);
