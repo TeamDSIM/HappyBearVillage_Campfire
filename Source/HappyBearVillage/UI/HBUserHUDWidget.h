@@ -30,6 +30,7 @@ public:
 	void UpdateDate(int32 NewDate);
 	void UpdateCurrentFightInfo(AHBPlayerState* InPlayerState, FDamageRankEntry InEntry, int32 InRank);
 	void UpdateVoteNum(int32 NewVoteNum);
+	void UpdateGameEnd(int32 NewMafiaWin);
 
 	void SetHUDVisibility(bool IsVisible, UHBUserWidget* InHUD);
 
@@ -43,5 +44,6 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class UHBVoteHUD> VoteHUDWidget;
 
-	
+	UPROPERTY()
+	TObjectPtr<class UHBGameEndHUD> GameEndHUDWidget;
 };

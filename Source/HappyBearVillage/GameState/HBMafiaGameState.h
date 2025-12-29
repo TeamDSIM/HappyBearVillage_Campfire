@@ -19,6 +19,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnRemainingTimeChanged, float /*RemainingTi
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnDateChanged, int32 /*Date*/)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTargetVoteNumChanged, int32 /*TargetVoteNum*/)
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnTopDamagePlayersChanged, AHBPlayerState*, FDamageRankEntry, int32)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameEndChanged, int32);
 
 
 //LobbyWidget 관련 코드입니다.
@@ -78,6 +79,7 @@ public:
 	FOnDateChanged OnDateChanged;
 	FOnTopDamagePlayersChanged OnTopDamagePlayersChanged;
 	FOnTargetVoteNumChanged OnTargetVoteNumChanged;
+	FOnGameEndChanged OnGameEndChanged;
 
 public:
 	void SetTopDamagePlayers(const TArray<FDamageRankEntry>& NewTopDamagePlayers);
@@ -101,6 +103,10 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_TargetVoteNum)
 	int32 TargetVoteNum = 0;
 
+	// 0 은 종료 X, 1 은 마피아, 2 는 시민 승리
+	UPROPERTY(ReplicatedUsing = OnRep_GameEnd)
+	int32 GameEnd = 0;
+
 	UFUNCTION()
 	void OnRep_TopDamagePlayers();
 
@@ -115,6 +121,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_TargetVoteNum();
+
+	UFUNCTION()
+	void OnRep_GameEnd();
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsNight() const;

@@ -11,6 +11,9 @@ class UHBGameModePlayerControlComponent;
 /**
  * 
  */
+
+
+
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBVillageGameMode : public AGameModeBase
 {
@@ -36,6 +39,7 @@ public:
 	{
 		return GameModePlayerControlComponent;
 	}
+
 
 private:
 	virtual void StartPlay() override;
@@ -72,6 +76,7 @@ private:
 
 	int32 ConnectedPlayerCounts = 0;
 
+	
 	uint8 bIsGameEnd : 1;
 	uint8 bIsCivilWin : 1;
 	uint8 bIsMafiaWin : 1;

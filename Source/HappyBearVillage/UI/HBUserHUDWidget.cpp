@@ -4,6 +4,7 @@
 #include "UI/HBUserHUDWidget.h"
 
 #include "HBFightHUD.h"
+#include "HBGameEndHUD.h"
 #include "HBPhaseHUD.h"
 #include "HBVoteHUD.h"
 #include "Interface/HBCharacterHUDInterface.h"
@@ -18,6 +19,8 @@ void UHBUserHUDWidget::NativeConstruct()
 	FightHUDWidget = Cast<UHBFightHUD>(GetWidgetFromName(TEXT("FightHUD")));
 
 	VoteHUDWidget = Cast<UHBVoteHUD>(GetWidgetFromName(TEXT("VoteHUD")));
+
+	GameEndHUDWidget = Cast<UHBGameEndHUD>(GetWidgetFromName(TEXT("GameEndHUD")));
 
 	IHBCharacterHUDInterface* HUDPawn = Cast<IHBCharacterHUDInterface>(GetOwningPlayerPawn());
 	if (HUDPawn)
@@ -70,6 +73,20 @@ void UHBUserHUDWidget::UpdateVoteNum(int32 NewVoteNum)
 {
 	UE_LOG(LogTemp, Log, TEXT("HUDWidget Update Vote Num"));
 	VoteHUDWidget->UpdateVoteNum(NewVoteNum);
+}
+
+void UHBUserHUDWidget::UpdateGameEnd(int32 NewMafiaWin)
+{
+	GameEndHUDWidget->SetVisibility(ESlateVisibility::Visible);
+	
+	if (NewMafiaWin == 1)
+	{
+		GameEndHUDWidget->UpdateWinText(TEXT("MAFIA WIN"));
+	}
+	else if (NewMafiaWin == 2)
+	{
+		GameEndHUDWidget->UpdateWinText(TEXT("CITIZEN WIN"));
+	}
 }
 
 void UHBUserHUDWidget::SetHUDVisibility(bool IsVisible, UHBUserWidget* InHUD)

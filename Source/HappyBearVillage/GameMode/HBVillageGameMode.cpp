@@ -28,10 +28,13 @@ bool AHBVillageGameMode::IsServer(UWorld* World)
 
 AHBVillageGameMode::AHBVillageGameMode()
 {
-	GameModePlayerControlComponent = CreateDefaultSubobject<UHBGameModePlayerControlComponent>(TEXT("GameModePlayerControl"));
-	GameModeVillageGenerationComponent = CreateDefaultSubobject<UHBGameModeVillageGenerationComponent>(TEXT("GameModeVillageGeneration"));
-	CharacterRelocationComponent = CreateDefaultSubobject<UHBCharacterRelocationComponent>(TEXT("CharacterRelocationComponent"));
-	
+	GameModePlayerControlComponent = CreateDefaultSubobject<UHBGameModePlayerControlComponent>(
+		TEXT("GameModePlayerControl"));
+	GameModeVillageGenerationComponent = CreateDefaultSubobject<UHBGameModeVillageGenerationComponent>(
+		TEXT("GameModeVillageGeneration"));
+	CharacterRelocationComponent = CreateDefaultSubobject<UHBCharacterRelocationComponent>(
+		TEXT("CharacterRelocationComponent"));
+
 	bIsGamePlaying = false;
 
 	// Default 세팅
@@ -85,7 +88,7 @@ void AHBVillageGameMode::StartGame()
 	{
 		return;
 	}
-	
+
 
 	// 플레이어 초기 세팅
 	GameModePlayerControlComponent->InitPlayers(HBGameState);
@@ -93,10 +96,10 @@ void AHBVillageGameMode::StartGame()
 
 	// 날짜 세팅
 	HBGameState->Date = 0;
-	
+
 	GameModeVillageGenerationComponent->SyncVillageGenerationData(HBGameState);
 
-	
+
 	// @PHYTODO : 페이즈 시작
 	StartDay();
 }
@@ -142,6 +145,10 @@ void AHBVillageGameMode::StopGame()
 
 	// 플레이어 정보 초기화
 	GameModePlayerControlComponent->ResetPlayers(HBGameState);
+	
+	//@ Todo : 맵 이름 변경
+	FString Map = TEXT("/Game/Maps/LobbyMap");
+	GetWorld()->ServerTravel(Map);
 }
 
 void AHBVillageGameMode::CheatPhaseChange()
@@ -193,9 +200,23 @@ void AHBVillageGameMode::CheckGameEnd()
 		UE_LOG(LogTemp, Log, TEXT("CheckGameEnd Timer Call"));
 		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
 		GetWorld()->GetTimerManager().ClearTimer(PhaseTimerHandle);
-		
+
 		// 승패 화면 출력
-		
+		// GameState 의 GameEnd 를 변경하여 RepNotify 호출
+		AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
+		if (HBGameState)
+		{
+			if (bIsMafiaWin)
+			{
+				HBGameState->GameEnd = 1;
+			}
+			else
+			{
+				HBGameState->GameEnd = 2;
+			}
+
+			HBGameState->OnRep_GameEnd();
+		}
 
 		// 타이머로 일정 시간 뒤 StopGame();
 		GetWorld()->GetTimerManager().SetTimer(
@@ -269,7 +290,7 @@ void AHBVillageGameMode::CheckStartGame()
 void AHBVillageGameMode::StartDay()
 {
 	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start Day"));
-	SetPhase(EGamePhase::Day, 10.f);
+	SetPhase(EGamePhase::Day, 3.f);
 
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (HBGameState)
@@ -277,6 +298,7 @@ void AHBVillageGameMode::StartDay()
 		HBGameState->Date += 1;
 		HBGameState->OnRep_GamePhase();
 		HBGameState->OnRep_Date();
+		CharacterRelocationComponent->RelocateCharacterToCouncil(HBGameState);
 	}
 	else
 	{
@@ -296,8 +318,6 @@ void AHBVillageGameMode::StartDiscussion()
 	if (HBGameState)
 	{
 		HBGameState->OnRep_GamePhase();
-		CharacterRelocationComponent->RelocateCharacterToCouncil(HBGameState);
-
 	}
 	else
 	{
@@ -389,7 +409,7 @@ void AHBVillageGameMode::StartNight()
 	}
 
 	CharacterRelocationComponent->RelocateCharactersToHouse(HBGameState);
-	
+
 	// 모든 플레이어 장착 해제
 	GameModePlayerControlComponent->UnEquippedAllPlayer(HBGameState);
 
@@ -441,7 +461,10 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 
 	World->GetTimerManager().ClearTimer(CountdownTimerHandle);
 	World->GetTimerManager().ClearTimer(PhaseTimerHandle);
-	StartCountdown(Duration);
+	if (!bIsGameEnd)
+	{
+		StartCountdown(Duration);
+	}
 	HBGameState->OnRep_RemainingTime();
 
 	// 각 페이즈 종료 시 다음 페이즈로 넘겨줄 델리게이트 생성
@@ -485,7 +508,11 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 							UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] CheckTarget Is Dead"));
 							VoteSubsystem->CheckTargetIsDead();
 						}
-						StartNight();
+
+						if (!bIsGameEnd)
+						{
+							StartNight();
+						}
 					}
 					break;
 
