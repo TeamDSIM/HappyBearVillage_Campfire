@@ -469,8 +469,14 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 	World->GetTimerManager().SetTimer(
 		PhaseTimerHandle,
 		FTimerDelegate::CreateLambda(
-			[this, NewPhase, HBGameState]()
+			[this, NewPhase]()
 			{
+				AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
+				if (!HBGameState)
+				{
+					return;
+				}
+				
 				switch (NewPhase)
 				{
 				case EGamePhase::Day:
