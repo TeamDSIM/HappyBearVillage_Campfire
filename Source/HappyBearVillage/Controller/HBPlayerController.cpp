@@ -11,6 +11,7 @@
 #include "Engine/World.h"
 #include "MultiplayerSessionsSubsystem.h"
 #include "EnhancedInputComponent.h"
+#include "GameMode/HBVillageGameMode.h"
 #include "UI/HBCharacterStatusWidgetComponent.h"
 
 
@@ -216,9 +217,24 @@ void AHBPlayerController::StartGame()
 		UE_LOG(LogTemp, Warning, TEXT("NOT HOST!!!"));
 		return;
 	}
+	
+	// Seamless Travel을 활성화하기 위해 GameMode를 가져와 설정 확인
+	if (UWorld* World = GetWorld())
+	{
+		if (AHBVillageGameMode* GM = World->GetAuthGameMode<AHBVillageGameMode>())
+		{
+			GM->bUseSeamlessTravel = true; // 이동 직전에 활성화
+		}
+
+		// 절대 경로보다는 상대 경로 형식을 권장하지만, 프로젝트 구조에 맞춰 수정
+		// .umap 확장자를 제외한 경로를 사용합니다.
+		FString MapPath = TEXT("/Game/Maps/InGameMap");
+		World->ServerTravel(MapPath);
+	}
+
 	//@ Todo : 맵 이름 변경
-	FString Map = TEXT("/Game/Maps/InGameMap");
-		GetWorld()->ServerTravel(Map);
+	// FString Map = TEXT("/Game/Maps/InGameMap");
+	// 	GetWorld()->ServerTravel(Map);
 }
 
 void AHBPlayerController::ExitGame()
