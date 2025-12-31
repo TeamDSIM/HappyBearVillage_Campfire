@@ -3,7 +3,7 @@
 
 #include "HBMinimapWidgetComponent.h"
 
-#include "Subsystem/VillageGenerationWorldSubsystem.h"
+#include "Subsystem/HBVillageGenerationWorldSubsystem.h"
 #include "UI/HBMinimapWidget.h"
 
 
@@ -21,13 +21,13 @@ void UHBMinimapWidgetComponent::CreateMinimapWidget(APlayerController* InPlayerC
 	MinimapWidget = CreateWidget<UHBMinimapWidget>(InPlayerController, MinimapWidgetClass);
 	MinimapWidget->AddToViewport();
 
-	UVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UVillageGenerationWorldSubsystem>();
+	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
 	VillageGenerationSystem->OnVillageGenerated.AddUObject(this, &UHBMinimapWidgetComponent::SetMinimapTexture);
 }
 
 void UHBMinimapWidgetComponent::SetMinimapTexture()
 {
-	UVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UVillageGenerationWorldSubsystem>();
+	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
 	UTexture2D* Texture = VillageGenerationSystem->GetMapData().ForestAsTexture2D;
 	MinimapWidget->SetMinimapTexture(Texture);
 }

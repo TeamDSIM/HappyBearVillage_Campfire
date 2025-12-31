@@ -10,7 +10,7 @@
 #include "Character/Stat/HBPlayerStatComponent.h"
 #include "InteractObject/HBExecutePlatform.h"
 #include "Subsystem/HBGameVoteSubsystem.h"
-#include "Subsystem/VillageGenerationWorldSubsystem.h"
+#include "Subsystem/HBVillageGenerationWorldSubsystem.h"
 
 UHBCharacterRelocationComponent::UHBCharacterRelocationComponent() { }
 
@@ -18,7 +18,7 @@ void UHBCharacterRelocationComponent::RelocateCharactersToHouse(AHBMafiaGameStat
 {
 	if (!InGameState) return;
 	
-	UVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UVillageGenerationWorldSubsystem>();
+	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
 	if (!VillageGenerationSystem) return;
 
 	const TMap<FLinearColor, FVector>& HouseLocationsByColor = VillageGenerationSystem->GetMapData().HouseLocationsByColor;
@@ -39,7 +39,7 @@ void UHBCharacterRelocationComponent::RelocateCharactersToHouse(AHBMafiaGameStat
 			return;
 		}
 
-		// Á×Àº »ç¶÷Àº ÀÌµ¿ Á¦¿Ü
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½
 		if (Character->GetStat()->GetIsAlive() == false)
 		{
 			continue;
@@ -57,15 +57,15 @@ void UHBCharacterRelocationComponent::RelocateCharacterToCouncil(AHBMafiaGameSta
 	if (!InGameState) return;
 	if (!GetOwner() || !GetWorld()) return;
 
-	//  ¼­¹ö¿¡¼­¸¸ ½ÇÇà
+	//  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (!GetOwner()->HasAuthority())
 		return;
 
-    // ¼³Á¤°ª
-    const FVector Center = FVector(200000.0f, 0.0f, 100.0f); // Áß½É À§Ä¡
-    const float Radius = 300.f;                           // ¿ø ¹ÝÁö¸§
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    const FVector Center = FVector(200000.0f, 0.0f, 100.0f); // ï¿½ß½ï¿½ ï¿½ï¿½Ä¡
+    const float Radius = 300.f;                           // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    // Ä³¸¯ÅÍ ¼öÁý
+    // Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     TArray<AHBCharacterPlayer*> Characters;
 
     for (APlayerState* PS : InGameState->PlayerArray)
@@ -84,13 +84,13 @@ void UHBCharacterRelocationComponent::RelocateCharacterToCouncil(AHBMafiaGameSta
     const int32 NumPlayers = Characters.Num();
     if (NumPlayers == 0) return;
 
-    // ¿øÇü ¹èÄ¡
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
   
     const float AngleStep = 360.f / NumPlayers;
 
     for (int32 i = 0; i < NumPlayers; ++i)
     {
-    	// Á×Àº »ç¶÷Àº ÀÌµ¿ Á¦¿Ü
+    	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½
 		if (Characters[i]->GetStat()->GetIsAlive() == false)
 		{
 			continue;
@@ -104,9 +104,9 @@ void UHBCharacterRelocationComponent::RelocateCharacterToCouncil(AHBMafiaGameSta
         TargetLocation.Y = Center.Y + FMath::Sin(AngleRad) * Radius;
         TargetLocation.Z = Center.Z;
 
-        //Áß½ÉÀ» ¹Ù¶óº¸°Ô È¸Àü
+        //ï¿½ß½ï¿½ï¿½ï¿½ ï¿½Ù¶óº¸°ï¿½ È¸ï¿½ï¿½
         FRotator LookAtRotation = (Center - TargetLocation).Rotation();
-        //BP¿¡¼­ -90µµ·Î ¼³Á¤µÇ¾î ÀÖÀ½
+        //BPï¿½ï¿½ï¿½ï¿½ -90ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½
         //LookAtRotation.Yaw += 90.f;
         AController* Con = Characters[i]->GetController();
         if (Con)
@@ -127,7 +127,7 @@ void UHBCharacterRelocationComponent::RelocateCharacterToExecutePlatform(AHBMafi
 		AHBCharacterPlayer* Target = VoteSubsystem->GetCurrentVoteTarget();
 		if (Target)
 		{
-			// Ã³Çü´ë À§Ä¡·Î ÀÌµ¿
+			// Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Ìµï¿½
 			Target->SetActorLocation(VoteSubsystem->GetExecutePlatform()->GetTargetPosition());
 		}
 	}
