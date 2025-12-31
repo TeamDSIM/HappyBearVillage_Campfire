@@ -34,6 +34,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UHBInGameHUDComponent> InGameHUDComponent;
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+	TObjectPtr<class UHBMinimapWidgetComponent> MinimapWidgetComponent;
 
 private:
 	//강타입의 경우는 지정한 위젯만 들어올 수 있고 (로비 UI, 인게임 HUD)
@@ -80,6 +82,7 @@ public:
 
 	void CreateTitleUI();
 	void CreateLobbyUI();
+	void CreateMinimapWidget();
 	
 	UFUNCTION()
 	void StartGame();

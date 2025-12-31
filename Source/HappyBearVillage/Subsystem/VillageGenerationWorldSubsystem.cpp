@@ -33,4 +33,6 @@ void UVillageGenerationWorldSubsystem::GenerateVillage(FHBVillageGenerationData 
 	MapGenerator->GenerateVillage(MapData, GetWorld());
 
 	bIsGenerated = true;
+
+	OnVillageGenerated.Broadcast();
 }

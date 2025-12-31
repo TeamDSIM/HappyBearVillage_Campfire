@@ -11,6 +11,7 @@
 #include "Engine/World.h"
 #include "MultiplayerSessionsSubsystem.h"
 #include "EnhancedInputComponent.h"
+#include "Component/HBMinimapWidgetComponent.h"
 #include "GameMode/HBVillageGameMode.h"
 #include "UI/HBCharacterStatusWidgetComponent.h"
 
@@ -18,6 +19,7 @@
 AHBPlayerController::AHBPlayerController()
 {
 	InGameHUDComponent = CreateDefaultSubobject<UHBInGameHUDComponent>(TEXT("InGameHUD"));
+	MinimapWidgetComponent = CreateDefaultSubobject<UHBMinimapWidgetComponent>(TEXT("Minimap"));
 }
 
 void AHBPlayerController::BeginPlay()
@@ -106,6 +108,7 @@ void AHBPlayerController::SetupUI()
 	if (Map == TEXT("InGameMap"))
 	{
 		InGameHUDComponent->ActivateHUD(this);
+		MinimapWidgetComponent->CreateMinimapWidget(this);
 		FInputModeGameOnly InputMode;
 		SetInputMode(InputMode);
 		SetShowMouseCursor(false);
@@ -151,6 +154,10 @@ void AHBPlayerController::CreateLobbyUI()
 	LobbyWidget->AddToViewport();
 
 	SpawnedWidgets.Add(RawWidget);
+}
+
+void AHBPlayerController::CreateMinimapWidget()
+{
 }
 
 
