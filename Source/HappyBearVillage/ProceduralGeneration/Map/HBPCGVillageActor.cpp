@@ -49,7 +49,7 @@ void AHBPCGVillageActor::InitializePCGInput(UTexture2D* Texture2D)
 void AHBPCGVillageActor::SetPCGBounds()
 {
 	SetActorLocation(FVector(12600.f, 12600.f, 0.f));
-	Bounds->SetBoxExtent(FVector(12600.f, 12600.f, 1000.f));
+	Bounds->SetBoxExtent(FVector(12800.f, 12800.f, 1000.f));
 }
 
 void AHBPCGVillageActor::Generate()

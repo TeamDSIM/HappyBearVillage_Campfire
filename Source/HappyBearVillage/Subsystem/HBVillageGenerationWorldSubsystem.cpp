@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Subsystem/VillageGenerationWorldSubsystem.h"
+#include "Subsystem/HBVillageGenerationWorldSubsystem.h"
 
 #include "ProceduralGeneration/Map/HBMapGenerator.h"
 #include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
 #include "ProceduralGeneration/Noise/HBPerlinNoise.h"
 #include "Utils/HBUtils.h"
 
-void UVillageGenerationWorldSubsystem::GenerateVillage(FHBVillageGenerationData InVillageGenerationData)
+void UHBVillageGenerationWorldSubsystem::GenerateVillage(FHBVillageGenerationData InVillageGenerationData)
 {
 	HBUtils::InitRandomSeed(InVillageGenerationData.RandomStreamSeed);
 
@@ -33,4 +33,6 @@ void UVillageGenerationWorldSubsystem::GenerateVillage(FHBVillageGenerationData 
 	MapGenerator->GenerateVillage(MapData, GetWorld());
 
 	bIsGenerated = true;
+
+	OnVillageGenerated.Broadcast();
 }
