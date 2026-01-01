@@ -16,6 +16,11 @@ void UHBMinimapWidget::SetPlayerPosition(FVector NormalizedLocation)
 	MinimapDynamicMaterial->SetVectorParameterValue(FName("PlayerPos"), FLinearColor(NormalizedLocation));
 }
 
+void UHBMinimapWidget::SetPlayerDirAngle(float Angle)
+{
+	MinimapDynamicMaterial->SetScalarParameterValue(FName("PlayerDirAngle"), Angle);
+}
+
 void UHBMinimapWidget::NativeConstruct()
 {
 	Super::NativeConstruct();

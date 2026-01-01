@@ -24,6 +24,7 @@ protected:
 	
 	void SetMinimapTexture();
 	void SetPlayerPosition();
+	void SetPlayerDirection();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Widget")

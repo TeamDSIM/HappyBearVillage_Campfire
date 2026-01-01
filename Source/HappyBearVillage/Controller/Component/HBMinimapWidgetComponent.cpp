@@ -46,6 +46,7 @@ void UHBMinimapWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	SetPlayerPosition();
+	SetPlayerDirection();
 }
 
 void UHBMinimapWidgetComponent::SetMinimapTexture()
@@ -65,5 +66,16 @@ void UHBMinimapWidgetComponent::SetPlayerPosition()
 	FVector NormalizedLocation = FVector(Location.X / (Resolution.X * AreaScale * 100), Location.Y / (Resolution.Y * AreaScale * 100), 0.0f);
 	
 	MinimapWidget->SetPlayerPosition(NormalizedLocation);
+}
+
+void UHBMinimapWidgetComponent::SetPlayerDirection()
+{
+	FVector Forward = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorForwardVector();
+	FVector2D Dir(Forward.X, Forward.Y);
+	
+	float AngleRad = FMath::Atan2(-Dir.X, -Dir.Y);
+	if (AngleRad < 0.0f) AngleRad += 2.0f * PI;
+
+	MinimapWidget->SetPlayerDirAngle(AngleRad);
 }
 
