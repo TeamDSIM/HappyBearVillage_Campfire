@@ -2,11 +2,18 @@
 
 
 #include "HBMinimapWidget.h"
+
+#include "HappyBearVillage.h"
 #include "Components/Image.h"
 
 void UHBMinimapWidget::SetMinimapTexture(UTexture2D* Texture)
 {
 	MinimapDynamicMaterial->SetTextureParameterValue(FName("MinimapTexture"), Texture);
+}
+
+void UHBMinimapWidget::SetPlayerPosition(FVector NormalizedLocation)
+{
+	MinimapDynamicMaterial->SetVectorParameterValue(FName("PlayerPos"), FLinearColor(NormalizedLocation));
 }
 
 void UHBMinimapWidget::NativeConstruct()

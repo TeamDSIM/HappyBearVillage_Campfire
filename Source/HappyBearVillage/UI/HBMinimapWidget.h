@@ -16,6 +16,7 @@ class HAPPYBEARVILLAGE_API UHBMinimapWidget : public UUserWidget
 
 public:
 	void SetMinimapTexture(UTexture2D* Texture);
+	void SetPlayerPosition(FVector NormalizedLocation);
 	
 protected:
 	virtual void NativeConstruct() override;

@@ -18,11 +18,12 @@ public:
 	void CreateMinimapWidget(APlayerController* InPlayerController);
 	void ShowMinimapWidget();
 	void HideMinimapWidget();
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 protected:
-	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 	void SetMinimapTexture();
+	void SetPlayerPosition();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Widget")

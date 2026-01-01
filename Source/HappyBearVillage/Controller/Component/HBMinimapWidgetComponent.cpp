@@ -9,6 +9,9 @@
 
 UHBMinimapWidgetComponent::UHBMinimapWidgetComponent()
 {
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
+	
 	static ConstructorHelpers::FClassFinder<UHBMinimapWidget> MinimapWidgetClassRef(TEXT("/Game/UI/Minimap/WBP_Minimap.WBP_Minimap_C"));
 	if (MinimapWidgetClassRef.Class)
 	{
@@ -20,9 +23,29 @@ void UHBMinimapWidgetComponent::CreateMinimapWidget(APlayerController* InPlayerC
 {
 	MinimapWidget = CreateWidget<UHBMinimapWidget>(InPlayerController, MinimapWidgetClass);
 	MinimapWidget->AddToViewport();
+	HideMinimapWidget();
 
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
+	VillageGenerationSystem->OnVillageGenerated.AddUObject(this, &UHBMinimapWidgetComponent::ShowMinimapWidget);
 	VillageGenerationSystem->OnVillageGenerated.AddUObject(this, &UHBMinimapWidgetComponent::SetMinimapTexture);
+}
+
+void UHBMinimapWidgetComponent::ShowMinimapWidget()
+{
+	MinimapWidget->SetVisibility(ESlateVisibility::Visible);
+	SetComponentTickEnabled(true);
+}
+
+void UHBMinimapWidgetComponent::HideMinimapWidget()
+{
+	MinimapWidget->SetVisibility(ESlateVisibility::Hidden);
+	SetComponentTickEnabled(false);
+}
+
+void UHBMinimapWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	SetPlayerPosition();
 }
 
 void UHBMinimapWidgetComponent::SetMinimapTexture()
@@ -32,23 +55,15 @@ void UHBMinimapWidgetComponent::SetMinimapTexture()
 	MinimapWidget->SetMinimapTexture(Texture);
 }
 
-void UHBMinimapWidgetComponent::ShowMinimapWidget()
+void UHBMinimapWidgetComponent::SetPlayerPosition()
 {
-	MinimapWidget->SetVisibility(ESlateVisibility::Visible);
-}
+	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
+	FIntVector2 Resolution = VillageGenerationSystem->GetMapData().Resolution;
+	int32 AreaScale = VillageGenerationSystem->GetMapData().AreaScale;
 
-void UHBMinimapWidgetComponent::HideMinimapWidget()
-{
-	MinimapWidget->SetVisibility(ESlateVisibility::Hidden);
-}
-
-void UHBMinimapWidgetComponent::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void UHBMinimapWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	FVector Location = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	FVector NormalizedLocation = FVector(Location.X / (Resolution.X * AreaScale * 100), Location.Y / (Resolution.Y * AreaScale * 100), 0.0f);
+	
+	MinimapWidget->SetPlayerPosition(NormalizedLocation);
 }
 
