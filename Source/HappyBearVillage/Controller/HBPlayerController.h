@@ -13,6 +13,9 @@ class UMultiplayerSessionsSubsystem;
 
 class UInputMappingContext;
 //class UInputAction;
+class AHBCharacterPlayer;
+class UWorld;
+class AActor;
 
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBPlayerController : public APlayerController
@@ -74,6 +77,11 @@ private:
 
 	bool bFriendInviteOpen = false;
 
+	//包傈 包访 内靛
+	AHBCharacterPlayer* FindAnyAlivePlayer(UWorld* World, AActor* ExcludeActor);
+
+	void ObserveToAnyAlivePlayer();
+
 public:
 
 	void ResetUI();
@@ -88,5 +96,8 @@ public:
 	void StartGame();
 	UFUNCTION()
 	void ExitGame();
+
+	//包傈 包访 内靛
+	void EnterObserveMode();
 
 };

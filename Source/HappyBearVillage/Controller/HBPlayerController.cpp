@@ -14,6 +14,11 @@
 #include "Component/HBMinimapWidgetComponent.h"
 #include "GameMode/HBVillageGameMode.h"
 #include "UI/HBCharacterStatusWidgetComponent.h"
+#include "EngineUtils.h"
+#include "GameFramework/Actor.h"
+#include "Character/HBCharacterPlayer.h"
+#include "Character/Stat/HBPlayerStatComponent.h"
+
 
 
 AHBPlayerController::AHBPlayerController()
@@ -216,6 +221,44 @@ void AHBPlayerController::ToggleFriendInvite()
 	}
 }
 
+AHBCharacterPlayer* AHBPlayerController::FindAnyAlivePlayer(UWorld* World, AActor* ExcludeActor)
+{
+	if (!World) return nullptr;
+
+	for (TActorIterator<AHBCharacterPlayer> It(World); It; ++It)
+	{
+		AHBCharacterPlayer* Candidate = *It;   // 이름 변경
+		if (!Candidate || Candidate == ExcludeActor) continue;
+
+		UHBPlayerStatComponent* Stat = Candidate->FindComponentByClass<UHBPlayerStatComponent>();
+		if (Stat && Stat->GetIsAlive())
+		{
+			return Candidate;
+		}
+	}
+
+	return nullptr;
+}
+
+void AHBPlayerController::ObserveToAnyAlivePlayer()
+{
+	if (!IsLocalController())
+		return;
+
+	APawn* MyPawn = GetPawn();
+
+	//살아있는 플레이어 찾아서
+	AHBCharacterPlayer* Target = FindAnyAlivePlayer(GetWorld(), MyPawn);
+
+	if (Target)
+	{
+		//카메라 변경
+		SetViewTargetWithBlend(Target, 0.35f);
+		//따로 IgnoreInput 처리가 필요 없음(실행해보니 문제 없음)
+		//SetIgnoreMoveInput(true);
+	}
+}
+
 void AHBPlayerController::StartGame()
 {
 	//호스트인 경우만 작동
@@ -268,4 +311,9 @@ void AHBPlayerController::ExitGame()
 		//@Todo : 맵 이름 변경
 	FName Map = TEXT("/Game/Maps/TitleMap");
 	UGameplayStatics::OpenLevel(this, Map);
+}
+
+void AHBPlayerController::EnterObserveMode()
+{
+	ObserveToAnyAlivePlayer();
 }

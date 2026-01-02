@@ -327,7 +327,9 @@ void AHBVillageGameMode::StartDiscussion()
 void AHBVillageGameMode::StartFight()
 {
 	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start Fight"));
-	SetPhase(EGamePhase::Fight, 20.f);
+	//SetPhase(EGamePhase::Fight, 20.f);
+		//Test 위해 시간 늘렸습니다.
+	SetPhase(EGamePhase::Fight, 50.f);
 
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (HBGameState)
@@ -349,7 +351,9 @@ void AHBVillageGameMode::StartFight()
 void AHBVillageGameMode::StartVote()
 {
 	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start Vote"));
-	SetPhase(EGamePhase::Vote, 25.f);
+	//SetPhase(EGamePhase::Vote, 25.f);
+	//Test 위해 시간 늘렸습니다.
+	SetPhase(EGamePhase::Vote, 50.f);
 
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (HBGameState)
