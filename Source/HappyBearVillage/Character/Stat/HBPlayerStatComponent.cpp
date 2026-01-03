@@ -5,6 +5,7 @@
 
 #include "HappyBearVillage.h"
 #include "Character/Component/HBCharacterRagdollComponent.h"
+#include "Character/Component/Job/HBJobArmyComponent.h"
 #include "Editor/WidgetCompilerLog.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameState/HBMafiaGameState.h"
@@ -95,6 +96,27 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 	// 랜덤 직업 설정
 	UE_LOG(LogTemp, Log, TEXT(" PlayerJobs : %d"), static_cast<int32>(InJob));
 	CharacterRole.InitRole(InJob);
+
+	AHBCharacterPlayer* HBCharacterPlayer = Cast<AHBCharacterPlayer>(GetOwner());
+	if (HBCharacterPlayer)
+	{
+		switch (InJob)
+		{
+		case EJobType::MAFIA:
+			break;
+		case EJobType::SHACO:
+			break;
+		case EJobType::CITIZEN:
+			break;
+		case EJobType::ARMY:
+			{
+				HBCharacterPlayer->AssignJob(UHBJobArmyComponent::StaticClass());
+			}
+			break;
+		default:
+			break;
+		}
+	}
 
 	// 바뀐 직업 서버 반영
 	OnRep_CharacterRole();

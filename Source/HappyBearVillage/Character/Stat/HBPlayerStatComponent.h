@@ -50,6 +50,11 @@ public:
 		bIsAlive = InIsAlive;
 		OnRep_IsAlive();
 	}
+	FORCEINLINE void SetHealth(int32 InHealth)
+	{
+		Health = InHealth;
+		OnRep_Health();
+	}
 
 	float ApplyDamage(float InDamageAmount);
 	int32 ApplyNightDamage();
@@ -87,7 +92,7 @@ protected:
 	int32 VoteNum = 0;
 
 	UPROPERTY(ReplicatedUsing = OnRep_Health, Transient, VisibleAnywhere, Category = Stat)
-	int32 Health = 3;
+	int32 Health = 2;
 
 	UPROPERTY()
 	TArray<AActor*> VotedPlayers;

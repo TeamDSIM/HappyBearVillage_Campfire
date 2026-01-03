@@ -176,8 +176,15 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 		}
 		else
 		{
-			UE_LOG(LogTemp, Log, TEXT("CITIZEN"));
-			PlayerJobs.Add(EJobType::CITIZEN);
+			UE_LOG(LogTemp, Log, TEXT("ARMY"));
+			if (i % 2 == 0)
+			{
+				PlayerJobs.Add(EJobType::ARMY);
+			}
+			else
+			{
+				PlayerJobs.Add(EJobType::CITIZEN);
+			}
 		}
 	}
 	

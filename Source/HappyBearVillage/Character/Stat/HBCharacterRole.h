@@ -27,14 +27,12 @@ enum class EJobType : uint8
 	// 마피아 직업군
 	MAFIA UMETA(DisplayName = "Mafia"),
 	// 임시 직업군
-	KILLER UMETA(DisplayName = "Killer"),
-	THIEF UMETA(DisplayName = "Thief"),
+	SHACO UMETA(DisplayName = "Shaco"),
 	
 	// 시민 직업군
 	CITIZEN UMETA(DisplayName = "Citizen"),
 	// 임시 직업군
-	POLICE UMETA(DisplayName = "Police"),
-	DOCTOR UMETA(DisplayName = "Doctor"),
+	ARMY UMETA(DisplayName = "Army"),
 
 
 	END UMETA(DisplayName = "End") // 총 개수

@@ -423,6 +423,20 @@ void AHBVillageGameMode::StartNight()
 	// Night 시작 시 플레이어 Night 상태 초기화
 	for (APlayerState* PS : HBGameState->PlayerArray)
 	{
+		// 플레이어 직업 컴포넌트 저녁 초기화 실행
+		AController* PlayerController = PS->GetPlayerController();
+		if (PlayerController)
+		{
+			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
+			if (Character)
+			{
+				if (Character->GetJobComponent() != nullptr)
+				{
+					Character->GetJobComponent()->OnNightPhaseBegin();
+				}
+			}
+		}
+		
 		if (!PS) continue;
 
 		AController* Controller = PS->GetPlayerController();

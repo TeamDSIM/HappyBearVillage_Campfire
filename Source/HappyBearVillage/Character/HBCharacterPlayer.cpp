@@ -802,6 +802,29 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 	}
 }
 
+// 직업 설정
+void AHBCharacterPlayer::AssignJob(TSubclassOf<UHBJobBaseComponent> JobClass)
+{
+	// 서버에서만 실행
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	if (JobComponent)
+	{
+		JobComponent->DestroyComponent();
+		JobComponent = nullptr;
+	}
+
+	JobComponent = NewObject<UHBJobBaseComponent>(this, JobClass);
+
+	if (JobComponent)
+	{
+		JobComponent->RegisterComponent();
+	}
+}
+
 // @PHYTODO : ���� �й� �ӽ� Ȯ�ο�
 void AHBCharacterPlayer::ServerRPCStart_Implementation()
 {

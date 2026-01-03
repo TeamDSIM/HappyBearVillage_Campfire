@@ -10,6 +10,7 @@
 #include "Camera/CameraComponent.h"
 #include "Interface/HBCharacterHUDInterface.h"
 #include "TimerManager.h"
+#include "Component/Job/HBJobBaseComponent.h"
 #include "HBCharacterPlayer.generated.h"
 
 /**
@@ -279,5 +280,17 @@ protected:
 	//무기 탈/착용
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UHBCharacterMafiaAttackComponent> MafiaAttackComp;
+
+
+	// 직업 컴포넌트
+public:
+	FORCEINLINE UHBJobBaseComponent* GetJobComponent() const { return JobComponent; }
+
+	UFUNCTION()
+	void AssignJob(TSubclassOf<UHBJobBaseComponent> JobClass);
+	
+protected:
+	UPROPERTY(Replicated)
+	TObjectPtr<UHBJobBaseComponent> JobComponent;
 
 };
