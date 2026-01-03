@@ -3,6 +3,7 @@
 
 #include "HBMapWidgetComponent.h"
 
+#include "Controller/HBPlayerController.h"
 #include "Subsystem/HBVillageGenerationWorldSubsystem.h"
 #include "UI/Map/HBMapWidget.h"
 
@@ -19,6 +20,15 @@ UHBMapWidgetComponent::UHBMapWidgetComponent()
 	}
 }
 
+bool UHBMapWidgetComponent::IsMapValid() const
+{
+	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
+	if (!VillageGenerationSystem->IsGenerated()) return false;
+	if (!MapWidget) return false;
+
+	return true;
+}
+
 void UHBMapWidgetComponent::CreateMapWidget(APlayerController* InPlayerController)
 {
 	MapWidget = CreateWidget<UHBMapWidget>(InPlayerController, MapWidgetClass);
@@ -31,8 +41,7 @@ void UHBMapWidgetComponent::CreateMapWidget(APlayerController* InPlayerControlle
 
 void UHBMapWidgetComponent::ShowMapWidget()
 {
-	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
-	if (!VillageGenerationSystem->IsGenerated()) return;
+	if (!IsMapValid()) return;
 	
 	MapWidget->SetVisibility(ESlateVisibility::Visible);
 	bIsMapVisible = true;
@@ -46,18 +55,6 @@ void UHBMapWidgetComponent::HideMapWidget()
 	MapWidget->SetVisibility(ESlateVisibility::Hidden);
 	bIsMapVisible = false;
 	SetComponentTickEnabled(false);
-}
-
-void UHBMapWidgetComponent::ToggleMapWidget()
-{
-	if (bIsMapVisible)
-	{
-		HideMapWidget();
-	}
-	else
-	{
-		ShowMapWidget();
-	}
 }
 
 void UHBMapWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

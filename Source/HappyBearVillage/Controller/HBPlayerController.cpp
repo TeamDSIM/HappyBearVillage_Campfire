@@ -222,7 +222,27 @@ void AHBPlayerController::ToggleFriendInvite()
 
 void AHBPlayerController::ToggleMapWidget()
 {
-	MapWidgetComponent->ToggleMapWidget();
+	if (!MapWidgetComponent->IsMapValid()) return;
+	
+	if (MapWidgetComponent->IsMapVisible())
+	{
+		MapWidgetComponent->HideMapWidget();
+
+		FInputModeGameOnly InputMode;
+		SetInputMode(InputMode);
+		SetShowMouseCursor(false);	
+	}
+	else
+	{
+		MapWidgetComponent->ShowMapWidget();
+
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false);
+		
+		SetInputMode(InputMode);
+		SetShowMouseCursor(true);	
+	}
 }
 
 void AHBPlayerController::StartGame()

@@ -21,6 +21,9 @@ public:
 
 protected:
 	virtual void NativeConstruct() override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	void SpawnMarkAtLocalPosition(const FVector2D& LocalPosition);
 
 protected:
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Map")

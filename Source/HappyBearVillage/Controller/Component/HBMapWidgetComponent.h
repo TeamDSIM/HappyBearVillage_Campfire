@@ -15,10 +15,12 @@ class HAPPYBEARVILLAGE_API UHBMapWidgetComponent : public UActorComponent
 public:
 	UHBMapWidgetComponent();
 
+	FORCEINLINE bool IsMapVisible() const { return bIsMapVisible; }
+	bool IsMapValid() const ;
+
 	void CreateMapWidget(APlayerController* InPlayerController);
 	void ShowMapWidget();
 	void HideMapWidget();
-	void ToggleMapWidget();
 	
 protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -35,5 +37,5 @@ protected:
 	TObjectPtr<class UHBMapWidget> MapWidget;
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-	uint8 bIsMapVisible = false;
+	uint8 bIsMapVisible : 1;
 };
