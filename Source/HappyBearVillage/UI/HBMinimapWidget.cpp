@@ -2,8 +2,6 @@
 
 
 #include "HBMinimapWidget.h"
-
-#include "HappyBearVillage.h"
 #include "Components/Image.h"
 
 void UHBMinimapWidget::SetMinimapTexture(UTexture2D* Texture)
@@ -25,7 +23,7 @@ void UHBMinimapWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	UMaterialInstance* MinimapMaterial = LoadObject<UMaterialInstance>(nullptr, TEXT("/Game/UI/Minimap/MI_MinimapMaterial.MI_MinimapMaterial"));
+	UMaterialInstance* MinimapMaterial = LoadObject<UMaterialInstance>(nullptr, TEXT("/Game/UI/Map/MI_MinimapMaterial.MI_MinimapMaterial"));
 	MinimapDynamicMaterial = UMaterialInstanceDynamic::Create(MinimapMaterial, this);
 	Minimap->SetBrushFromMaterial(MinimapDynamicMaterial);
 }

@@ -12,7 +12,7 @@ UHBMinimapWidgetComponent::UHBMinimapWidgetComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 	
-	static ConstructorHelpers::FClassFinder<UHBMinimapWidget> MinimapWidgetClassRef(TEXT("/Game/UI/Minimap/WBP_Minimap.WBP_Minimap_C"));
+	static ConstructorHelpers::FClassFinder<UHBMinimapWidget> MinimapWidgetClassRef(TEXT("/Game/UI/Map/WBP_Minimap.WBP_Minimap_C"));
 	if (MinimapWidgetClassRef.Class)
 	{
 		MinimapWidgetClass = MinimapWidgetClassRef.Class;
