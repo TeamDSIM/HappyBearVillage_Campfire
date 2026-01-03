@@ -2,9 +2,8 @@
 
 
 #include "HBMinimapWidgetComponent.h"
-
 #include "Subsystem/HBVillageGenerationWorldSubsystem.h"
-#include "UI/HBMinimapWidget.h"
+#include "UI/Map/HBMinimapWidget.h"
 
 
 UHBMinimapWidgetComponent::UHBMinimapWidgetComponent()
@@ -12,7 +11,7 @@ UHBMinimapWidgetComponent::UHBMinimapWidgetComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 	
-	static ConstructorHelpers::FClassFinder<UHBMinimapWidget> MinimapWidgetClassRef(TEXT("/Game/UI/Map/WBP_Minimap.WBP_Minimap_C"));
+	static ConstructorHelpers::FClassFinder<UHBMinimapWidget> MinimapWidgetClassRef(TEXT("/Game/UI/Minimap/WBP_Minimap.WBP_Minimap_C"));
 	if (MinimapWidgetClassRef.Class)
 	{
 		MinimapWidgetClass = MinimapWidgetClassRef.Class;
