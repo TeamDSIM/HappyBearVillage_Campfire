@@ -11,15 +11,24 @@
 #include "Engine/World.h"
 #include "MultiplayerSessionsSubsystem.h"
 #include "EnhancedInputComponent.h"
+#include "Component/HBMapWidgetComponent.h"
 #include "Component/HBMinimapWidgetComponent.h"
 #include "GameMode/HBVillageGameMode.h"
 #include "UI/HBCharacterStatusWidgetComponent.h"
+#include "UI/Map/HBMapWidget.h"
 
 
 AHBPlayerController::AHBPlayerController()
 {
 	InGameHUDComponent = CreateDefaultSubobject<UHBInGameHUDComponent>(TEXT("InGameHUD"));
 	MinimapWidgetComponent = CreateDefaultSubobject<UHBMinimapWidgetComponent>(TEXT("Minimap"));
+	MapWidgetComponent = CreateDefaultSubobject<UHBMapWidgetComponent>(TEXT("Map"));
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleMapActionRef(TEXT("/Game/Character/Input/Action/IA_ToggleMap.IA_ToggleMap"));
+	if (ToggleMapActionRef.Succeeded())
+	{
+		ToggleMapAction = ToggleMapActionRef.Object;
+	}
 }
 
 void AHBPlayerController::BeginPlay()
@@ -50,8 +59,8 @@ void AHBPlayerController::SetupInputComponent()
 	{
 		if (FriendInviteInputAction)
 		{
-			EIC->BindAction(FriendInviteInputAction, ETriggerEvent::Started,
-				this, &AHBPlayerController::ToggleFriendInvite);
+			EIC->BindAction(FriendInviteInputAction, ETriggerEvent::Started,this, &AHBPlayerController::ToggleFriendInvite);
+			EIC->BindAction(ToggleMapAction, ETriggerEvent::Started, this, &AHBPlayerController::ToggleMapWidget);
 		}
 	}
 }
@@ -109,6 +118,8 @@ void AHBPlayerController::SetupUI()
 	{
 		InGameHUDComponent->ActivateHUD(this);
 		MinimapWidgetComponent->CreateMinimapWidget(this);
+		MapWidgetComponent->CreateMapWidget(this);
+		
 		FInputModeGameOnly InputMode;
 		SetInputMode(InputMode);
 		SetShowMouseCursor(false);
@@ -155,11 +166,6 @@ void AHBPlayerController::CreateLobbyUI()
 
 	SpawnedWidgets.Add(RawWidget);
 }
-
-void AHBPlayerController::CreateMinimapWidget()
-{
-}
-
 
 void AHBPlayerController::RemoveUI()
 {
@@ -214,6 +220,11 @@ void AHBPlayerController::ToggleFriendInvite()
 		FInputModeGameOnly Mode;
 		SetInputMode(Mode);
 	}
+}
+
+void AHBPlayerController::ToggleMapWidget()
+{
+	MapWidgetComponent->ToggleMapWidget();
 }
 
 void AHBPlayerController::StartGame()
