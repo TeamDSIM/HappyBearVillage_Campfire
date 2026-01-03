@@ -29,23 +29,24 @@ public:
 public:
 	// 직업 호출 시점
 	// 게임 시작 시점
-	virtual void OnGameBegin(); 
+	virtual void GameBegin();
 
 	// 낮 시작 시점
-	virtual void OnDayPhaseBegin();
+	virtual void DayPhaseBegin();
 
 	// 밤 시작 시점
-	virtual void OnNightPhaseBegin();
+	virtual void NightPhaseBegin();
 
 	// 공격 시
-	virtual void OnAttack();
+	virtual void Attack();
 
 	// 직업 행동 시
-	virtual void OnAction();
+	virtual void Action();
 
 protected:
 	// 대상 탐지
 	virtual AHBCharacterPlayer* DetectTarget();
+	virtual TArray<AHBCharacterPlayer*> DetectTargets();
 
 	// 집 탐지
 	virtual AHBHouse* DetectHouse();
@@ -53,13 +54,5 @@ protected:
 protected:
 	// 직업 스킬 사용 가능 여부
 	UPROPERTY()
-	uint8 bIsActionActive : 1;
-
-	UPROPERTY()
-	TObjectPtr<AHBCharacterPlayer> TargetPlayer = nullptr;
-
-	UPROPERTY()
-	TObjectPtr<AHBHouse> TargetHouse = nullptr;
-
-	
+	uint8 bIsActionActive : 1;	
 };

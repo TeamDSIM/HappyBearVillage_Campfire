@@ -28,7 +28,7 @@ void UHBJobBaseComponent::OnAttack()
 {
 }
 
-void UHBJobBaseComponent::OnAction()
+void UHBJobBaseComponent::Action()
 {
 }
 
