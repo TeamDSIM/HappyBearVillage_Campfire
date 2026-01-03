@@ -73,11 +73,14 @@ void UHBMapWidgetComponent::SetMapTexture()
 
 void UHBMapWidgetComponent::SetPlayerPosition()
 {
+	APawn* Pawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	if (!Pawn) return;
+	
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
 	FIntVector2 Resolution = VillageGenerationSystem->GetMapData().Resolution;
 	int32 AreaScale = VillageGenerationSystem->GetMapData().AreaScale;
-
-	FVector Location = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	
+	FVector Location = Pawn->GetActorLocation();
 	FVector NormalizedLocation = FVector(Location.X / (Resolution.X * AreaScale * 100), Location.Y / (Resolution.Y * AreaScale * 100), 0.0f);
 	
 	MapWidget->SetPlayerPosition(NormalizedLocation);
@@ -85,7 +88,10 @@ void UHBMapWidgetComponent::SetPlayerPosition()
 
 void UHBMapWidgetComponent::SetPlayerDirection()
 {
-	FVector Forward = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorForwardVector();
+	APawn* Pawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	if (!Pawn) return;
+	
+	FVector Forward = Pawn->GetActorForwardVector();
 	FVector2D Dir(Forward.X, Forward.Y);
 	
 	float AngleRad = FMath::Atan2(-Dir.X, -Dir.Y);
