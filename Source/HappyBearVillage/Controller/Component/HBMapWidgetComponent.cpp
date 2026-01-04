@@ -19,6 +19,15 @@ UHBMapWidgetComponent::UHBMapWidgetComponent()
 	}
 }
 
+bool UHBMapWidgetComponent::IsMapValid() const
+{
+	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
+	if (!VillageGenerationSystem->IsGenerated()) return false;
+	if (!MapWidget) return false;
+
+	return true;
+}
+
 void UHBMapWidgetComponent::CreateMapWidget(APlayerController* InPlayerController)
 {
 	MapWidget = CreateWidget<UHBMapWidget>(InPlayerController, MapWidgetClass);
@@ -31,8 +40,7 @@ void UHBMapWidgetComponent::CreateMapWidget(APlayerController* InPlayerControlle
 
 void UHBMapWidgetComponent::ShowMapWidget()
 {
-	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
-	if (!VillageGenerationSystem->IsGenerated()) return;
+	if (!IsMapValid()) return;
 	
 	MapWidget->SetVisibility(ESlateVisibility::Visible);
 	bIsMapVisible = true;
@@ -46,18 +54,6 @@ void UHBMapWidgetComponent::HideMapWidget()
 	MapWidget->SetVisibility(ESlateVisibility::Hidden);
 	bIsMapVisible = false;
 	SetComponentTickEnabled(false);
-}
-
-void UHBMapWidgetComponent::ToggleMapWidget()
-{
-	if (bIsMapVisible)
-	{
-		HideMapWidget();
-	}
-	else
-	{
-		ShowMapWidget();
-	}
 }
 
 void UHBMapWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -76,11 +72,14 @@ void UHBMapWidgetComponent::SetMapTexture()
 
 void UHBMapWidgetComponent::SetPlayerPosition()
 {
+	APawn* Pawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	if (!Pawn) return;
+	
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
 	FIntVector2 Resolution = VillageGenerationSystem->GetMapData().Resolution;
 	int32 AreaScale = VillageGenerationSystem->GetMapData().AreaScale;
-
-	FVector Location = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	
+	FVector Location = Pawn->GetActorLocation();
 	FVector NormalizedLocation = FVector(Location.X / (Resolution.X * AreaScale * 100), Location.Y / (Resolution.Y * AreaScale * 100), 0.0f);
 	
 	MapWidget->SetPlayerPosition(NormalizedLocation);
@@ -88,7 +87,10 @@ void UHBMapWidgetComponent::SetPlayerPosition()
 
 void UHBMapWidgetComponent::SetPlayerDirection()
 {
-	FVector Forward = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorForwardVector();
+	APawn* Pawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	if (!Pawn) return;
+	
+	FVector Forward = Pawn->GetActorForwardVector();
 	FVector2D Dir(Forward.X, Forward.Y);
 	
 	float AngleRad = FMath::Atan2(-Dir.X, -Dir.Y);

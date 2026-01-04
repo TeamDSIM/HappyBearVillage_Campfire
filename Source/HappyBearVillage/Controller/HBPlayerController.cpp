@@ -22,7 +22,6 @@
 #include "Character/Stat/HBPlayerStatComponent.h"
 
 
-
 AHBPlayerController::AHBPlayerController()
 {
 	InGameHUDComponent = CreateDefaultSubobject<UHBInGameHUDComponent>(TEXT("InGameHUD"));
@@ -229,7 +228,27 @@ void AHBPlayerController::ToggleFriendInvite()
 
 void AHBPlayerController::ToggleMapWidget()
 {
-	MapWidgetComponent->ToggleMapWidget();
+	if (!MapWidgetComponent->IsMapValid()) return;
+	
+	if (MapWidgetComponent->IsMapVisible())
+	{
+		MapWidgetComponent->HideMapWidget();
+
+		FInputModeGameOnly InputMode;
+		SetInputMode(InputMode);
+		SetShowMouseCursor(false);	
+	}
+	else
+	{
+		MapWidgetComponent->ShowMapWidget();
+
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false);
+		
+		SetInputMode(InputMode);
+		SetShowMouseCursor(true);	
+	}
 }
 AHBCharacterPlayer* AHBPlayerController::FindAnyAlivePlayer(UWorld* World, AActor* ExcludeActor)
 {
