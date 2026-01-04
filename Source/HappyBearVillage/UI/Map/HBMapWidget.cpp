@@ -96,7 +96,7 @@ void UHBMapWidget::SpawnMarkAtLocalPosition(FLinearColor Color, const FVector2D&
 		NewMark->SetVisibility(ESlateVisibility::Visible);
 		NewMark->SetColorAndOpacity(Color);
 
-		if (UCanvasPanel* ParentCanvas  = Cast<UCanvasPanel>(Map->GetParent()))
+		if (UCanvasPanel* ParentCanvas = Cast<UCanvasPanel>(Map->GetParent()))
 		{
 			UCanvasPanelSlot* NewMarkSlot = ParentCanvas->AddChildToCanvas(NewMark);
 			NewMarkSlot->SetAutoSize(false);
