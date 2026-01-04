@@ -11,6 +11,8 @@
 #include "Net/UnrealNetwork.h"
 #include "PlayerState/HBPlayerState.h"
 #include "Subsystem/HBGameVoteSubsystem.h"
+#include "Controller/HBPlayerController.h"
+
 
 // Sets default values for this component's properties
 UHBPlayerStatComponent::UHBPlayerStatComponent()
@@ -184,6 +186,14 @@ void UHBPlayerStatComponent::OnRep_IsAlive()
 			CharacterPlayer->GetComponentByClass<UHBCharacterRagdollComponent>()->ApplyRagdoll();
 			CharacterPlayer->GetCharacterMovement()->DisableMovement();
 			CharacterPlayer->GetCharacterMovement()->StopMovementImmediately();
+			if (CharacterPlayer->IsLocallyControlled())
+			{
+				if (AHBPlayerController* PC =
+					Cast<AHBPlayerController>(CharacterPlayer->GetController()))
+				{
+					PC->EnterObserveMode();
+				}
+			}
 		}
 	}
 }
