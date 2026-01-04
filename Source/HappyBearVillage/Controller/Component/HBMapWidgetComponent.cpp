@@ -3,7 +3,6 @@
 
 #include "HBMapWidgetComponent.h"
 
-#include "Controller/HBPlayerController.h"
 #include "Subsystem/HBVillageGenerationWorldSubsystem.h"
 #include "UI/Map/HBMapWidget.h"
 

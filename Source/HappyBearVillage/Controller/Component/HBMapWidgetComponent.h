@@ -36,6 +36,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 	TObjectPtr<class UHBMapWidget> MapWidget;
 
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
+	UPROPERTY(VisibleAnywhere, Category = "Widget Info")
 	uint8 bIsMapVisible : 1;
 };
