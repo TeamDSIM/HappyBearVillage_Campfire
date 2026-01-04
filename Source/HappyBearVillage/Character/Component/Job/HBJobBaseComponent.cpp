@@ -6,25 +6,22 @@
 // Sets default values for this component's properties
 UHBJobBaseComponent::UHBJobBaseComponent()
 {
-	TargetPlayer = nullptr;
-	TargetHouse = nullptr;
-
 	SetIsReplicatedByDefault(true);
 }
 
-void UHBJobBaseComponent::OnGameBegin()
+void UHBJobBaseComponent::GameBegin()
 {
 }
 
-void UHBJobBaseComponent::OnDayPhaseBegin()
+void UHBJobBaseComponent::DayPhaseBegin()
 {
 }
 
-void UHBJobBaseComponent::OnNightPhaseBegin()
+void UHBJobBaseComponent::NightPhaseBegin()
 {
 }
 
-void UHBJobBaseComponent::OnAttack()
+void UHBJobBaseComponent::Attack()
 {
 }
 
@@ -35,6 +32,11 @@ void UHBJobBaseComponent::Action()
 AHBCharacterPlayer* UHBJobBaseComponent::DetectTarget()
 {
 	return nullptr;
+}
+
+TArray<AHBCharacterPlayer*> UHBJobBaseComponent::DetectTargets()
+{
+	return TArray<AHBCharacterPlayer*>();
 }
 
 AHBHouse* UHBJobBaseComponent::DetectHouse()

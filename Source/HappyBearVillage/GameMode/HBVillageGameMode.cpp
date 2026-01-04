@@ -304,6 +304,24 @@ void AHBVillageGameMode::StartDay()
 		return;
 	}
 
+	// Day 시작 시 플레이어 Day 상태 초기화
+	for (APlayerState* PS : HBGameState->PlayerArray)
+	{
+		// 플레이어 직업 컴포넌트 낮 초기화 실행
+		AController* PlayerController = PS->GetPlayerController();
+		if (PlayerController)
+		{
+			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
+			if (Character)
+			{
+				if (Character->GetJobComponent() != nullptr)
+				{
+					Character->GetJobComponent()->DayPhaseBegin();
+				}
+			}
+		}
+	}
+
 	// 모든 플레이어 장착 해제
 	GameModePlayerControlComponent->UnEquippedAllPlayer(HBGameState);
 }
@@ -432,7 +450,7 @@ void AHBVillageGameMode::StartNight()
 			{
 				if (Character->GetJobComponent() != nullptr)
 				{
-					Character->GetJobComponent()->OnNightPhaseBegin();
+					Character->GetJobComponent()->NightPhaseBegin();
 				}
 			}
 		}

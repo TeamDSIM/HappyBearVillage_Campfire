@@ -9,10 +9,10 @@
 
 // @PHYTodo: Job 관련 시점 함수
 // 현재 호출된 목록
-// : OnNightPhaseBegin()
+// : OnNightPhaseBegin(), OnGameBegin(), OnDayPhaseBegin(), OnAction()
 //
 // 아직 미호출 된 목록
-// : OnGameBegin(), OnDayPhaseBegin(), OnAttack(), OnAction()
+// : OnAttack(), 
 
 class AHBHouse;
 class AHBCharacterPlayer;
@@ -28,19 +28,19 @@ public:
 
 public:
 	// 직업 호출 시점
-	// 게임 시작 시점
+	// 게임 시작 시점 (GameMode -> StartGame -> InitPlayer 마지막)
 	virtual void GameBegin();
 
-	// 낮 시작 시점
+	// 낮 시작 시점 (GameMode -> StartDay)
 	virtual void DayPhaseBegin();
 
-	// 밤 시작 시점
+	// 밤 시작 시점 (GameMode -> StartNight)
 	virtual void NightPhaseBegin();
 
 	// 공격 시
 	virtual void Attack();
 
-	// 직업 행동 시
+	// 직업 행동 시 (PlayerCharcter -> DoJobAction()
 	virtual void Action();
 
 protected:

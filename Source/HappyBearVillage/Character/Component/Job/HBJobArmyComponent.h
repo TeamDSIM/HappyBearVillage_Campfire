@@ -19,7 +19,7 @@ public:
 
 protected:
 	// 밤 시작 시점
-	virtual void OnNightPhaseBegin() override;
+	virtual void NightPhaseBegin() override;
 
 private:
 	

@@ -77,6 +77,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TObjectPtr<UInputAction> ToggleWeaponAction;
 
+	// 직업 행동
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	TObjectPtr<UInputAction> JobAction;
+
 	/* ========== Night Flow : State ========== */
 public:
 	FOnStaminaChanged OnStaminaChanged;
@@ -167,6 +171,9 @@ public:
 
 	UFUNCTION()
 	void ToggleWeapon();
+
+	UFUNCTION()
+	void DoJobAction();
 
 
 	// 1인칭 카메라

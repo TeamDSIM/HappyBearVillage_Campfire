@@ -10,9 +10,9 @@ UHBJobArmyComponent::UHBJobArmyComponent()
 {
 }
 
-void UHBJobArmyComponent::OnNightPhaseBegin()
+void UHBJobArmyComponent::NightPhaseBegin()
 {
-	Super::OnNightPhaseBegin();
+	Super::NightPhaseBegin();
 
 	AHBCharacterBase* HBCharacterBase = GetOwner<AHBCharacterBase>();
 	if (HBCharacterBase)

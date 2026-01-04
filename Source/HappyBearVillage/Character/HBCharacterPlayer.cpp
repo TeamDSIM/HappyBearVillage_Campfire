@@ -101,6 +101,14 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 		StartAction = StartActionRef.Object;
 	}
 
+	// 직업 행동 IA
+	static ConstructorHelpers::FObjectFinder<UInputAction> JobActionRef(
+		TEXT("/Game/Character/Input/Action/IA_JobAction.IA_JobAction"));
+	if (JobActionRef.Succeeded())
+	{
+		JobAction = JobActionRef.Object;
+	}
+
 	// �޽� ����
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshRef(
 		TEXT("/Game/Assets/Character/Mesh/Bear_Add_Mat.Bear_Add_Mat"));
@@ -262,6 +270,9 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(ToggleWeaponAction, ETriggerEvent::Triggered, this,
 			&AHBCharacterPlayer::ToggleWeapon);
 
+		// 직업 행동 바인드
+		EnhancedInputComponent->BindAction(JobAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::DoJobAction);
+		
 	}
 }
 
@@ -440,6 +451,16 @@ void AHBCharacterPlayer::ToggleWeapon()
 {
 	if (MafiaAttackComp)
 		MafiaAttackComp->ToggleWeapon();
+}
+
+void AHBCharacterPlayer::DoJobAction()
+{
+	if (GetJobComponent())
+	{
+		GetJobComponent()->Action();
+		// 각 직업의 컴포넌트에서 필요한 부분 구현
+		// 충돌 판정 같은게 필요하다면 공격판정을 참고하여 ServerRPC 를 돌려야 할듯 함
+	}
 }
 
 void AHBCharacterPlayer::OnRep_PlayerColor()
