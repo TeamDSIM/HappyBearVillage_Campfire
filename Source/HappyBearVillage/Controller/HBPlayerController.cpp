@@ -14,7 +14,6 @@
 #include "Component/HBMapWidgetComponent.h"
 #include "Component/HBMinimapWidgetComponent.h"
 #include "GameMode/HBVillageGameMode.h"
-#include "UI/HBCharacterStatusWidgetComponent.h"
 #include "UI/Map/HBMapWidget.h"
 #include "EngineUtils.h"
 #include "GameFramework/Actor.h"
