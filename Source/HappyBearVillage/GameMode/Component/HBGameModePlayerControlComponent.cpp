@@ -62,7 +62,11 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 				Character->SetRandomBaseColor();
 
 				// 플레이어의 직업 초기화 함수 실행
-				Character->GetJobComponent()->GameBegin();
+				UHBJobBaseComponent* JobComponent = Character->GetJobComponent();
+				if (JobComponent)
+				{
+					Character->GetJobComponent()->GameBegin();
+				}
 			}
 		}
 	}

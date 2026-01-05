@@ -314,9 +314,10 @@ void AHBVillageGameMode::StartDay()
 			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
 			if (Character)
 			{
-				if (Character->GetJobComponent() != nullptr)
+				UHBJobBaseComponent* JobComponent = Character->GetJobComponent();
+				if (JobComponent)
 				{
-					Character->GetJobComponent()->DayPhaseBegin();
+					JobComponent->DayPhaseBegin();
 				}
 			}
 		}
@@ -452,9 +453,10 @@ void AHBVillageGameMode::StartNight()
 			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
 			if (Character)
 			{
-				if (Character->GetJobComponent() != nullptr)
+				UHBJobBaseComponent* JobComponent = Character->GetJobComponent();
+				if (JobComponent)
 				{
-					Character->GetJobComponent()->NightPhaseBegin();
+					JobComponent->NightPhaseBegin();
 				}
 			}
 		}
