@@ -220,9 +220,10 @@ void AHBPlayerController::ToggleFriendInvite()
 	bFriendInviteOpen = !bFriendInviteOpen;
 	LobbyWidget->SetFriendInviteVisible(bFriendInviteOpen);
 
-	//토글 켜졌을때
+	
 	if (bFriendInviteOpen)
 	{
+		//토글 켜졌을때
 		bShowMouseCursor = true;
 
 		// 로비에서 움직임/시점 막기
@@ -233,10 +234,9 @@ void AHBPlayerController::ToggleFriendInvite()
 		Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 		SetInputMode(Mode);
 	}
-
-	//토글 꺼졌을때
 	else
 	{
+		//토글 꺼졌을때
 		bShowMouseCursor = false;
 
 		SetIgnoreMoveInput(false);
