@@ -5,6 +5,7 @@
 
 #include "EngineUtils.h"
 #include "HappyBearVillage.h"
+#include "Character/HBCharacterPlayer.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 #include "PlayerState/HBPlayerState.h"

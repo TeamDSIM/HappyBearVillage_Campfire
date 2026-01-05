@@ -20,8 +20,6 @@ UHBGameModePlayerControlComponent::UHBGameModePlayerControlComponent()
 
 void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameState)
 {	
-	HB_SUBLOG(LogHY, Log, TEXT("InitPlayers"));
-	
 	// 플레이어 목록 불러오기
 	TArray<APlayerState*> Players = InGameState->PlayerArray;
 
@@ -45,7 +43,6 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 				UHBPlayerStatComponent* PlayerStatComponent = Character->GetStat();
 				if (PlayerStatComponent)
 				{
-					UE_LOG(LogTemp, Log, TEXT("nitCharacterRole, PlayerJobs[%d] : %d"), i, static_cast<int32>(PlayerJobs[i]));
 					// 플레이어의 직업 설정
 					PlayerStatComponent->InitCharacterRole(PlayerJobs[i]);
 
@@ -92,7 +89,6 @@ void UHBGameModePlayerControlComponent::ResetPlayers(AHBMafiaGameState* InGameSt
 				UHBPlayerStatComponent* PlayerStatComponent = Character->GetStat();
 				if (PlayerStatComponent)
 				{
-					UE_LOG(LogTemp, Log, TEXT("Call Server Start Game / InitCharacterRole"));
 					// 플레이어의 직업 설정
 					PlayerStatComponent->ResetCharacterRole();
 					
@@ -180,12 +176,10 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 	{
 		if (i < MafiaNum)
 		{
-			UE_LOG(LogTemp, Log, TEXT("MAFIA"));
-			PlayerJobs.Add(EJobType::MAFIA);
+			PlayerJobs.Add(EJobType::SHACO);
 		}
 		else
 		{
-			UE_LOG(LogTemp, Log, TEXT("ARMY"));
 			if (i % 2 == 0)
 			{
 				PlayerJobs.Add(EJobType::ARMY);
