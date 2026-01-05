@@ -23,6 +23,7 @@ UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
 	CreateSessionCompleteDelegate = FOnCreateSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnCreateSessionComplete);
 	//FindSessionsCompleteDelegate = FOnFindSessionsCompleteDelegate::CreateUObject(this, &ThisClass::OnFindSessionsComplete);
 	JoinSessionCompleteDelegate = FOnJoinSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnJoinSessionComplete);
+	DestroySessionCompleteDelegate = FOnDestroySessionCompleteDelegate::CreateUObject(this, &ThisClass::OnDestroySessionComplete);
 
 	//SessionInterface 획득
 	if (IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get())
@@ -125,7 +126,8 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 
 		//다시 만들 것이라는 플래그
 		bCreateSessionOnDestroy = true;
-		SessionInterface->DestroySession(NAME_GameSession);
+		//SessionInterface->DestroySession(NAME_GameSession);
+		DestroySession();
 		return;
 	}
 
@@ -375,8 +377,17 @@ void UMultiplayerSessionsSubsystem::DestroySession()
 		return;
 	}
 
-	//host 인 경우 방 삭제 후 나가기
-	SessionInterface->DestroySession(NAME_GameSession);
+	//delegate 등록
+	DestroySessionCompleteDelegateHandle = SessionInterface->AddOnDestroySessionCompleteDelegate_Handle(DestroySessionCompleteDelegate);
+
+
+	//host인 경우 방 삭제하고 나가기
+	const bool bStarted = SessionInterface->DestroySession(NAME_GameSession);
+	if (!bStarted)
+	{
+		SessionInterface->ClearOnDestroySessionCompleteDelegate_Handle(DestroySessionCompleteDelegateHandle);
+		MultiplayerOnDestroySessionComplete.Broadcast(false);
+	}
 }
 
 
@@ -634,5 +645,21 @@ void UMultiplayerSessionsSubsystem::OnSessionUserInviteAccepted(
 
 void UMultiplayerSessionsSubsystem::OnDestroySessionComplete(FName SessionName, bool bWasSuccessful)
 {
+	if (SessionInterface.IsValid())
+	{
+		SessionInterface->ClearOnDestroySessionCompleteDelegate_Handle(DestroySessionCompleteDelegateHandle);
+	}
+
 	MultiplayerOnDestroySessionComplete.Broadcast(bWasSuccessful);
+
+	// 기존 세션 때문에 Destroy했다면, 여기서 다시 Create
+	if (bWasSuccessful && bCreateSessionOnDestroy)
+	{
+		bCreateSessionOnDestroy = false;
+		CreateSession(LastNumPublicConnections, LastMatchType);
+	}
+	else
+	{
+		bCreateSessionOnDestroy = false;
+	}
 }
