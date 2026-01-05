@@ -61,6 +61,8 @@ void UHBMinimapWidgetComponent::SetPlayerPosition()
 	if (!Pawn) return;
 	
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
+	if (!VillageGenerationSystem) return;
+	
 	FIntVector2 Resolution = VillageGenerationSystem->GetMapData().Resolution;
 	int32 AreaScale = VillageGenerationSystem->GetMapData().AreaScale;
 	
