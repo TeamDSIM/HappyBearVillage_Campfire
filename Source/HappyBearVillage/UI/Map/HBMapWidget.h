@@ -26,6 +26,8 @@ public:
 	void RefreshMapMarks(TArray<FHBMapMarkInfo> MapMarks);
 	void ClearMapMarks();
 
+	void RefreshPlayerColorList();
+
 public:
 	FOnClickMap OnClickMap;
 
@@ -50,4 +52,7 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Map Mark")
 	FLinearColor OwnMarkColor = FLinearColor::Black;
+
+	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Player Color")
+	TObjectPtr<class UListView> PlayerColorInfoList;
 };
