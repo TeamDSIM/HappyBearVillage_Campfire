@@ -145,6 +145,8 @@ void AHBVillageGameMode::StopGame()
 	// 플레이어 정보 초기화
 	GameModePlayerControlComponent->ResetPlayers(HBGameState);
 	
+	bUseSeamlessTravel = true;
+
 	//@ Todo : 맵 이름 변경
 	FString Map = TEXT("/Game/Maps/LobbyMap");
 	World->ServerTravel(Map);
