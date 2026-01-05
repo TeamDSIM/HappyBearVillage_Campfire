@@ -63,6 +63,7 @@ void UHBMapWidgetComponent::HideMapWidget()
 
 void UHBMapWidgetComponent::SetOwnMarkColor(FLinearColor InOwnMarkColor)
 {
+	if (!MapWidget) return;
 	MapWidget->SetOwnMarkColor(InOwnMarkColor);
 }
 

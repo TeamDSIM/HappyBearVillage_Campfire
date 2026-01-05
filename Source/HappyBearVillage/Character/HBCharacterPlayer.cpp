@@ -470,12 +470,12 @@ void AHBCharacterPlayer::OnRep_PlayerColor()
 	SetRandomBaseColor();
 
 	AHBPlayerController* HBPlayerController = Cast<AHBPlayerController>(GetController());
+	if (!HBPlayerController) return;
+	
 	UHBMapWidgetComponent* MapWidgetComponent = HBPlayerController->GetComponentByClass<UHBMapWidgetComponent>();
+	if (!MapWidgetComponent) return;
 
-	if (MapWidgetComponent)
-	{
-		MapWidgetComponent->SetOwnMarkColor(PlayerColor);
-	}
+	MapWidgetComponent->SetOwnMarkColor(PlayerColor);
 }
 
 void AHBCharacterPlayer::SetRandomBaseColor()
