@@ -891,7 +891,6 @@ void AHBCharacterPlayer::AssignJob(TSubclassOf<UHBJobBaseComponent> JobClass)
 // @PHYTODO : ���� �й� �ӽ� Ȯ�ο�
 void AHBCharacterPlayer::ServerRPCStart_Implementation()
 {
-	UE_LOG(LogTemp, Log, TEXT("ServerRPCStart Call"));
 	// ������ �ƴ϶��
 	if (!HasAuthority())
 	{

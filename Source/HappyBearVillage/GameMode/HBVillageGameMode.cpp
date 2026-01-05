@@ -288,7 +288,6 @@ void AHBVillageGameMode::CheckStartGame()
 // 나중에 각 페이즈별 시간도 데이터로 따로 빼서 변수로 넣어주기
 void AHBVillageGameMode::StartDay()
 {
-	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start Day"));
 	SetPhase(EGamePhase::Day, 3.f);
 
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
@@ -329,7 +328,6 @@ void AHBVillageGameMode::StartDay()
 
 void AHBVillageGameMode::StartDiscussion()
 {
-	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start Discussion"));
 	SetPhase(EGamePhase::Discussion, 30.f);
 
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
@@ -345,7 +343,6 @@ void AHBVillageGameMode::StartDiscussion()
 
 void AHBVillageGameMode::StartFight()
 {
-	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start Fight"));
 	//SetPhase(EGamePhase::Fight, 20.f);
 		//Test 위해 시간 늘렸습니다.
 	SetPhase(EGamePhase::Fight, 50.f);
@@ -369,7 +366,6 @@ void AHBVillageGameMode::StartFight()
 
 void AHBVillageGameMode::StartVote()
 {
-	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start Vote"));
 	//SetPhase(EGamePhase::Vote, 25.f);
 	//Test 위해 시간 늘렸습니다.
 	SetPhase(EGamePhase::Vote, 50.f);
@@ -422,7 +418,6 @@ void AHBVillageGameMode::StartVote()
 
 void AHBVillageGameMode::StartVoteCheck()
 {
-	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start VoteCheck"));
 	SetPhase(EGamePhase::VoteCheck, 3.f);
 	
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
@@ -434,7 +429,6 @@ void AHBVillageGameMode::StartVoteCheck()
 
 void AHBVillageGameMode::StartNight()
 {
-	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start Night"));
 	SetPhase(EGamePhase::Night, 180.f);
 
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
@@ -505,7 +499,6 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 	}
 
 	// GameState 의 현재 페이즈와 남은 시간을 페이즈에 맞게 설정
-	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] SetPhase / Duration"));
 	HBGameState->CurrentPhase = NewPhase;
 	HBGameState->RemainingTime = Duration;
 
@@ -561,7 +554,6 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 							UHBGameVoteSubsystem>();
 						if (VoteSubsystem)
 						{
-							UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] CheckTarget Is Dead"));
 							VoteSubsystem->CheckTargetIsDead();
 						}
 
@@ -581,7 +573,6 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 					break;
 
 				default:
-					UE_LOG(LogTemp, Error, TEXT("this GamePhase is Not Valid"));
 					break;
 				}
 			}),

@@ -3,9 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Character/HBCharacterPlayer.h"
 #include "GameFramework/GameStateBase.h"
-#include "ProceduralGeneration/MapData/HBMapData.h"
 #include "ProceduralGeneration/Sync/HBVillageGenerationData.h"
 #include "UI/Map/HBMapMarkInfo.h"
 #include "HBMafiaGameState.generated.h"
@@ -15,6 +13,7 @@
  */
 
 class AHBPlayerState;
+
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGamePhaseChanged, EGamePhase)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnRemainingTimeChanged, float /*RemainingTime*/)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnDateChanged, int32 /*Date*/)

@@ -6,6 +6,7 @@
 #include "HappyBearVillage.h"
 #include "Character/Component/HBCharacterRagdollComponent.h"
 #include "Character/Component/Job/HBJobArmyComponent.h"
+#include "Character/Component/Job/HBJobAssassinComponent.h"
 #include "Editor/WidgetCompilerLog.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameState/HBMafiaGameState.h"
@@ -107,6 +108,9 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 		case EJobType::MAFIA:
 			break;
 		case EJobType::SHACO:
+			{
+				HBCharacterPlayer->AssignJob(UHBJobAssassinComponent::StaticClass());
+			}
 			break;
 		case EJobType::CITIZEN:
 			break;

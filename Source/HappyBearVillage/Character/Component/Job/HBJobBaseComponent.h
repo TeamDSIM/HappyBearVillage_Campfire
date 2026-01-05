@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameState/HBMafiaGameState.h"
 #include "HBJobBaseComponent.generated.h"
 
 
@@ -50,6 +51,9 @@ protected:
 
 	// 집 탐지
 	virtual AHBHouse* DetectHouse();
+
+	// 현재 Phase 반환
+	virtual EGamePhase GetCurrentPhase();
 	
 protected:
 	// 직업 스킬 사용 가능 여부
