@@ -330,16 +330,53 @@ void AHBPlayerController::ExitGame()
 		return;
 	}
 
-
-	//Host 인 경우
-	if (HasAuthority())
+	if (bExitRequested)
 	{
-		MultiplayerSessionsSubsystem->DestroySession();
+		return;
 	}
-		//@Todo : 맵 이름 변경
-	FName Map = TEXT("/Game/Maps/TitleMap");
-	UGameplayStatics::OpenLevel(this, Map);
+
+	bExitRequested = true;
+	bExitWasHost = HasAuthority();
+
+	//  Destroy 완료 콜백 구독 (한 번만)
+	MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.RemoveAll(this);
+	MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddUObject(
+		this, &ThisClass::HandleExitDestroySessionComplete
+	);
+
+	//  Host/Client 모두 로컬 세션 정리는 DestroySession으로 통일
+	MultiplayerSessionsSubsystem->DestroySession();
 }
+
+void AHBPlayerController::HandleExitDestroySessionComplete(bool bWasSuccessful)
+{
+	if (!bExitRequested)
+	{
+		return;
+	}
+
+	bExitRequested = false;
+
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.RemoveAll(this);
+	}
+
+	// 실패해도 Title로 빠져나가고 싶으면 그대로 진행
+	if (bExitWasHost && HasAuthority())
+	{
+		//  Host: 서버가 Title로 ServerTravel → 모든 클라이언트가 같이 따라감
+		if (UWorld* World = GetWorld())
+		{
+			World->ServerTravel(TEXT("/Game/Maps/TitleMap"));
+		}
+		return;
+	}
+
+	//  Client: 본인만 Title로 이동
+	UGameplayStatics::OpenLevel(this, FName(TEXT("/Game/Maps/TitleMap")));
+}
+
 
 void AHBPlayerController::EnterObserveMode()
 {

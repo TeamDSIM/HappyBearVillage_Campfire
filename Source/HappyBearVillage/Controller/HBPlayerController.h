@@ -75,6 +75,12 @@ private:
 	UPROPERTY()
 	TObjectPtr< UMultiplayerSessionsSubsystem> MultiplayerSessionsSubsystem;
 
+	bool bExitRequested = false;
+	bool bExitWasHost = false;
+
+	void HandleExitDestroySessionComplete(bool bWasSuccessful);
+
+
 	void ToggleFriendInvite();
 	void ToggleMapWidget();
 
