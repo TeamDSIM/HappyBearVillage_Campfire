@@ -65,6 +65,8 @@ float UHBPlayerStatComponent::ApplyDamage(float InDamageAmount)
 
 int32 UHBPlayerStatComponent::ApplyNightDamage()
 {
+	UE_LOG(LogTemp, Log, TEXT("ApplyNightDamage"));
+	
 	if (Health <= 0)
 	{
 		return 0;

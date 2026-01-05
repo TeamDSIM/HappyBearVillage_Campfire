@@ -4,6 +4,7 @@
 #include "Character/Component/Job/HBJobAssassinComponent.h"
 
 #include "Character/HBCharacterPlayer.h"
+#include "Character/Stat/HBPlayerStatComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameState/HBMafiaGameState.h"
@@ -34,6 +35,17 @@ void UHBJobAssassinComponent::Attack(AActor* HitActor)
 
 	AActor* OwnerActor = GetOwner<AActor>();
 	if (!OwnerActor)
+	{
+		return;
+	}
+
+	AHBCharacterPlayer* HitCharacter = Cast<AHBCharacterPlayer>(HitActor);
+	if (!HitCharacter)
+	{
+		return;
+	}
+
+	if (HitCharacter->GetStat()->GetHealth() <= 0)
 	{
 		return;
 	}

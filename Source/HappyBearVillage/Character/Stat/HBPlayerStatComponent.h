@@ -43,6 +43,7 @@ public:
 	FORCEINLINE bool GetIsVoteTarget() const { return bIsVoteTarget; }
 	FORCEINLINE bool GetIsAlive() const { return bIsAlive; }
 	FORCEINLINE int32 GetVoteNum() const { return VoteNum; }
+	FORCEINLINE int32 GetHealth() const { return Health; }
 
 	FORCEINLINE void SetIsVoteTarget(bool InIsVoteTarget) { bIsVoteTarget = InIsVoteTarget; }
 	FORCEINLINE void SetIsAlive(bool InIsAlive)
