@@ -33,6 +33,8 @@ public:
 	void UpdateGameEnd(int32 NewMafiaWin);
 	void UpdateStamina(int32 NewStamina);
 
+	void PlayFadeAnimation(bool bIsFadeIn);
+
 	void SetHUDVisibility(bool IsVisible, UHBUserWidget* InHUD);
 
 protected:
@@ -47,6 +49,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UHBGameEndHUD> GameEndHUDWidget;
+
+	UPROPERTY()
+	TObjectPtr<class UHBFadeHUD> FadeHUDWidget;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UHBNightStaminaWidget> NightStaminaWidget;

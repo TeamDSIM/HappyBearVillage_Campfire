@@ -58,6 +58,22 @@ void AHBMafiaGameState::OnRep_GamePhase()
 	{
 		It->ApplyNightColor(bIsNight);
 	}
+	
+	if (CurrentPhase == EGamePhase::VoteCheck)
+	{
+		if (GameEnd == 0)
+		{
+			OnFadeAnimationPlay.Broadcast(true);
+		}
+	}
+	
+	if (CurrentPhase == EGamePhase::Night)
+	{
+		if (GameEnd == 0)
+		{
+			OnFadeAnimationPlay.Broadcast(false);
+		}
+	}
 }
 
 void AHBMafiaGameState::OnRep_RemainingTime()

@@ -3,6 +3,7 @@
 
 #include "UI/HBUserHUDWidget.h"
 
+#include "HBFadeHUD.h"
 #include "HBFightHUD.h"
 #include "HBGameEndHUD.h"
 #include "HBPhaseHUD.h"
@@ -21,6 +22,8 @@ void UHBUserHUDWidget::NativeConstruct()
 	VoteHUDWidget = Cast<UHBVoteHUD>(GetWidgetFromName(TEXT("VoteHUD")));
 
 	GameEndHUDWidget = Cast<UHBGameEndHUD>(GetWidgetFromName(TEXT("GameEndHUD")));
+
+	FadeHUDWidget = Cast<UHBFadeHUD>(GetWidgetFromName(TEXT("FadeHUD")));
 
 	IHBCharacterHUDInterface* HUDPawn = Cast<IHBCharacterHUDInterface>(GetOwningPlayerPawn());
 	if (HUDPawn)
@@ -94,6 +97,22 @@ void UHBUserHUDWidget::UpdateStamina(int32 NewStamina)
 	if (NightStaminaWidget)
 	{
 		NightStaminaWidget->SetStamina(NewStamina);
+	}
+}
+
+void UHBUserHUDWidget::PlayFadeAnimation(bool bIsFadeIn)
+{
+	if (FadeHUDWidget)
+	{
+		if (bIsFadeIn)
+		{
+			FadeHUDWidget->SetVisibility(ESlateVisibility::Visible);
+			FadeHUDWidget->PlayFadeIn();
+		}
+		else
+		{
+			FadeHUDWidget->PlayFadeOut();
+		}
 	}
 }
 

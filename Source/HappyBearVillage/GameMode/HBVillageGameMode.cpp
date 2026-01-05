@@ -420,6 +420,18 @@ void AHBVillageGameMode::StartVote()
 	}
 }
 
+void AHBVillageGameMode::StartVoteCheck()
+{
+	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start VoteCheck"));
+	SetPhase(EGamePhase::VoteCheck, 3.f);
+	
+	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
+	if (HBGameState)
+	{
+		HBGameState->OnRep_GamePhase();
+	}
+}
+
 void AHBVillageGameMode::StartNight()
 {
 	UE_LOG(LogTemp, Log, TEXT("[GameFlowSubsystem] Start Night"));
@@ -528,7 +540,7 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 						// 첫날이면 Night 로 스킵
 						if (HBGameState->Date == 1)
 						{
-							StartNight();
+							StartVoteCheck();
 						}
 						// 첫날이 아니면 fight 로 이동
 						else
@@ -555,9 +567,13 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 
 						if (!bIsGameEnd)
 						{
-							StartNight();
+							StartVoteCheck();
 						}
 					}
+					break;
+					
+				case EGamePhase::VoteCheck:
+					StartNight();
 					break;
 
 				case EGamePhase::Night:

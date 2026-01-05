@@ -33,6 +33,9 @@ enum class EPlayerNightState : uint8
 };
 /* ================================================= */
 
+
+
+
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBCharacterPlayer : public AHBCharacterBase, public IHBCharacterHUDInterface
 {
@@ -84,6 +87,7 @@ protected:
 	/* ========== Night Flow : State ========== */
 public:
 	FOnStaminaChanged OnStaminaChanged;
+
 
 protected:
 	// 남은 외출 가능 횟수 (RepNotify로 HUD 갱신)

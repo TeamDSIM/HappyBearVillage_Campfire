@@ -54,6 +54,7 @@ private:
 	void StartDiscussion(); // 토론
 	void StartFight(); // 난투
 	void StartVote(); // 투표
+	void StartVoteCheck(); // 투표 확인
 	void StartNight(); // 밤
 
 	// 페이즈 변환 함수
