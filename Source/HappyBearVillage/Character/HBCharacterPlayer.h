@@ -33,6 +33,9 @@ enum class EPlayerNightState : uint8
 };
 /* ================================================= */
 
+
+
+
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBCharacterPlayer : public AHBCharacterBase, public IHBCharacterHUDInterface
 {
@@ -84,6 +87,7 @@ protected:
 	/* ========== Night Flow : State ========== */
 public:
 	FOnStaminaChanged OnStaminaChanged;
+
 
 protected:
 	// 남은 외출 가능 횟수 (RepNotify로 HUD 갱신)
@@ -201,6 +205,9 @@ public:
 	// 플레이어 색상 섹션 ===================================
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterial;
+	
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> HandMeshDynamicMaterial;
 
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerColor)
 	FLinearColor PlayerColor;
@@ -210,6 +217,8 @@ public:
 
 	void SetRandomBaseColor();
 	void ResetBaseColor();
+
+	void ApplyNightColor(bool bIsNight);
 
 
 	// 애님 섹션 ===========================================

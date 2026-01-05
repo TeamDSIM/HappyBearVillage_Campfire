@@ -21,6 +21,10 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnTargetVoteNumChanged, int32 /*TargetVoteN
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnTopDamagePlayersChanged, AHBPlayerState*, FDamageRankEntry, int32)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameEndChanged, int32);
 
+// 페이드 인, 페이드 아웃 재생을 위한 델리게이트
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnFadeAnimationPlay, bool)
+
+
 
 //LobbyWidget 관련 코드입니다.
 DECLARE_MULTICAST_DELEGATE(FOnLobbyPlayersChanged);
@@ -33,6 +37,7 @@ enum class EGamePhase : uint8
 	Discussion UMETA(DisplayName = "Discussion"),	// 토론 상태
 	Fight UMETA(DisplayName = "Fight"),		// 난투 상태
 	Vote UMETA(DisplayName = "Vote"),		// 최종 투표 상태
+	VoteCheck UMETA(DisplayName = "VoteCheck"), // 투표 확인 시간
 	Night UMETA(DisplayName = "Night"),		// 밤 상태
 
 
@@ -80,6 +85,9 @@ public:
 	FOnTopDamagePlayersChanged OnTopDamagePlayersChanged;
 	FOnTargetVoteNumChanged OnTargetVoteNumChanged;
 	FOnGameEndChanged OnGameEndChanged;
+
+	// 페이드 인, 아웃 용도
+	FOnFadeAnimationPlay OnFadeAnimationPlay;
 
 public:
 	void SetTopDamagePlayers(const TArray<FDamageRankEntry>& NewTopDamagePlayers);
