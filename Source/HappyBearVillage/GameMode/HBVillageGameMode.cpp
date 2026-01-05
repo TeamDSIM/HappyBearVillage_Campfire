@@ -147,7 +147,7 @@ void AHBVillageGameMode::StopGame()
 	
 	//@ Todo : 맵 이름 변경
 	FString Map = TEXT("/Game/Maps/LobbyMap");
-	GetWorld()->ServerTravel(Map);
+	World->ServerTravel(Map);
 }
 
 void AHBVillageGameMode::CheatPhaseChange()
