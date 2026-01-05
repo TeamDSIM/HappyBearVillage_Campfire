@@ -478,19 +478,6 @@ void AHBCharacterPlayer::SetRandomBaseColor()
 
 	if (DynamicMaterial)
 	{
-		// �����϶��� ���� ���� ���� ����
-		if (HasAuthority())
-		{
-			PlayerColor = FLinearColor::MakeRandomColor();
-
-			// PlayerState �� Color �� ����ȭ
-			AHBPlayerState* PawnState = Cast<AHBPlayerState>(GetPlayerState());
-			if (PawnState)
-			{
-				PawnState->SyncPlayerColorFromPlayerStat(PlayerColor);
-			}
-		}
-
 		// CharacterBaseColor ������ RandomColor ���� �ο�
 		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
 	}
@@ -513,6 +500,29 @@ void AHBCharacterPlayer::ResetBaseColor()
 		}
 
 		// CharacterBaseColor ������ RandomColor ���� �ο�
+		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
+	}
+}
+
+void AHBCharacterPlayer::ApplyNightColor(bool bIsNight)
+{
+	// 자기 자신은 제외
+	if (IsLocallyControlled())
+	{
+		return;
+	}
+
+	if (!DynamicMaterial)
+	{
+		 return;
+	}
+
+	if (bIsNight)
+	{
+		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), FLinearColor::Black);
+	}
+	else
+	{
 		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
 	}
 }

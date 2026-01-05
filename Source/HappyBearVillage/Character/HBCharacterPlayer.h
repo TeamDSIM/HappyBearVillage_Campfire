@@ -211,6 +211,8 @@ public:
 	void SetRandomBaseColor();
 	void ResetBaseColor();
 
+	void ApplyNightColor(bool bIsNight);
+
 
 	// 애님 섹션 ===========================================
 protected:

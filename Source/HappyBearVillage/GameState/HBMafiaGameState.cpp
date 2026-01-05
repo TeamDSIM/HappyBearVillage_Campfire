@@ -3,6 +3,7 @@
 
 #include "GameState/HBMafiaGameState.h"
 
+#include "EngineUtils.h"
 #include "HappyBearVillage.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
@@ -51,6 +52,12 @@ void AHBMafiaGameState::OnRep_TopDamagePlayers()
 void AHBMafiaGameState::OnRep_GamePhase()
 {
 	OnGamePhaseChanged.Broadcast(CurrentPhase);
+
+	const bool bIsNight = (CurrentPhase == EGamePhase::Night);
+	for (TActorIterator<AHBCharacterPlayer> It(GetWorld()); It; ++It)
+	{
+		It->ApplyNightColor(bIsNight);
+	}
 }
 
 void AHBMafiaGameState::OnRep_RemainingTime()
