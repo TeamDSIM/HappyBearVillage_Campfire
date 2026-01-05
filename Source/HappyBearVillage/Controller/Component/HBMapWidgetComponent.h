@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "HBMapWidgetComponent.generated.h"
 
+enum class EGamePhase : uint8;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class HAPPYBEARVILLAGE_API UHBMapWidgetComponent : public UActorComponent
@@ -14,13 +15,17 @@ class HAPPYBEARVILLAGE_API UHBMapWidgetComponent : public UActorComponent
 
 public:
 	UHBMapWidgetComponent();
-
+	
 	FORCEINLINE bool IsMapVisible() const { return bIsMapVisible; }
 	bool IsMapValid() const ;
-
+	
 	void CreateMapWidget(APlayerController* InPlayerController);
 	void ShowMapWidget();
 	void HideMapWidget();
+
+	void SetOwnMarkColor(FLinearColor InOwnMarkColor);
+	void SetSyncStateByPhase(EGamePhase Phase);
+	void RequestMark(FLinearColor Color, FVector2D Position);
 	
 protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -28,6 +33,9 @@ protected:
 	void SetMapTexture();
 	void SetPlayerPosition();
 	void SetPlayerDirection();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPCMark(FLinearColor Color, FVector2D Position);
 	
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Widget")

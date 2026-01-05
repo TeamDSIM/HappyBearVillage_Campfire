@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HBMapMarkInfo.h"
 #include "Blueprint/UserWidget.h"
 #include "HBMapWidget.generated.h"
 
-/**
- * 
- */
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnClickMap, FLinearColor /* Color */, FVector2D /* MarkPosition */);
+
 UCLASS()
 class HAPPYBEARVILLAGE_API UHBMapWidget : public UUserWidget
 {
@@ -16,16 +16,24 @@ class HAPPYBEARVILLAGE_API UHBMapWidget : public UUserWidget
 
 public:
 	UHBMapWidget(const FObjectInitializer& ObjectInitializer);
+
+	FORCEINLINE void SetOwnMarkColor(FLinearColor InOwnMarKColor) { OwnMarkColor = InOwnMarKColor; }
 	
 	void SetMapTexture(UTexture2D* Texture);
 	void SetPlayerPosition(FVector NormalizedLocation);
 	void SetPlayerDirAngle(float Angle);
 
+	void RefreshMapMarks(TArray<FHBMapMarkInfo> MapMarks);
+	void ClearMapMarks();
+
+public:
+	FOnClickMap OnClickMap;
+
 protected:
 	virtual void NativeConstruct() override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
-	void SpawnMarkAtLocalPosition(FLinearColor Color, const FVector2D& NormalizedLocation);
+	void SpawnMark(FLinearColor Color, const FVector2D& NormalizedPosition);
 
 protected:
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Map")
@@ -39,4 +47,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Map Mark")
 	TSubclassOf<class UUserWidget> MarkWidgetClass;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Map Mark")
+	FLinearColor OwnMarkColor = FLinearColor::Black;
 };

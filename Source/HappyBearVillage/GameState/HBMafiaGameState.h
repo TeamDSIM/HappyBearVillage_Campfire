@@ -7,6 +7,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "ProceduralGeneration/MapData/HBMapData.h"
 #include "ProceduralGeneration/Sync/HBVillageGenerationData.h"
+#include "UI/Map/HBMapMarkInfo.h"
 #include "HBMafiaGameState.generated.h"
 
 /**
@@ -20,6 +21,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnDateChanged, int32 /*Date*/)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTargetVoteNumChanged, int32 /*TargetVoteNum*/)
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnTopDamagePlayersChanged, AHBPlayerState*, FDamageRankEntry, int32)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameEndChanged, int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnMapMarksChanged, TArray<FHBMapMarkInfo>);
 
 // 페이드 인, 페이드 아웃 재생을 위한 델리게이트
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnFadeAnimationPlay, bool)
@@ -85,6 +87,7 @@ public:
 	FOnTopDamagePlayersChanged OnTopDamagePlayersChanged;
 	FOnTargetVoteNumChanged OnTargetVoteNumChanged;
 	FOnGameEndChanged OnGameEndChanged;
+	FOnMapMarksChanged OnMapMarksChanged;
 
 	// 페이드 인, 아웃 용도
 	FOnFadeAnimationPlay OnFadeAnimationPlay;
@@ -115,6 +118,9 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_GameEnd)
 	int32 GameEnd = 0;
 
+	UPROPERTY(ReplicatedUsing = OnRep_MapMarks)
+	TArray<FHBMapMarkInfo> MapMarks;
+
 	UFUNCTION()
 	void OnRep_TopDamagePlayers();
 
@@ -132,6 +138,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_GameEnd();
+
+	UFUNCTION()
+	void OnRep_MapMarks();
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsNight() const;

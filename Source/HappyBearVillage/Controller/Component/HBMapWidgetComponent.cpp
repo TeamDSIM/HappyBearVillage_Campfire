@@ -3,6 +3,8 @@
 
 #include "HBMapWidgetComponent.h"
 
+#include "HappyBearVillage.h"
+#include "GameState/HBMafiaGameState.h"
 #include "Subsystem/HBVillageGenerationWorldSubsystem.h"
 #include "UI/Map/HBMapWidget.h"
 
@@ -36,6 +38,9 @@ void UHBMapWidgetComponent::CreateMapWidget(APlayerController* InPlayerControlle
 
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
 	VillageGenerationSystem->OnVillageGenerated.AddUObject(this, &UHBMapWidgetComponent::SetMapTexture);
+
+	AHBMafiaGameState* HBGameState = Cast<AHBMafiaGameState>(GetWorld()->GetGameState());
+	HBGameState->OnGamePhaseChanged.AddUObject(this, &UHBMapWidgetComponent::SetSyncStateByPhase);
 }
 
 void UHBMapWidgetComponent::ShowMapWidget()
@@ -54,6 +59,68 @@ void UHBMapWidgetComponent::HideMapWidget()
 	MapWidget->SetVisibility(ESlateVisibility::Hidden);
 	bIsMapVisible = false;
 	SetComponentTickEnabled(false);
+}
+
+void UHBMapWidgetComponent::SetOwnMarkColor(FLinearColor InOwnMarkColor)
+{
+	if (!MapWidget) return;
+	MapWidget->SetOwnMarkColor(InOwnMarkColor);
+}
+
+void UHBMapWidgetComponent::RequestMark(FLinearColor Color, FVector2D Position)
+{
+	UE_LOG(LogYS, Log, TEXT("RequestMark"));
+	ServerRPCMark(Color, Position);
+}
+
+void UHBMapWidgetComponent::SetSyncStateByPhase(EGamePhase Phase)
+{
+	UE_LOG(LogYS, Log, TEXT("SetSyncStateByPhase Begin"));
+	
+	if (Phase == EGamePhase::Discussion)
+	{
+		UE_LOG(LogYS, Log, TEXT("SetSyncStateByPhase Discussion"));
+		
+		MapWidget->OnClickMap.AddUObject(this, &UHBMapWidgetComponent::RequestMark);
+	
+		AHBMafiaGameState* HBGameState = Cast<AHBMafiaGameState>(GetWorld()->GetGameState());
+		HBGameState->OnMapMarksChanged.AddUObject(MapWidget, &UHBMapWidget::RefreshMapMarks);
+		
+		MapWidget->ClearMapMarks();
+	}
+	else if (Phase == EGamePhase::Night)
+	{
+		UE_LOG(LogYS, Log, TEXT("SetSyncStateByPhase Night"));
+		
+		MapWidget->OnClickMap.RemoveAll(this);
+	
+		AHBMafiaGameState* HBGameState = Cast<AHBMafiaGameState>(GetWorld()->GetGameState());
+		HBGameState->OnMapMarksChanged.RemoveAll(this);
+		
+		MapWidget->ClearMapMarks();
+	}
+}
+
+void UHBMapWidgetComponent::ServerRPCMark_Implementation(FLinearColor Color, FVector2D Position)
+{
+	UE_LOG(LogYS, Log, TEXT("ServerRPCMark_Implementation"));
+	
+	AHBMafiaGameState* HBGameState = Cast<AHBMafiaGameState>(GetWorld()->GetGameState());
+
+	TArray<FHBMapMarkInfo> NewMapMarks;
+
+	for (FHBMapMarkInfo& MapMark : HBGameState->MapMarks)
+	{
+		if (MapMark.Color != Color)
+		{
+			NewMapMarks.Add(MapMark);
+		}
+	}
+
+	NewMapMarks.Add(FHBMapMarkInfo(Color, Position));
+
+	HBGameState->MapMarks = NewMapMarks;
+	HBGameState->OnRep_MapMarks();
 }
 
 void UHBMapWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

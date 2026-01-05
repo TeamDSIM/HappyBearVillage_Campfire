@@ -33,6 +33,27 @@ void UHBMapWidget::SetPlayerDirAngle(float Angle)
 	MapDynamicMaterial->SetScalarParameterValue(FName("PlayerDirAngle"), Angle);
 }
 
+void UHBMapWidget::RefreshMapMarks(TArray<FHBMapMarkInfo> MapMarks)
+{
+	UE_LOG(LogYS, Log, TEXT("Refresh Map Mark"));
+	ClearMapMarks();
+
+	for (auto& MapMark : MapMarks)
+	{
+		SpawnMark(MapMark.Color, MapMark.Position);	
+	}
+}
+
+void UHBMapWidget::ClearMapMarks()
+{
+	for (const TPair<FLinearColor, UUserWidget*>& MarkPair : MarksByColor)
+	{
+		MarkPair.Value->RemoveFromParent();
+	}
+
+	MarksByColor.Empty();
+}
+
 void UHBMapWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -50,60 +71,52 @@ FReply UHBMapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const 
 	}
 	
 	FGeometry ImageGeometry = Map->GetCachedGeometry();
-	FVector2D LocalLocation = ImageGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
+	FVector2D LocalPosition = ImageGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
 	FVector2D ImageSize = ImageGeometry.GetLocalSize();
-	FVector2D NormalizedLocation(LocalLocation.X / ImageSize.X, LocalLocation.Y / ImageSize.Y);
+	FVector2D NormalizedPosition(LocalPosition.X / ImageSize.X, LocalPosition.Y / ImageSize.Y);
 
-	if (LocalLocation.X < 0 || LocalLocation.Y < 0 || LocalLocation.X > ImageSize.X || LocalLocation.Y > ImageSize.Y)
+	if (LocalPosition.X < 0 || LocalPosition.Y < 0 || LocalPosition.X > ImageSize.X || LocalPosition.Y > ImageSize.Y)
 	{
 		return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 	}
-	
-	UE_LOG(LogYS, Log, TEXT("Local Location : %f, %f"), LocalLocation.X, LocalLocation.Y);
-	UE_LOG(LogYS, Log, TEXT("Normalized Location : %f, %f"), NormalizedLocation.X, NormalizedLocation.Y);
-	SpawnMarkAtLocalPosition(FLinearColor::Black, NormalizedLocation);
+
+	OnClickMap.Broadcast(OwnMarkColor, NormalizedPosition);
+	UE_LOG(LogYS, Log, TEXT("OnClickMap"));
 	
 	return FReply::Handled();
 }
 
-void UHBMapWidget::SpawnMarkAtLocalPosition(FLinearColor Color, const FVector2D& NormalizedLocation)
+void UHBMapWidget::SpawnMark(FLinearColor Color, const FVector2D& NormalizedPosition)
 {
-	FGeometry ImageGeometry = Map->GetCachedGeometry();
-	FVector2D ImageSize = ImageGeometry.GetLocalSize();
-
-	FVector2D ImageOffset = ImageGeometry.AbsoluteToLocal(ImageGeometry.GetAbsolutePosition());
-	FVector2D MarkLocalPosition = ImageOffset + FVector2D(NormalizedLocation.X * ImageSize.X, NormalizedLocation.Y * ImageSize.Y);
-
-	FVector2D Test1 = ImageGeometry.GetAbsolutePosition();
-	
-	UE_LOG(LogYS, Log, TEXT("ImageOffset : %f, %f"), ImageOffset.X, ImageOffset.Y);
-	UE_LOG(LogYS, Log, TEXT("MarkLocalPosition : %f, %f"), MarkLocalPosition.X, MarkLocalPosition.Y);
+	FGeometry MapImageGeometry = Map->GetCachedGeometry();
+	FVector2D MapImageSize = MapImageGeometry.GetLocalSize();
+	FVector2D MarkLocalPosition = FVector2D((NormalizedPosition.X - 0.5f) * MapImageSize.X, (NormalizedPosition.Y - 0.5f) * MapImageSize.Y);
 	
 	UUserWidget** Found = MarksByColor.Find(Color);
 
-	if (Found && *Found)
-	{
-		UUserWidget* Mark = *Found;
-		UCanvasPanelSlot* MarkSlot = Cast<UCanvasPanelSlot>(Mark->Slot);
-		
-		MarkSlot->SetPosition(MarkLocalPosition);
-	}
-	else
+	if (!Found || !*Found)
 	{
 		UUserWidget* NewMark = WidgetTree->ConstructWidget<UUserWidget>(MarkWidgetClass);
 		if (!NewMark) return;
-
+		
 		NewMark->SetVisibility(ESlateVisibility::Visible);
 		NewMark->SetColorAndOpacity(Color);
 
-		if (UCanvasPanel* ParentCanvas = Cast<UCanvasPanel>(Map->GetParent()))
-		{
-			UCanvasPanelSlot* NewMarkSlot = ParentCanvas->AddChildToCanvas(NewMark);
-			NewMarkSlot->SetAutoSize(false);
-			NewMarkSlot->SetSize(FVector2D(8.f, 8.f));
-			NewMarkSlot->SetPosition(MarkLocalPosition);
-		}
+		UCanvasPanel* MapCanvas = Cast<UCanvasPanel>(Map->GetParent());
+		UCanvasPanelSlot* NewMarkSlot = MapCanvas->AddChildToCanvas(NewMark);
+		
+		NewMarkSlot->SetAutoSize(false);
+		NewMarkSlot->SetAnchors(FAnchors(0.5f, 0.5f, 0.5f, 0.5f));
+		NewMarkSlot->SetAlignment(FVector2D(0.5f, 0.5f));
+		NewMarkSlot->SetPosition(MarkLocalPosition);
 		
 		MarksByColor.Add(Color, NewMark);
+	}
+	else
+	{
+		UUserWidget* Mark = *Found;
+		UCanvasPanelSlot* MarkSlot = Cast<UCanvasPanelSlot>(Mark->Slot);
+
+		MarkSlot->SetPosition(MarkLocalPosition);
 	}
 }
