@@ -201,6 +201,9 @@ public:
 	// 플레이어 색상 섹션 ===================================
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterial;
+	
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> HandMeshDynamicMaterial;
 
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerColor)
 	FLinearColor PlayerColor;

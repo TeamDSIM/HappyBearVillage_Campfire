@@ -175,6 +175,7 @@ void AHBCharacterPlayer::BeginPlay()
 	/* ================================================================ */
 
 	DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
+	HandMeshDynamicMaterial = FPSMeshComponent->CreateDynamicMaterialInstance(0);
 
 	// InputMappingContext ����
 	// @PHYTODO : �̰� PossessedBy �� �Ű���� ��
@@ -476,10 +477,20 @@ void AHBCharacterPlayer::SetRandomBaseColor()
 		DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
 	}
 
+	if (!HandMeshDynamicMaterial && FPSMeshComponent)
+	{
+		HandMeshDynamicMaterial = FPSMeshComponent->CreateDynamicMaterialInstance(0);
+	}
+
 	if (DynamicMaterial)
 	{
 		// CharacterBaseColor ������ RandomColor ���� �ο�
 		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
+	}
+
+	if (HandMeshDynamicMaterial)
+	{
+		HandMeshDynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
 	}
 }
 
@@ -489,6 +500,11 @@ void AHBCharacterPlayer::ResetBaseColor()
 	if (!DynamicMaterial && GetMesh())
 	{
 		DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
+	}
+
+	if (!HandMeshDynamicMaterial && FPSMeshComponent)
+	{
+		HandMeshDynamicMaterial = FPSMeshComponent->CreateDynamicMaterialInstance(0);
 	}
 
 	if (DynamicMaterial)
@@ -501,6 +517,11 @@ void AHBCharacterPlayer::ResetBaseColor()
 
 		// CharacterBaseColor ������ RandomColor ���� �ο�
 		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
+	}
+
+	if (HandMeshDynamicMaterial)
+	{
+		HandMeshDynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
 	}
 }
 
