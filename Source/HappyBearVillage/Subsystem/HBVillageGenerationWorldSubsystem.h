@@ -7,13 +7,12 @@
 #include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
 #include "ProceduralGeneration/Sync/HBVillageGenerationData.h"
 #include "Subsystems/WorldSubsystem.h"
-#include "VillageGenerationWorldSubsystem.generated.h"
+#include "HBVillageGenerationWorldSubsystem.generated.h"
 
-/**
- * 
- */
+DECLARE_MULTICAST_DELEGATE(FVillageGenerationHandler)
+
 UCLASS()
-class HAPPYBEARVILLAGE_API UVillageGenerationWorldSubsystem : public UWorldSubsystem
+class HAPPYBEARVILLAGE_API UHBVillageGenerationWorldSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
@@ -22,6 +21,9 @@ public:
 	FORCEINLINE FHBMapData GetMapData() const { return MapDataGenerator->GetMapData(); }
 
 	void GenerateVillage(FHBVillageGenerationData InVillageGenerationData);
+
+public:
+	FVillageGenerationHandler OnVillageGenerated;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "VillageGeneation")

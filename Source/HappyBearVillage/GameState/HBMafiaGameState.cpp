@@ -10,7 +10,7 @@
 #include "ProceduralGeneration/Map/HBMapGenerator.h"
 #include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
 #include "ProceduralGeneration/Noise/HBPerlinNoise.h"
-#include "Subsystem/VillageGenerationWorldSubsystem.h"
+#include "Subsystem/HBVillageGenerationWorldSubsystem.h"
 #include "Utils/HBUtils.h"
 
 AHBMafiaGameState::AHBMafiaGameState()
@@ -81,7 +81,7 @@ bool AHBMafiaGameState::IsNight() const
 
 void AHBMafiaGameState::OnRep_VillageGenerationData()
 {
-	UVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UVillageGenerationWorldSubsystem>();
+	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
 	if (!VillageGenerationSystem) return;
 	if (VillageGenerationSystem->IsGenerated()) return;
 	

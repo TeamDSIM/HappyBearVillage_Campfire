@@ -13,6 +13,9 @@ class UMultiplayerSessionsSubsystem;
 
 class UInputMappingContext;
 //class UInputAction;
+class AHBCharacterPlayer;
+class UWorld;
+class AActor;
 
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBPlayerController : public APlayerController
@@ -29,11 +32,15 @@ protected:
 	// BP에서 지정 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> FriendInviteInputAction;
-
-
+	UPROPERTY(VisibleAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> ToggleMapAction;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UHBInGameHUDComponent> InGameHUDComponent;
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+	TObjectPtr<class UHBMinimapWidgetComponent> MinimapWidgetComponent;
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+	TObjectPtr<class UHBMapWidgetComponent> MapWidgetComponent;
 
 private:
 	//강타입의 경우는 지정한 위젯만 들어올 수 있고 (로비 UI, 인게임 HUD)
@@ -69,8 +76,14 @@ private:
 	TObjectPtr< UMultiplayerSessionsSubsystem> MultiplayerSessionsSubsystem;
 
 	void ToggleFriendInvite();
+	void ToggleMapWidget();
 
 	bool bFriendInviteOpen = false;
+
+	//관전 관련 코드
+	AHBCharacterPlayer* FindAnyAlivePlayer(UWorld* World, AActor* ExcludeActor);
+
+	void ObserveToAnyAlivePlayer();
 
 public:
 
@@ -85,5 +98,8 @@ public:
 	void StartGame();
 	UFUNCTION()
 	void ExitGame();
+
+	//관전 관련 코드
+	void EnterObserveMode();
 
 };

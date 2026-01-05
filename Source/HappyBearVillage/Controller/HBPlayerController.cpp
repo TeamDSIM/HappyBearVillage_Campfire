@@ -11,13 +11,27 @@
 #include "Engine/World.h"
 #include "MultiplayerSessionsSubsystem.h"
 #include "EnhancedInputComponent.h"
+#include "Component/HBMapWidgetComponent.h"
+#include "Component/HBMinimapWidgetComponent.h"
 #include "GameMode/HBVillageGameMode.h"
-#include "UI/HBCharacterStatusWidgetComponent.h"
+#include "UI/Map/HBMapWidget.h"
+#include "EngineUtils.h"
+#include "GameFramework/Actor.h"
+#include "Character/HBCharacterPlayer.h"
+#include "Character/Stat/HBPlayerStatComponent.h"
 
 
 AHBPlayerController::AHBPlayerController()
 {
 	InGameHUDComponent = CreateDefaultSubobject<UHBInGameHUDComponent>(TEXT("InGameHUD"));
+	MinimapWidgetComponent = CreateDefaultSubobject<UHBMinimapWidgetComponent>(TEXT("Minimap"));
+	MapWidgetComponent = CreateDefaultSubobject<UHBMapWidgetComponent>(TEXT("Map"));
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleMapActionRef(TEXT("/Game/Character/Input/Action/IA_ToggleMap.IA_ToggleMap"));
+	if (ToggleMapActionRef.Succeeded())
+	{
+		ToggleMapAction = ToggleMapActionRef.Object;
+	}
 }
 
 void AHBPlayerController::BeginPlay()
@@ -48,8 +62,8 @@ void AHBPlayerController::SetupInputComponent()
 	{
 		if (FriendInviteInputAction)
 		{
-			EIC->BindAction(FriendInviteInputAction, ETriggerEvent::Started,
-				this, &AHBPlayerController::ToggleFriendInvite);
+			EIC->BindAction(FriendInviteInputAction, ETriggerEvent::Started,this, &AHBPlayerController::ToggleFriendInvite);
+			EIC->BindAction(ToggleMapAction, ETriggerEvent::Started, this, &AHBPlayerController::ToggleMapWidget);
 		}
 	}
 }
@@ -106,6 +120,9 @@ void AHBPlayerController::SetupUI()
 	if (Map == TEXT("InGameMap"))
 	{
 		InGameHUDComponent->ActivateHUD(this);
+		MinimapWidgetComponent->CreateMinimapWidget(this);
+		MapWidgetComponent->CreateMapWidget(this);
+		
 		FInputModeGameOnly InputMode;
 		SetInputMode(InputMode);
 		SetShowMouseCursor(false);
@@ -152,7 +169,6 @@ void AHBPlayerController::CreateLobbyUI()
 
 	SpawnedWidgets.Add(RawWidget);
 }
-
 
 void AHBPlayerController::RemoveUI()
 {
@@ -209,6 +225,68 @@ void AHBPlayerController::ToggleFriendInvite()
 	}
 }
 
+void AHBPlayerController::ToggleMapWidget()
+{
+	if (!MapWidgetComponent->IsMapValid()) return;
+	
+	if (MapWidgetComponent->IsMapVisible())
+	{
+		MapWidgetComponent->HideMapWidget();
+
+		FInputModeGameOnly InputMode;
+		SetInputMode(InputMode);
+		SetShowMouseCursor(false);	
+	}
+	else
+	{
+		MapWidgetComponent->ShowMapWidget();
+
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false);
+		
+		SetInputMode(InputMode);
+		SetShowMouseCursor(true);	
+	}
+}
+AHBCharacterPlayer* AHBPlayerController::FindAnyAlivePlayer(UWorld* World, AActor* ExcludeActor)
+{
+	if (!World) return nullptr;
+
+	for (TActorIterator<AHBCharacterPlayer> It(World); It; ++It)
+	{
+		AHBCharacterPlayer* Candidate = *It;   // 이름 변경
+		if (!Candidate || Candidate == ExcludeActor) continue;
+
+		UHBPlayerStatComponent* Stat = Candidate->FindComponentByClass<UHBPlayerStatComponent>();
+		if (Stat && Stat->GetIsAlive())
+		{
+			return Candidate;
+		}
+	}
+
+	return nullptr;
+}
+
+void AHBPlayerController::ObserveToAnyAlivePlayer()
+{
+	if (!IsLocalController())
+		return;
+
+	APawn* MyPawn = GetPawn();
+
+	//살아있는 플레이어 찾아서
+	AHBCharacterPlayer* Target = FindAnyAlivePlayer(GetWorld(), MyPawn);
+
+	if (Target)
+	{
+		//카메라 변경
+		SetViewTargetWithBlend(Target, 0.35f);
+		//따로 IgnoreInput 처리가 필요 없음(실행해보니 문제 없음)
+		//SetIgnoreMoveInput(true);
+	}
+}
+
 void AHBPlayerController::StartGame()
 {
 	//호스트인 경우만 작동
@@ -261,4 +339,9 @@ void AHBPlayerController::ExitGame()
 		//@Todo : 맵 이름 변경
 	FName Map = TEXT("/Game/Maps/TitleMap");
 	UGameplayStatics::OpenLevel(this, Map);
+}
+
+void AHBPlayerController::EnterObserveMode()
+{
+	ObserveToAnyAlivePlayer();
 }
