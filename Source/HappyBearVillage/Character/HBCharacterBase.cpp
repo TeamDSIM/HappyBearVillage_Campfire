@@ -219,6 +219,8 @@ float AHBCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const
 			UHBGameModePlayerControlComponent* PlayerControlComp = HBGameMode->GetHBGameModePlayerControlComponent();
 
 			int32 PlayerNum = PlayerControlComp->GetPlayerNum();
+			UE_LOG(LogTemp, Log, TEXT("PlayerNum : %d"), PlayerNum);
+			
 			PlayerControlComp->SetPlayerNum(PlayerNum - 1);
 
 			HBGameMode->CheckGameEnd();

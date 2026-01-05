@@ -24,7 +24,7 @@ void UHBJobBaseComponent::NightPhaseBegin()
 {
 }
 
-void UHBJobBaseComponent::Attack()
+void UHBJobBaseComponent::Attack(AActor* HitActor)
 {
 }
 

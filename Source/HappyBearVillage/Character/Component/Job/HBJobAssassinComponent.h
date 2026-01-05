@@ -18,7 +18,7 @@ public:
 	UHBJobAssassinComponent();
 
 public:
-	virtual void Attack() override;
+	virtual void Attack(AActor* HitActor) override;
 	
 	virtual void Action() override;
 

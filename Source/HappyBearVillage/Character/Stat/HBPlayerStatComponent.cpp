@@ -65,6 +65,11 @@ float UHBPlayerStatComponent::ApplyDamage(float InDamageAmount)
 
 int32 UHBPlayerStatComponent::ApplyNightDamage()
 {
+	if (Health <= 0)
+	{
+		return 0;
+	}
+	
 	Health -= 1;
 	
 	if (Health <= 0)
