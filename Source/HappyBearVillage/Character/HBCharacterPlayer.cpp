@@ -478,19 +478,6 @@ void AHBCharacterPlayer::SetRandomBaseColor()
 
 	if (DynamicMaterial)
 	{
-		// �����϶��� ���� ���� ���� ����
-		if (HasAuthority())
-		{
-			PlayerColor = FLinearColor::MakeRandomColor();
-
-			// PlayerState �� Color �� ����ȭ
-			AHBPlayerState* PawnState = Cast<AHBPlayerState>(GetPlayerState());
-			if (PawnState)
-			{
-				PawnState->SyncPlayerColorFromPlayerStat(PlayerColor);
-			}
-		}
-
 		// CharacterBaseColor ������ RandomColor ���� �ο�
 		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
 	}

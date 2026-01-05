@@ -51,15 +51,17 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 
 					// 누적 데미지 초기화
 					PlayerStatComponent->ResetTotalTakenDamage();
-
-					AHBPlayerState* HBPlayerState = Cast<AHBPlayerState>(Players[i]);
-					if (HBPlayerState)
-					{
-						HBPlayerState->SetUserID(i);
-					}
 				}
 
-				Character->SetRandomBaseColor();
+				Character->PlayerColor = FLinearColor::MakeRandomColor();
+				Character->OnRep_PlayerColor();
+
+				AHBPlayerState* HBPlayerState = Cast<AHBPlayerState>(Players[i]);
+				if (HBPlayerState)
+				{
+					HBPlayerState->SyncPlayerColorFromPlayerStat(Character->PlayerColor);
+					HBPlayerState->SetUserID(i);
+				}
 
 				// 플레이어의 직업 초기화 함수 실행
 				UHBJobBaseComponent* JobComponent = Character->GetJobComponent();
