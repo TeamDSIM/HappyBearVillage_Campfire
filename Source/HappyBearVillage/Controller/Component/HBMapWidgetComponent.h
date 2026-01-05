@@ -14,13 +14,15 @@ class HAPPYBEARVILLAGE_API UHBMapWidgetComponent : public UActorComponent
 
 public:
 	UHBMapWidgetComponent();
-
+	
 	FORCEINLINE bool IsMapVisible() const { return bIsMapVisible; }
 	bool IsMapValid() const ;
-
+	
 	void CreateMapWidget(APlayerController* InPlayerController);
 	void ShowMapWidget();
 	void HideMapWidget();
+
+	void SetOwnMarkColor(FLinearColor InOwnMarkColor);
 	
 protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

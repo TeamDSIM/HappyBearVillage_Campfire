@@ -19,6 +19,8 @@
 #include "UI/HBUserHUDWidget.h"
 #include "GameState/HBMafiaGameState.h"
 #include "Character/Component/HBCharacterMafiaAttackComponent.h"
+#include "Controller/HBPlayerController.h"
+#include "Controller/Component/HBMapWidgetComponent.h"
 
 AHBCharacterPlayer::AHBCharacterPlayer()
 {
@@ -466,6 +468,14 @@ void AHBCharacterPlayer::DoJobAction()
 void AHBCharacterPlayer::OnRep_PlayerColor()
 {
 	SetRandomBaseColor();
+
+	AHBPlayerController* HBPlayerController = Cast<AHBPlayerController>(GetController());
+	UHBMapWidgetComponent* MapWidgetComponent = HBPlayerController->GetComponentByClass<UHBMapWidgetComponent>();
+
+	if (MapWidgetComponent)
+	{
+		MapWidgetComponent->SetOwnMarkColor(PlayerColor);
+	}
 }
 
 void AHBCharacterPlayer::SetRandomBaseColor()

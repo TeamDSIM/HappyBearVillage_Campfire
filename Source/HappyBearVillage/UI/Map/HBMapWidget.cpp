@@ -59,7 +59,7 @@ FReply UHBMapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const 
 		return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 	}
 	
-	SpawnMark(FLinearColor::Black, NormalizedPosition);
+	SpawnMark(OwnMarkColor, NormalizedPosition);
 	
 	return FReply::Handled();
 }

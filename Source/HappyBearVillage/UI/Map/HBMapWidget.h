@@ -16,6 +16,8 @@ class HAPPYBEARVILLAGE_API UHBMapWidget : public UUserWidget
 
 public:
 	UHBMapWidget(const FObjectInitializer& ObjectInitializer);
+
+	FORCEINLINE void SetOwnMarkColor(FLinearColor InOwnMarKColor) { OwnMarkColor = InOwnMarKColor; }
 	
 	void SetMapTexture(UTexture2D* Texture);
 	void SetPlayerPosition(FVector NormalizedLocation);
@@ -39,4 +41,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Map Mark")
 	TSubclassOf<class UUserWidget> MarkWidgetClass;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Map Mark")
+	FLinearColor OwnMarkColor = FLinearColor::Black;
 };

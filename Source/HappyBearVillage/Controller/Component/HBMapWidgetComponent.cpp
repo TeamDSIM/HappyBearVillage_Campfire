@@ -3,6 +3,7 @@
 
 #include "HBMapWidgetComponent.h"
 
+#include "HappyBearVillage.h"
 #include "Subsystem/HBVillageGenerationWorldSubsystem.h"
 #include "UI/Map/HBMapWidget.h"
 
@@ -54,6 +55,12 @@ void UHBMapWidgetComponent::HideMapWidget()
 	MapWidget->SetVisibility(ESlateVisibility::Hidden);
 	bIsMapVisible = false;
 	SetComponentTickEnabled(false);
+}
+
+void UHBMapWidgetComponent::SetOwnMarkColor(FLinearColor InOwnMarkColor)
+{
+	UE_LOG(LogTemp, Log, TEXT("SetOwnMarkColor %f %f %f"), InOwnMarkColor.R, InOwnMarkColor.G, InOwnMarkColor.B);
+	MapWidget->SetOwnMarkColor(InOwnMarkColor);
 }
 
 void UHBMapWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
