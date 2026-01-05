@@ -51,12 +51,12 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	RagdollComponent = CreateDefaultSubobject<UHBCharacterRagdollComponent>(TEXT("Ragdoll"));
 
 	// ���� �Է� ����
-	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(
-		TEXT("/Game/Character/Input/IMC_Player.IMC_Player"));
-	if (InputMappingContextRef.Succeeded())
-	{
-		InputMappingContext = InputMappingContextRef.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(
+	//	TEXT("/Game/Character/Input/IMC_Player.IMC_Player"));
+	//if (InputMappingContextRef.Succeeded())
+	//{
+	//	InputMappingContext = InputMappingContextRef.Object;
+	//}
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> MoveActionRef(
 		TEXT("/Game/Character/Input/Action/IA_Move.IA_Move"));

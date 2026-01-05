@@ -42,6 +42,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 	TObjectPtr<class UHBMapWidgetComponent> MapWidgetComponent;
 
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputMappingContext> PlayerIMC;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputMappingContext> ObserveIMC; 
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> ObserveNextInputAction; // D
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> ObservePrevInputAction; // A
+
 private:
 	//강타입의 경우는 지정한 위젯만 들어올 수 있고 (로비 UI, 인게임 HUD)
 	//약타입의 경우는 어느 위젯이든 가리킬 수 있음 (타이틀/팝업/오버레이)
@@ -90,6 +103,19 @@ private:
 	AHBCharacterPlayer* FindAnyAlivePlayer(UWorld* World, AActor* ExcludeActor);
 
 	void ObserveToAnyAlivePlayer();
+	void BuildObserveCandidates();
+	void ApplyObserveTarget(int32 NewIndex, bool bBlend);
+	void ObserveNext();
+	void ObservePrev();
+
+	bool bIsObserving = false;
+	
+	//관전 가능 플레이어 목록
+	//Weak로 선언하는 이유: 플레이어가 죽으면 자동으로 무효화
+	UPROPERTY()
+	TArray<TWeakObjectPtr<AHBCharacterPlayer>> ObserveCandidates;
+	int32 ObserveIndex = INDEX_NONE;
+
 
 public:
 
@@ -107,5 +133,6 @@ public:
 
 	//관전 관련 코드
 	void EnterObserveMode();
+	void ExitObserveMode();
 
 };
