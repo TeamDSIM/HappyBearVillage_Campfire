@@ -74,6 +74,11 @@ void AHBMafiaGameState::OnRep_GameEnd()
 	OnGameEndChanged.Broadcast(GameEnd);
 }
 
+void AHBMafiaGameState::OnRep_MapMarks()
+{
+	OnMapMarksChanged.Broadcast(MapMarks);
+}
+
 bool AHBMafiaGameState::IsNight() const
 {
 	return CurrentPhase == EGamePhase::Night;

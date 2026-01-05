@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HBMapMarkInfo.h"
 #include "Blueprint/UserWidget.h"
 #include "HBMapWidget.generated.h"
 
-/**
- * 
- */
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnClickMap, FLinearColor /* Color */, FVector2D /* MarkPosition */);
+
 UCLASS()
 class HAPPYBEARVILLAGE_API UHBMapWidget : public UUserWidget
 {
@@ -22,6 +22,12 @@ public:
 	void SetMapTexture(UTexture2D* Texture);
 	void SetPlayerPosition(FVector NormalizedLocation);
 	void SetPlayerDirAngle(float Angle);
+
+	void RefreshMapMarks(TArray<FHBMapMarkInfo> MapMarks);
+	void ClearMapMarks();
+
+public:
+	FOnClickMap OnClickMap;
 
 protected:
 	virtual void NativeConstruct() override;

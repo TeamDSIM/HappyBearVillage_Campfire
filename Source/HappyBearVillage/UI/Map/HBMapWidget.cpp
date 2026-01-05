@@ -33,6 +33,27 @@ void UHBMapWidget::SetPlayerDirAngle(float Angle)
 	MapDynamicMaterial->SetScalarParameterValue(FName("PlayerDirAngle"), Angle);
 }
 
+void UHBMapWidget::RefreshMapMarks(TArray<FHBMapMarkInfo> MapMarks)
+{
+	UE_LOG(LogYS, Log, TEXT("Refresh Map Mark"));
+	ClearMapMarks();
+
+	for (auto& MapMark : MapMarks)
+	{
+		SpawnMark(MapMark.Color, MapMark.Position);	
+	}
+}
+
+void UHBMapWidget::ClearMapMarks()
+{
+	for (const TPair<FLinearColor, UUserWidget*>& MarkPair : MarksByColor)
+	{
+		MarkPair.Value->RemoveFromParent();
+	}
+
+	MarksByColor.Empty();
+}
+
 void UHBMapWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -58,8 +79,9 @@ FReply UHBMapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const 
 	{
 		return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 	}
-	
-	SpawnMark(OwnMarkColor, NormalizedPosition);
+
+	OnClickMap.Broadcast(OwnMarkColor, NormalizedPosition);
+	UE_LOG(LogYS, Log, TEXT("OnClickMap"));
 	
 	return FReply::Handled();
 }
