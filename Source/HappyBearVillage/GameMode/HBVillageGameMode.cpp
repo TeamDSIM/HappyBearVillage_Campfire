@@ -145,9 +145,28 @@ void AHBVillageGameMode::StopGame()
 	// 플레이어 정보 초기화
 	GameModePlayerControlComponent->ResetPlayers(HBGameState);
 	
+	bUseSeamlessTravel = true;
+
 	//@ Todo : 맵 이름 변경
 	FString Map = TEXT("/Game/Maps/LobbyMap");
-	GetWorld()->ServerTravel(Map);
+	World->ServerTravel(Map);
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = It->Get();
+		if (!PC) continue;
+
+		APawn* Pawn = PC->GetPawn();
+		if (!Pawn) continue;
+
+		FVector LobbyRespawnLocation;
+		LobbyRespawnLocation.X = 0.0f;
+		LobbyRespawnLocation.Y = 0.0f;
+		LobbyRespawnLocation.Z = 92.0f;
+
+		Pawn->SetActorLocation(LobbyRespawnLocation);
+	}
+
 }
 
 void AHBVillageGameMode::CheatPhaseChange()
