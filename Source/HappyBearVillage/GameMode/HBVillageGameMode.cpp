@@ -147,9 +147,6 @@ void AHBVillageGameMode::StopGame()
 	
 	bUseSeamlessTravel = true;
 
-	//@ Todo : 맵 이름 변경
-	FString Map = TEXT("/Game/Maps/LobbyMap");
-	World->ServerTravel(Map);
 
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
@@ -165,7 +162,18 @@ void AHBVillageGameMode::StopGame()
 		LobbyRespawnLocation.Z = 92.0f;
 
 		Pawn->SetActorLocation(LobbyRespawnLocation);
+		/*
+		AActor* StartSpot = FindPlayerStart(NewPlayer); // 기본 로직 or 커스텀
+		if (StartSpot)
+		{
+			RestartPlayerAtPlayerStart(NewPlayer, StartSpot);
+		}
+		*/
 	}
+
+	//@ Todo : 맵 이름 변경
+	FString Map = TEXT("/Game/Maps/LobbyMap");
+	World->ServerTravel(Map);
 
 }
 
