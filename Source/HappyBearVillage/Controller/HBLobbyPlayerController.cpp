@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "MultiplayerSessionsSubsystem.h"
+#include "GameMode/HBLobbyGameMode.h"
 #include "GameMode/HBVillageGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/HBLobbyWidget.h"
@@ -163,7 +164,7 @@ void AHBLobbyPlayerController::StartGame()
 	// Seamless Travel을 활성화하기 위해 GameMode를 가져와 설정 확인
 	if (UWorld* World = GetWorld())
 	{
-		if (AHBVillageGameMode* GM = World->GetAuthGameMode<AHBVillageGameMode>())
+		if (AHBLobbyGameMode* GM = World->GetAuthGameMode<AHBLobbyGameMode>())
 		{
 			GM->bUseSeamlessTravel = true; // 이동 직전에 활성화
 		}
