@@ -212,6 +212,12 @@ float AHBCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const
 	}
 	else if (HBGameState->CurrentPhase == EGamePhase::Night)
 	{
+		// 마피아면 저녁에 공격받지 않도록 예외처리
+		if (Stat->GetCharacterRole().Role == ERoleType::MAFIA)
+		{
+			return -1;
+		}
+		
 		int32 Health = Stat->ApplyNightDamage();
 		if (Health <= 0)
 		{
