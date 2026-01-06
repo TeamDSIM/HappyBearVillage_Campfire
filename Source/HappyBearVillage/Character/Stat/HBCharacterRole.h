@@ -40,7 +40,7 @@ enum class EJobType : uint8
 	SANTA UMETA(DisplayName = "Santa"),
 	POLICE UMETA(DisplayName = "Police"),
 	INSIDER UMETA(DisplayName = "Insider"),
-	STAR UMETA(DisplayName = "Star"),
+	CELEBRITY UMETA(DisplayName = "Celebrity"),
 	POOH UMETA(DisplayName = "Pooh"),
 	TREASUREHUNTER UMETA(DisplayName = "TreasureHunter"),
 

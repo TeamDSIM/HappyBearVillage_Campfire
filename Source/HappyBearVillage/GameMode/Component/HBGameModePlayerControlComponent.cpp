@@ -205,37 +205,37 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 	Algo::RandomShuffle(CitizenPool);
 
 	// // 일단 현재 마피아와 시민만 배치
-	// for (int i = 0; i < InPlayerNum; ++i)
-	// {
-	// 	if (i < MafiaNum)
-	// 	{
-	// 		PlayerJobs.Add(EJobType::SHACO);
-	// 	}
-	// 	else
-	// 	{
-	// 		if (i % 2 == 0)
-	// 		{
-	// 			PlayerJobs.Add(EJobType::ARMY);
-	// 		}
-	// 		else
-	// 		{
-	// 			PlayerJobs.Add(EJobType::CITIZEN);
-	// 		}
-	// 	}
-	// }
+	 for (int i = 0; i < InPlayerNum; ++i)
+	 {
+	 	if (i < MafiaNum)
+	 	{
+	 		PlayerJobs.Add(EJobType::SHACO);
+	 	}
+	 	else
+	 	{
+	 		if (i % 2 == 0)
+	 		{
+	 			PlayerJobs.Add(EJobType::ARMY);
+	 		}
+	 		else
+	 		{
+	 			PlayerJobs.Add(EJobType::CELEBRITY);
+	 		}
+	 	}
+	 }
 
-	// 마피아와 시민 직업 풀을 이용해서 직업 부여
-	for (int i = 0; i < InPlayerNum; ++i)
-	{
-		if (i < MafiaNum)
-		{
-			PlayerJobs.Add(MafiaPool.Pop());
-		}
-		else
-		{
-			PlayerJobs.Add(CitizenPool.Pop());
-		}
-	}
+	//// 마피아와 시민 직업 풀을 이용해서 직업 부여
+	//for (int i = 0; i < InPlayerNum; ++i)
+	//{
+	//	if (i < MafiaNum)
+	//	{
+	//		PlayerJobs.Add(MafiaPool.Pop());
+	//	}
+	//	else
+	//	{
+	//		PlayerJobs.Add(CitizenPool.Pop());
+	//	}
+	//}
 	
 	InitPlayerNum(InPlayerNum);
 }
