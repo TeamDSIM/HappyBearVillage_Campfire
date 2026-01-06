@@ -24,16 +24,25 @@ enum class ERoleType : uint8
 UENUM(BlueprintType)
 enum class EJobType : uint8
 {
-	// 마피아 직업군
+	// 마피아 직업군 =======
 	MAFIA UMETA(DisplayName = "Mafia"),
-	// 임시 직업군
-	SHACO UMETA(DisplayName = "Shaco"),
+	// 
+	SHACO UMETA(DisplayName = "Shaco"),	// 완
+	FIREBUG UMETA(DisplayName = "FireBug"),
+	BOMBER UMETA(DisplayName = "Bomber"),
 	
-	// 시민 직업군
+	// 시민 직업군 =========
 	CITIZEN UMETA(DisplayName = "Citizen"),
-	// 임시 직업군
-	ARMY UMETA(DisplayName = "Army"),
-
+	
+	ARMY UMETA(DisplayName = "Army"),	// 완
+	SLEEPWALKER UMETA(DisplayName = "Sleepwalker"),
+	DETECTOR UMETA(DisplayName = "Detector"),
+	SANTA UMETA(DisplayName = "Santa"),
+	POLICE UMETA(DisplayName = "Police"),
+	INSIDER UMETA(DisplayName = "Insider"),
+	STAR UMETA(DisplayName = "Star"),
+	POOH UMETA(DisplayName = "Pooh"),
+	TREASUREHUNTER UMETA(DisplayName = "TreasureHunter"),
 
 	END UMETA(DisplayName = "End") // 총 개수
 };

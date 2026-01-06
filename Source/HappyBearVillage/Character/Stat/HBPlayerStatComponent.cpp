@@ -7,6 +7,7 @@
 #include "Character/Component/HBCharacterRagdollComponent.h"
 #include "Character/Component/Job/HBJobArmyComponent.h"
 #include "Character/Component/Job/HBJobAssassinComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Editor/WidgetCompilerLog.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameState/HBMafiaGameState.h"
@@ -65,6 +66,13 @@ float UHBPlayerStatComponent::ApplyDamage(float InDamageAmount)
 
 int32 UHBPlayerStatComponent::ApplyNightDamage()
 {
+	UE_LOG(LogTemp, Log, TEXT("ApplyNightDamage"));
+	
+	if (Health <= 0)
+	{
+		return 0;
+	}
+	
 	Health -= 1;
 	
 	if (Health <= 0)
@@ -112,12 +120,23 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 				HBCharacterPlayer->AssignJob(UHBJobAssassinComponent::StaticClass());
 			}
 			break;
+		case EJobType::FIREBUG:
+		case EJobType::BOMBER:
 		case EJobType::CITIZEN:
 			break;
 		case EJobType::ARMY:
 			{
 				HBCharacterPlayer->AssignJob(UHBJobArmyComponent::StaticClass());
 			}
+			break;
+		case EJobType::SLEEPWALKER:
+		case EJobType::DETECTOR:
+		case EJobType::SANTA:
+		case EJobType::POLICE:
+		case EJobType::INSIDER:
+		case EJobType::STAR:
+		case EJobType::POOH:
+		case EJobType::TREASUREHUNTER:
 			break;
 		default:
 			break;
@@ -212,6 +231,7 @@ void UHBPlayerStatComponent::OnRep_IsAlive()
 			CharacterPlayer->GetComponentByClass<UHBCharacterRagdollComponent>()->ApplyRagdoll();
 			CharacterPlayer->GetCharacterMovement()->DisableMovement();
 			CharacterPlayer->GetCharacterMovement()->StopMovementImmediately();
+			CharacterPlayer->GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 			if (CharacterPlayer->IsLocallyControlled())
 			{
 				if (AHBPlayerController* PC =

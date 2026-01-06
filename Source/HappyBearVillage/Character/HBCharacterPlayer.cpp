@@ -726,6 +726,13 @@ void AHBCharacterPlayer::AttackHitConfirm(AActor* HitActor)
 		FDamageEvent DamageEvent;
 		HitActor->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
 
+		// 직업의 공격 함수 호출 (피격 시 적용되는것만 있으니 HitConfirm 에서 호출)
+		if (GetJobComponent())
+		{
+			UE_LOG(LogTemp, Log, TEXT("JobComponent Attack"));
+			GetJobComponent()->Attack(HitActor);
+		}
+
 		AHBMafiaGameState* GameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 		if (GameState && GameState->CurrentPhase == EGamePhase::Fight)
 		{
