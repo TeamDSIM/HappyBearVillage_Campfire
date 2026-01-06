@@ -125,6 +125,28 @@ void UHBGameModePlayerControlComponent::UnEquippedAllPlayer(AHBMafiaGameState* I
 	}
 }
 
+void UHBGameModePlayerControlComponent::CallJobNightPhaseEnd(AHBMafiaGameState* InGameState)
+{
+	// Night 시작 시 플레이어 Night 상태 초기화
+	for (APlayerState* PS : InGameState->PlayerArray)
+	{
+		// 플레이어 직업 컴포넌트 저녁 초기화 실행
+		AController* PlayerController = PS->GetPlayerController();
+		if (PlayerController)
+		{
+			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
+			if (Character)
+			{
+				UHBJobBaseComponent* JobComponent = Character->GetJobComponent();
+				if (JobComponent)
+				{
+					JobComponent->NightPhaseEnd();
+				}
+			}
+		}
+	}
+}
+
 void UHBGameModePlayerControlComponent::ResetPlayersTotalTakenDamage(AHBMafiaGameState* InGameState)
 {
 	// 플레이어 목록 불러오기

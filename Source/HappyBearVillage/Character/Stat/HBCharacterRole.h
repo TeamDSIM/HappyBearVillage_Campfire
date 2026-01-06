@@ -27,7 +27,7 @@ enum class EJobType : uint8
 	// 마피아 직업군 =======
 	MAFIA UMETA(DisplayName = "Mafia"),
 	// 
-	SHACO UMETA(DisplayName = "Shaco"),	// 완
+	ASSASSIN UMETA(DisplayName = "Assassin"),	// 완
 	FIREBUG UMETA(DisplayName = "FireBug"),
 	BOMBER UMETA(DisplayName = "Bomber"),
 	

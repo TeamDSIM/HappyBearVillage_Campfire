@@ -116,7 +116,7 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 		{
 		case EJobType::MAFIA:
 			break;
-		case EJobType::SHACO:
+		case EJobType::ASSASSIN:
 			{
 				HBCharacterPlayer->AssignJob(UHBJobAssassinComponent::StaticClass());
 			}
