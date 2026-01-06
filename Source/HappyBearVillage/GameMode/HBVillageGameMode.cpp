@@ -46,7 +46,7 @@ AHBVillageGameMode::AHBVillageGameMode()
 	}
 
 	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassRef(
-		TEXT("/Game/Controller/BP_HBPlayerController.BP_HBPlayerController_C"));
+		TEXT("/Game/Controller/BP_HBVillagePlayerController.BP_HBVillagePlayerController_C"));
 	if (PlayerControllerClassRef.Class)
 	{
 		PlayerControllerClass = PlayerControllerClassRef.Class;
