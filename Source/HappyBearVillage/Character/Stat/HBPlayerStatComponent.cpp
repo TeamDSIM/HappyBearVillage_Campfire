@@ -7,6 +7,7 @@
 #include "Character/Component/HBCharacterRagdollComponent.h"
 #include "Character/Component/Job/HBJobArmyComponent.h"
 #include "Character/Component/Job/HBJobAssassinComponent.h"
+#include "Character/Component/Job/HBJobPoliceComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Editor/WidgetCompilerLog.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -132,7 +133,12 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 		case EJobType::SLEEPWALKER:
 		case EJobType::DETECTOR:
 		case EJobType::SANTA:
+			break;
 		case EJobType::POLICE:
+			{
+				HBCharacterPlayer->AssignJob(UHBJobPoliceComponent::StaticClass());
+			}
+			break;
 		case EJobType::INSIDER:
 		case EJobType::STAR:
 		case EJobType::POOH:

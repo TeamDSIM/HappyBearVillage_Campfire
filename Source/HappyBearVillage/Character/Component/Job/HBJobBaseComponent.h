@@ -38,6 +38,9 @@ public:
 	// 밤 시작 시점 (GameMode -> StartNight)
 	virtual void NightPhaseBegin();
 
+	// 밤 끝나고 초기화 시점
+	virtual void NightPhaseEnd();
+
 	// 공격 시 (CharacterPlayer -> AttackHitConfirm 에서 호출, 피격 대상을 인자로 받음)
 	virtual void Attack(AActor* HitActor);
 
