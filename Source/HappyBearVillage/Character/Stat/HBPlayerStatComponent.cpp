@@ -7,6 +7,7 @@
 #include "Character/Component/HBCharacterRagdollComponent.h"
 #include "Character/Component/Job/HBJobArmyComponent.h"
 #include "Character/Component/Job/HBJobAssassinComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Editor/WidgetCompilerLog.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameState/HBMafiaGameState.h"
@@ -230,6 +231,7 @@ void UHBPlayerStatComponent::OnRep_IsAlive()
 			CharacterPlayer->GetComponentByClass<UHBCharacterRagdollComponent>()->ApplyRagdoll();
 			CharacterPlayer->GetCharacterMovement()->DisableMovement();
 			CharacterPlayer->GetCharacterMovement()->StopMovementImmediately();
+			CharacterPlayer->GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 			if (CharacterPlayer->IsLocallyControlled())
 			{
 				if (AHBPlayerController* PC =
