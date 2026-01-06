@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "HBLobbyGameMode.generated.h"
+#include "HBTitleGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HAPPYBEARVILLAGE_API AHBLobbyGameMode : public AGameModeBase
+class HAPPYBEARVILLAGE_API AHBTitleGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-
+	
 public:
-	AHBLobbyGameMode();
+	AHBTitleGameMode();
 };
