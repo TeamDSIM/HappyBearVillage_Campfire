@@ -15,6 +15,7 @@
 #include "PlayerState/HBPlayerState.h"
 #include "Subsystem/HBGameVoteSubsystem.h"
 #include "Controller/HBPlayerController.h"
+#include "Controller/HBVillagePlayerController.h"
 
 
 // Sets default values for this component's properties
@@ -234,8 +235,8 @@ void UHBPlayerStatComponent::OnRep_IsAlive()
 			CharacterPlayer->GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 			if (CharacterPlayer->IsLocallyControlled())
 			{
-				if (AHBPlayerController* PC =
-					Cast<AHBPlayerController>(CharacterPlayer->GetController()))
+				if (AHBVillagePlayerController* PC =
+					Cast<AHBVillagePlayerController>(CharacterPlayer->GetController()))
 				{
 					PC->EnterObserveMode();
 				}
