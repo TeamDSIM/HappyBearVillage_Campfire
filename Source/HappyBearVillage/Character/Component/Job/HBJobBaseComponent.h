@@ -27,6 +27,14 @@ public:
 	// Sets default values for this component's properties
 	UHBJobBaseComponent();
 
+	void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void OnRep_IsActionActive();
+
+	FORCEINLINE bool GetIsActionActive() const { return bIsActionActive; }
+	FORCEINLINE void SetIsActionActive(bool bInIsActionActive) { bIsActionActive = bInIsActionActive; }
+
 public:
 	// 직업 호출 시점
 	// 게임 시작 시점 (GameMode -> StartGame -> InitPlayer 마지막)
@@ -60,6 +68,6 @@ protected:
 	
 protected:
 	// 직업 스킬 사용 가능 여부
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_IsActionActive)
 	uint8 bIsActionActive : 1;	
 };

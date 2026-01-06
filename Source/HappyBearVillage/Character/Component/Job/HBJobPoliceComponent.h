@@ -27,8 +27,21 @@ public:
 	void OnRep_IsRemainAction();
 	
 protected:
+	UFUNCTION(Server, Reliable)
+	void ServerRPCAction();
+
+	void BindSealEvent();
 
 private:
+	// 스킬 봉인, 무기 해제
+	UFUNCTION()
+	void SealPlayer(AActor* InActor);
+
+	// 플레이어 행동 봉인 해제
+	UFUNCTION()
+	void UnsealPlayer(AActor* InActor);
+	
+	
 	// 밤에 능력 사용 가능 여부
 	// true 면 사용 가능, false 면 불가
 	UPROPERTY(ReplicatedUsing = OnRep_IsRemainAction)
