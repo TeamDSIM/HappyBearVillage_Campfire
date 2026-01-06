@@ -119,12 +119,23 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 				HBCharacterPlayer->AssignJob(UHBJobAssassinComponent::StaticClass());
 			}
 			break;
+		case EJobType::FIREBUG:
+		case EJobType::BOMBER:
 		case EJobType::CITIZEN:
 			break;
 		case EJobType::ARMY:
 			{
 				HBCharacterPlayer->AssignJob(UHBJobArmyComponent::StaticClass());
 			}
+			break;
+		case EJobType::SLEEPWALKER:
+		case EJobType::DETECTOR:
+		case EJobType::SANTA:
+		case EJobType::POLICE:
+		case EJobType::INSIDER:
+		case EJobType::STAR:
+		case EJobType::POOH:
+		case EJobType::TREASUREHUNTER:
 			break;
 		default:
 			break;

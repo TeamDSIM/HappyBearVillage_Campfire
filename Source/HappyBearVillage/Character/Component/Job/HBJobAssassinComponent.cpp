@@ -45,33 +45,36 @@ void UHBJobAssassinComponent::Attack(AActor* HitActor)
 		return;
 	}
 
+	// 체력이 0일 시 한번 더 백어택 판정 들어가는 것을 방지
 	if (HitCharacter->GetStat()->GetHealth() <= 0)
 	{
 		return;
 	}
 
-	// 1. 공격자의 앞방향 (ControlRotation 권장)
+	// 공격자의 앞방향 (Pawn 이 있으면 ControlRotation 으로 받음)
 	FVector OwnerForward = OwnerActor->GetActorForwardVector();
-	if (APawn* OwnerPawn = Cast<APawn>(OwnerActor))
+	APawn* OwnerPawn = Cast<APawn>(OwnerActor);
+	if (OwnerPawn)
 	{
 		OwnerForward = OwnerPawn->GetControlRotation().Vector();
 	}
 	OwnerForward.Z = 0.f;
 	OwnerForward.Normalize();
 
-	// 2. 피격자의 앞방향 (ControlRotation 권장)
+	// 피격자의 앞방향 (Pawn 이 있으면 ControlRotation 으로 받음)
 	FVector TargetForward = HitActor->GetActorForwardVector();
-	if (APawn* TargetPawn = Cast<APawn>(HitActor))
+	APawn* TargetPawn = Cast<APawn>(HitActor);
+	if (TargetPawn)
 	{
 		TargetForward = TargetPawn->GetControlRotation().Vector();
 	}
 	TargetForward.Z = 0.f;
 	TargetForward.Normalize();
 
-	// 3. 두 캐릭터의 앞방향 내적 (얼마나 같은 곳을 보고 있는가)
+	// 두 캐릭터의 앞방향 내적 (얼마나 같은 곳을 보고 있는가)
 	float OrientationDot = FVector::DotProduct(OwnerForward, TargetForward);
 
-	// 4. 공격자가 피격자의 뒤에 위치하는지 확인 (이전 로직 결합)
+	// 공격자가 피격자의 뒤에 위치하는지 확인
 	FVector OwnerLoc = OwnerActor->GetActorLocation();
 	FVector TargetLoc = HitActor->GetActorLocation();
 	OwnerLoc.Z = 0.f;
@@ -84,8 +87,8 @@ void UHBJobAssassinComponent::Attack(AActor* HitActor)
 	UE_LOG(LogTemp, Log, TEXT("PositionDot: %f (-1에 가까울수록 피격자 뒤에 위치)"), PositionDot);
 
 	// 최종 판정: 
-	// 1. 두 캐릭터가 바라보는 방향이 비슷하고 (OrientationDot > 0.5)
-	// 2. 공격자가 피격자의 뒤쪽 공간에 위치함 (PositionDot < -0.5)
+	// 두 캐릭터가 바라보는 방향이 비슷하고 (OrientationDot > 0.85) (수치가 작아질수록 후방 판정 범위가 넓어짐)
+	// 공격자가 피격자의 뒤쪽 공간에 위치함 (PositionDot < -0.5)
 	if (OrientationDot > 0.85f && PositionDot < -0.5f)
 	{
 		UE_LOG(LogTemp, Log, TEXT("BackAttack"));
