@@ -61,7 +61,7 @@ AHBVillageGameMode::AHBVillageGameMode()
 	bIsCivilWin = false;
 	bIsMafiaWin = false;
 
-	bUseSeamlessTravel = false;
+	bUseSeamlessTravel = true;
 }
 
 void AHBVillageGameMode::StartGame()
