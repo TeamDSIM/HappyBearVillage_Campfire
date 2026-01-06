@@ -448,13 +448,15 @@ void AHBVillageGameMode::StartVoteCheck()
 
 void AHBVillageGameMode::StartNight()
 {
-	SetPhase(EGamePhase::Night, 180.f);
 
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (!HBGameState)
 	{
 		return;
 	}
+	SetPhase(EGamePhase::Night, 180.f);
+	//페이드인,아웃 및 밤 색상 설정
+	HBGameState->OnRep_GamePhase();
 	
 	CharacterRelocationComponent->RelocateCharactersToHouse(HBGameState);
 
@@ -468,8 +470,8 @@ void AHBVillageGameMode::StartNight()
 		VoteSubsystem->ClearCurrentVoteTarget();
 	}
 
-	//페이드인,아웃 및 밤 색상 설정
-	HBGameState->OnRep_GamePhase();
+	////페이드인,아웃 및 밤 색상 설정
+	//HBGameState->OnRep_GamePhase();
 
 	// Night 시작 시 플레이어 Night 상태 초기화
 	for (APlayerState* PS : HBGameState->PlayerArray)

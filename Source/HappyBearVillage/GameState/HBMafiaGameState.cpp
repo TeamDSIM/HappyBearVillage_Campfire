@@ -58,11 +58,6 @@ void AHBMafiaGameState::OnRep_GamePhase()
 	const bool bIsNight = (CurrentPhase == EGamePhase::Night);
 	for (TActorIterator<AHBCharacterPlayer> It(GetWorld()); It; ++It)
 	{
-		//연예인인 경우
-		//넘기기
-		
-		//else
-		if (It->GetStat()->GetCharacterRole().Job != EJobType::CELEBRITY);
 		It->ApplyNightColor(bIsNight);
 
 	}

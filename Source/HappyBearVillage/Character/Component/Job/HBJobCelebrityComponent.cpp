@@ -11,17 +11,16 @@ UHBJobCelebrityComponent::UHBJobCelebrityComponent()
 void UHBJobCelebrityComponent::NightPhaseBegin()
 {
 	Super::NightPhaseBegin();
-	UE_LOG(LogTemp, Log, TEXT("Try Cast"));
+
 	AHBCharacterPlayer* HBCharacterPlayer = GetOwner<AHBCharacterPlayer>();
-	if (!HBCharacterPlayer->DynamicMaterial)
-	{
-		UE_LOG(LogTemp, Log, TEXT("DynamicMaterial is NULL"));
-		return;
-	}
+
 	if (HBCharacterPlayer)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Try Celebrity"));
-		HBCharacterPlayer->DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), HBCharacterPlayer->PlayerColor);
+		if (HBCharacterPlayer->HasAuthority())
+		{
+			FLinearColor PlayerColor = HBCharacterPlayer->PlayerColor;
+			HBCharacterPlayer->RenderColor = PlayerColor;
+			HBCharacterPlayer->OnRep_RenderColor();
+		}
 	}
-
 }

@@ -212,8 +212,14 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerColor)
 	FLinearColor PlayerColor;
 
+	UPROPERTY(ReplicatedUsing = OnRep_RenderColor)
+	FLinearColor RenderColor;
+
 	UFUNCTION()
 	void OnRep_PlayerColor();
+
+	UFUNCTION()
+	void OnRep_RenderColor();
 
 	void SetRandomBaseColor();
 	void ResetBaseColor();

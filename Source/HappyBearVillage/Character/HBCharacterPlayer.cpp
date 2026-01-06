@@ -160,6 +160,9 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 
 	//���� Ż/����
 	MafiaAttackComp = CreateDefaultSubobject<UHBCharacterMafiaAttackComponent>(TEXT("MafiaAttackComp"));
+
+	RenderColor = FLinearColor::Black;
+
 }
 
 void AHBCharacterPlayer::BeginPlay()
@@ -466,6 +469,7 @@ void AHBCharacterPlayer::DoJobAction()
 	}
 }
 
+//Marker 색상 동기화
 void AHBCharacterPlayer::OnRep_PlayerColor()
 {
 	SetRandomBaseColor();
@@ -479,6 +483,13 @@ void AHBCharacterPlayer::OnRep_PlayerColor()
 	MapWidgetComponent->SetOwnMarkColor(PlayerColor);
 }
 
+void AHBCharacterPlayer::OnRep_RenderColor()
+{
+	//DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), RenderColor);
+	ApplyNightColor(true);
+}
+
+//랜덤 색깔이 아니라, 색깔 적용 함수
 void AHBCharacterPlayer::SetRandomBaseColor()
 {
 	// DynamicMaterial ����
@@ -550,7 +561,7 @@ void AHBCharacterPlayer::ApplyNightColor(bool bIsNight)
 
 	if (bIsNight)
 	{
-		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), FLinearColor::Black);
+		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), /*FLinearColor::Black*/ RenderColor);
 	}
 	else
 	{
