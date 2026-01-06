@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameState/HBMafiaGameState.h"
 #include "Net/UnrealNetwork.h"
+#include <GameMode/HBVillageGameMode.h>
 
 UHBJobAssassinComponent::UHBJobAssassinComponent()
 {
@@ -100,11 +101,11 @@ void UHBJobAssassinComponent::Attack(AActor* HitActor)
 void UHBJobAssassinComponent::Action()
 {
 	Super::Action();
-	if (GetCurrentPhase() != EGamePhase::Night)
+	/*if (GetCurrentPhase() != EGamePhase::Night)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Shaco Action : Not Night Phase"));
 		return;
-	}
+	}*/
 	
 	// 스킬 사용이 불가능하면 반환
 	if (!bIsActionActive)
@@ -134,6 +135,9 @@ void UHBJobAssassinComponent::Action()
 		// ServerRPC 로 돌림
 		ServerRPCSetMoveSpeed(1000.f);
 	}
+
+	AHBVillageGameMode* GameMode = Cast<AHBVillageGameMode>(GetWorld()->GetAuthGameMode());
+	GameMode->StopGame();
 }
 
 void UHBJobAssassinComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
