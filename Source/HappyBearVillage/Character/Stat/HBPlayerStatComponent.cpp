@@ -7,7 +7,9 @@
 #include "Character/Component/HBCharacterRagdollComponent.h"
 #include "Character/Component/Job/HBJobArmyComponent.h"
 #include "Character/Component/Job/HBJobAssassinComponent.h"
-#include "Character/Component//Job/HBJobCelebrityComponent.h"
+#include "Character/Component/Job/HBJobCelebrityComponent.h"
+#include "Character/Component/Job/HBJobSleepwalkerComponent.h"
+
 #include "Components/CapsuleComponent.h"
 #include "Editor/WidgetCompilerLog.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -118,30 +120,36 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 		case EJobType::MAFIA:
 			break;
 		case EJobType::SHACO:
-			{
-				HBCharacterPlayer->AssignJob(UHBJobAssassinComponent::StaticClass());
-			}
+		{
+			HBCharacterPlayer->AssignJob(UHBJobAssassinComponent::StaticClass());
+		}
 			break;
 		case EJobType::FIREBUG:
 		case EJobType::BOMBER:
 		case EJobType::CITIZEN:
 			break;
 		case EJobType::ARMY:
-			{
-				HBCharacterPlayer->AssignJob(UHBJobArmyComponent::StaticClass());
-			}
+		{
+			HBCharacterPlayer->AssignJob(UHBJobArmyComponent::StaticClass());
+		}
 			break;
 		case EJobType::SLEEPWALKER:
+		{
+			HBCharacterPlayer->AssignJob(UHBJobSleepwalkerComponent::StaticClass());
+		}
+			break;
+
 		case EJobType::DETECTOR:
 		case EJobType::SANTA:
 		case EJobType::POLICE:
 		case EJobType::INSIDER:
 			break;
 		case EJobType::CELEBRITY:
-			{
+		{
 			HBCharacterPlayer->AssignJob(UHBJobCelebrityComponent::StaticClass());
-			}
+		}
 			break;
+	
 		case EJobType::POOH:
 		case EJobType::TREASUREHUNTER:
 			break;

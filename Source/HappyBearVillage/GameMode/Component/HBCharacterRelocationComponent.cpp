@@ -39,7 +39,7 @@ void UHBCharacterRelocationComponent::RelocateCharactersToHouse(AHBMafiaGameStat
 			return;
 		}
 
-		// ���� ����� �̵� ����
+		// 죽은 사람은 이동 제외
 		if (Character->GetStat()->GetIsAlive() == false)
 		{
 			continue;

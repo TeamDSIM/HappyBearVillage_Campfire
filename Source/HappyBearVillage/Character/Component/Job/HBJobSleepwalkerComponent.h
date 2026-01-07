@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Character/Component/Job/HBJobBaseComponent.h"
-#include "MyJobSleepwalkerComponent.generated.h"
+#include "HBJobSleepwalkerComponent.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HAPPYBEARVILLAGE_API UMyJobSleepwalkerComponent : public UHBJobBaseComponent
+class HAPPYBEARVILLAGE_API UHBJobSleepwalkerComponent : public UHBJobBaseComponent
 {
 	GENERATED_BODY()
 public:
 
-	UMyJobSleepwalkerComponent();
+	UHBJobSleepwalkerComponent();
 
 protected:
 	virtual void NightPhaseBegin() override;
