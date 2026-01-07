@@ -955,6 +955,7 @@ void AHBCharacterPlayer::ServerRPCDance_Implementation(int32 MontageIndex, float
 			}
 		}
 	}
+
 }
 
 void AHBCharacterPlayer::PlayDanceAnimation(int32 MontageIndex)
