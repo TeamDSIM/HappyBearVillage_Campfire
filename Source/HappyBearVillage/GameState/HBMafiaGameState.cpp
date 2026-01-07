@@ -110,7 +110,6 @@ void AHBMafiaGameState::OnRep_Date()
 
 void AHBMafiaGameState::OnRep_TargetVoteNum()
 {
-	UE_LOG(LogTemp, Log, TEXT("OnRep_TargetVoteNum"));
 	OnTargetVoteNumChanged.Broadcast(TargetVoteNum);
 }
 
