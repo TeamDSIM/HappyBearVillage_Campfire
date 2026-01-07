@@ -37,7 +37,7 @@ void UHBDamagedPlayerHUD::NativeConstruct()
 
 void UHBDamagedPlayerHUD::UpdateCurrentInfo(AHBPlayerState* InPlayer, FDamageRankEntry InEntry)
 {
-	FString TempUserID = FString::Printf(TEXT("%d"), InPlayer->GetUserID());
+	FString TempUserID = InPlayer->GetUserID();
 	
 	UpdatePlayerColor(InPlayer->GetPlayerColor());
 	UpdatePlayerName(TempUserID);

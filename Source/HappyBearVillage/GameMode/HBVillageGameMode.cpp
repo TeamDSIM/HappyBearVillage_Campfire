@@ -412,8 +412,6 @@ void AHBVillageGameMode::StartVote()
 					if (PlayerStatComponent)
 					{
 						PlayerStatComponent->SetIsVoteTarget(true);
-						HB_LOG(LogTemp, Log, TEXT("Player %d is Target"),
-						       HBGameState->TopDamagePlayers[0].PlayerState->GetUserID());
 
 						UHBGameVoteSubsystem* VoteSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<
 							UHBGameVoteSubsystem>();

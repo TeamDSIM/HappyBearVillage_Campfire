@@ -75,7 +75,7 @@ void UHBGameFlowSubsystem::StartGame()
 					AHBPlayerState* HBPlayerState = Cast<AHBPlayerState>(Players[i]);
 					if (HBPlayerState)
 					{
-						HBPlayerState->SetUserID(i);
+						HBPlayerState->SetUserID(HBPlayerState->GetPlayerName());
 					}
 				}
 

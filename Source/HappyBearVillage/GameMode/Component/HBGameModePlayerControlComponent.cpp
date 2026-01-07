@@ -57,7 +57,7 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 				if (HBPlayerState)
 				{
 					HBPlayerState->SyncPlayerColorFromPlayerStat(Character->PlayerColor);
-					HBPlayerState->SetUserID(i);
+					HBPlayerState->SetUserID(HBPlayerState->GetPlayerName());
 				}
 
 				// 플레이어의 직업 초기화 함수 실행
