@@ -21,9 +21,11 @@ UCLASS()
 class HAPPYBEARVILLAGE_API AHBPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
-protected:
+
+public:
 	AHBPlayerController();
+
+protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 

@@ -8,6 +8,7 @@
 #include "Character/Component/Job/HBJobArmyComponent.h"
 #include "Character/Component/Job/HBJobAssassinComponent.h"
 #include "Character/Component/Job/HBJobPoliceComponent.h"
+#include "Character/Component/Job/HBJobCelebrityComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Editor/WidgetCompilerLog.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -16,6 +17,7 @@
 #include "PlayerState/HBPlayerState.h"
 #include "Subsystem/HBGameVoteSubsystem.h"
 #include "Controller/HBPlayerController.h"
+#include "Controller/HBVillagePlayerController.h"
 
 
 // Sets default values for this component's properties
@@ -140,7 +142,12 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 			}
 			break;
 		case EJobType::INSIDER:
-		case EJobType::STAR:
+			break;
+		case EJobType::CELEBRITY:
+			{
+			HBCharacterPlayer->AssignJob(UHBJobCelebrityComponent::StaticClass());
+			}
+			break;
 		case EJobType::POOH:
 		case EJobType::TREASUREHUNTER:
 			break;
@@ -240,8 +247,8 @@ void UHBPlayerStatComponent::OnRep_IsAlive()
 			CharacterPlayer->GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 			if (CharacterPlayer->IsLocallyControlled())
 			{
-				if (AHBPlayerController* PC =
-					Cast<AHBPlayerController>(CharacterPlayer->GetController()))
+				if (AHBVillagePlayerController* PC =
+					Cast<AHBVillagePlayerController>(CharacterPlayer->GetController()))
 				{
 					PC->EnterObserveMode();
 				}

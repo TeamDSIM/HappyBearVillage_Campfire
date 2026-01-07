@@ -20,6 +20,7 @@
 #include "GameState/HBMafiaGameState.h"
 #include "Character/Component/HBCharacterMafiaAttackComponent.h"
 #include "Controller/HBPlayerController.h"
+#include "Controller/HBVillagePlayerController.h"
 #include "Controller/Component/HBMapWidgetComponent.h"
 
 AHBCharacterPlayer::AHBCharacterPlayer()
@@ -160,6 +161,9 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 
 	//���� Ż/����
 	MafiaAttackComp = CreateDefaultSubobject<UHBCharacterMafiaAttackComponent>(TEXT("MafiaAttackComp"));
+
+	RenderColor = FLinearColor::Black;
+
 }
 
 void AHBCharacterPlayer::BeginPlay()
@@ -466,11 +470,12 @@ void AHBCharacterPlayer::DoJobAction()
 	}
 }
 
+//Marker 색상 동기화
 void AHBCharacterPlayer::OnRep_PlayerColor()
 {
 	SetRandomBaseColor();
-
-	AHBPlayerController* HBPlayerController = Cast<AHBPlayerController>(GetController());
+	
+	AHBVillagePlayerController* HBPlayerController = Cast<AHBVillagePlayerController>(GetController());
 	if (!HBPlayerController) return;
 	
 	UHBMapWidgetComponent* MapWidgetComponent = HBPlayerController->GetComponentByClass<UHBMapWidgetComponent>();
@@ -479,6 +484,13 @@ void AHBCharacterPlayer::OnRep_PlayerColor()
 	MapWidgetComponent->SetOwnMarkColor(PlayerColor);
 }
 
+void AHBCharacterPlayer::OnRep_RenderColor()
+{
+	//DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), RenderColor);
+	ApplyNightColor(true);
+}
+
+//랜덤 색깔이 아니라, 색깔 적용 함수
 void AHBCharacterPlayer::SetRandomBaseColor()
 {
 	// DynamicMaterial ����
@@ -550,7 +562,7 @@ void AHBCharacterPlayer::ApplyNightColor(bool bIsNight)
 
 	if (bIsNight)
 	{
-		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), FLinearColor::Black);
+		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), /*FLinearColor::Black*/ RenderColor);
 	}
 	else
 	{

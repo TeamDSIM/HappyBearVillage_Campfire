@@ -46,7 +46,7 @@ AHBVillageGameMode::AHBVillageGameMode()
 	}
 
 	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassRef(
-		TEXT("/Game/Controller/BP_HBPlayerController.BP_HBPlayerController_C"));
+		TEXT("/Game/Controller/BP_HBVillagePlayerController.BP_HBVillagePlayerController_C"));
 	if (PlayerControllerClassRef.Class)
 	{
 		PlayerControllerClass = PlayerControllerClassRef.Class;
@@ -61,7 +61,7 @@ AHBVillageGameMode::AHBVillageGameMode()
 	bIsCivilWin = false;
 	bIsMafiaWin = false;
 
-	bUseSeamlessTravel = false;
+	bUseSeamlessTravel = true;
 }
 
 void AHBVillageGameMode::StartGame()
@@ -145,9 +145,28 @@ void AHBVillageGameMode::StopGame()
 	// 플레이어 정보 초기화
 	GameModePlayerControlComponent->ResetPlayers(HBGameState);
 	
+	bUseSeamlessTravel = true;
+
 	//@ Todo : 맵 이름 변경
 	FString Map = TEXT("/Game/Maps/LobbyMap");
-	GetWorld()->ServerTravel(Map);
+	World->ServerTravel(Map);
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = It->Get();
+		if (!PC) continue;
+
+		APawn* Pawn = PC->GetPawn();
+		if (!Pawn) continue;
+
+		FVector LobbyRespawnLocation;
+		LobbyRespawnLocation.X = 0.0f;
+		LobbyRespawnLocation.Y = 0.0f;
+		LobbyRespawnLocation.Z = 92.0f;
+
+		Pawn->SetActorLocation(LobbyRespawnLocation);
+	}
+
 }
 
 void AHBVillageGameMode::CheatPhaseChange()
@@ -429,13 +448,15 @@ void AHBVillageGameMode::StartVoteCheck()
 
 void AHBVillageGameMode::StartNight()
 {
-	SetPhase(EGamePhase::Night, 180.f);
 
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (!HBGameState)
 	{
 		return;
 	}
+	SetPhase(EGamePhase::Night, 180.f);
+	//페이드인,아웃 및 밤 색상 설정
+	
 	
 	CharacterRelocationComponent->RelocateCharactersToHouse(HBGameState);
 
@@ -448,6 +469,9 @@ void AHBVillageGameMode::StartNight()
 	{
 		VoteSubsystem->ClearCurrentVoteTarget();
 	}
+
+	////페이드인,아웃 및 밤 색상 설정
+	HBGameState->OnRep_GamePhase();
 
 	// Night 시작 시 플레이어 Night 상태 초기화
 	for (APlayerState* PS : HBGameState->PlayerArray)
@@ -462,6 +486,7 @@ void AHBVillageGameMode::StartNight()
 				UHBJobBaseComponent* JobComponent = Character->GetJobComponent();
 				if (JobComponent)
 				{
+					UE_LOG(LogTemp, Log, TEXT("GameMode에서 JobComponent 호출"));
 					JobComponent->NightPhaseBegin();
 				}
 			}
@@ -478,7 +503,6 @@ void AHBVillageGameMode::StartNight()
 		Player->ResetNightState();
 	}
 
-	HBGameState->OnRep_GamePhase();
 }
 
 

@@ -7,9 +7,10 @@
 #include "Engine/GameInstance.h"
 #include "MultiplayerSessionsSubsystem.h"
 #include "HBSteamFriendEntryWidget.h"
+#include "Controller/HBLobbyPlayerController.h"
 #include "GameFramework/PlayerState.h"
 
-//È­¸é¿¡ ³ªÅ¸³¯ ÁØºñ°¡ ¸ðµÎ ³¡³­ °æ¿ì
+//È­ï¿½é¿¡ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½Øºï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 void UHBLobbyWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -27,13 +28,13 @@ void UHBLobbyWidget::NativeConstruct()
 		ExitButton->OnClicked.AddDynamic(this, &ThisClass::ExitButtonClicked);
 	}
 
-	//Subsystem °¡Á®¿À±â, Delegate ¿¬°á
+	//Subsystem ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, Delegate ï¿½ï¿½ï¿½ï¿½
 	if (UGameInstance* GI = GetGameInstance())
 	{
 		MultiplayerSessionsSubsystem = GI->GetSubsystem<UMultiplayerSessionsSubsystem>();
 	}
 
-	//SubsystemÀÌ Ä£±¸ ¸ñ·ÏÀ» ÀÐ¾î¿ÔÀ» ¶§, ÀÌ WidgetÀÇ OnFriendsReady°¡ È£ÃâµÇµµ·Ï ±¸µ¶
+	//Subsystemï¿½ï¿½ Ä£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, ï¿½ï¿½ Widgetï¿½ï¿½ OnFriendsReadyï¿½ï¿½ È£ï¿½ï¿½Çµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->MultiplayerOnReadFriendsComplete.AddUObject(
@@ -41,18 +42,18 @@ void UHBLobbyWidget::NativeConstruct()
 		);
 	}
 
-	// GameState ¾ò±â
+	// GameState ï¿½ï¿½ï¿½
 	CachedMafiaGS = GetWorld() ? GetWorld()->GetGameState<AHBMafiaGameState>() : nullptr;
 	if (!CachedMafiaGS)
 	{
-		// GameState°¡ ¾ÆÁ÷ ¾øÀ» ¼ö ÀÖÀ¸¸é(Å¸ÀÌ¹Ö) Å¸ÀÌ¸Ó·Î Àç½ÃµµÇÏ´Â ¹æ½Äµµ °¡´É
+		// GameStateï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(Å¸ï¿½Ì¹ï¿½) Å¸ï¿½Ì¸Ó·ï¿½ ï¿½ï¿½Ãµï¿½ï¿½Ï´ï¿½ ï¿½ï¿½Äµï¿½ ï¿½ï¿½ï¿½ï¿½
 		return;
 	}
 
-	// Join/Leave ½Ã ÀÚµ¿ °»½Å
+	// Join/Leave ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½
 	CachedMafiaGS->OnLobbyPlayersChanged.AddUObject(this, &ThisClass::HandleLobbyPlayersChanged);
 
-	// Ã³À½ 1È¸ Áï½Ã °»½Å
+	// Ã³ï¿½ï¿½ 1È¸ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	RefreshPlayersInRoom();
 }
 
@@ -72,7 +73,7 @@ void UHBLobbyWidget::StartButtonClicked()
 	UE_LOG(LogTemp, Log, TEXT("StartButtonClicked"));
 	if (APlayerController* PC = GetOwningPlayer())
 	{
-		if (AHBPlayerController* HBPC = Cast<AHBPlayerController>(PC))
+		if (AHBLobbyPlayerController* HBPC = Cast<AHBLobbyPlayerController>(PC))
 		{
 			HBPC->StartGame();
 		}
@@ -85,7 +86,7 @@ void UHBLobbyWidget::ExitButtonClicked()
 	UE_LOG(LogTemp, Log, TEXT("ExitButtonClicked"));
 	if (APlayerController* PC = GetOwningPlayer())
 	{
-		if (AHBPlayerController* HBPC = Cast<AHBPlayerController>(PC))
+		if (AHBLobbyPlayerController* HBPC = Cast<AHBLobbyPlayerController>(PC))
 		{
 			HBPC->ExitGame();
 		}
@@ -109,7 +110,7 @@ void UHBLobbyWidget::SetFriendInviteVisible(bool bVisible)
 
 }
 
-//Ä£±¸¸ñ·Ï °»½Å ¿äÃ»
+//Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»
 void UHBLobbyWidget::RequestFriends()
 {
 	
@@ -119,14 +120,14 @@ void UHBLobbyWidget::RequestFriends()
 		return;
 	}
 
-	// FriendEntryWidgetClass°¡ ºñ¾îÀÖÀ¸¸é UI »ý¼º ¸øÇÔ
+	// FriendEntryWidgetClassï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (!FriendEntryWidgetClass)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("RequestFriends: FriendEntryWidgetClass is null (set in BP Class Defaults)"));
 		return;
 	}
 
-	//Ä£±¸ ¸ñ·Ï °»½Å
+	//Ä£ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	MultiplayerSessionsSubsystem->ReadFriendsList();
 }
 
@@ -144,26 +145,26 @@ void UHBLobbyWidget::OnFriendsReady(const TArray<FHBSteamFriend>& Friends, bool 
 		return;
 	}
 
-	// Ä£±¸ ¸ñ·Ï Á¤·Ä
+	// Ä£ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	TArray<FHBSteamFriend> SortedFriends = Friends;
 
 	SortedFriends.Sort([](const FHBSteamFriend& A, const FHBSteamFriend& B)
 		{
-			// 1¼øÀ§: Online ¸ÕÀú
+			// 1ï¿½ï¿½ï¿½ï¿½: Online ï¿½ï¿½ï¿½ï¿½
 			if (A.bIsOnline != B.bIsOnline)
 			{
-				return A.bIsOnline > B.bIsOnline; // true°¡ ¾ÕÀ¸·Î
+				return A.bIsOnline > B.bIsOnline; // trueï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			}
 
-			// 2¼øÀ§(¼±ÅÃ): ÀÌ¸§ ¿À¸§Â÷¼ø
+			// 2ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½): ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			return A.DisplayName < B.DisplayName;
 		});
 
 
-	//±âÁ¸ Ä£±¸ ¸ñ·Ï clear
+	//ï¿½ï¿½ï¿½ï¿½ Ä£ï¿½ï¿½ ï¿½ï¿½ï¿½ clear
 	ScrollBox_Friends->ClearChildren();
 
-	// 1. Ä£±¸ ¼ö¸¸Å­ Entry Widget »ý¼ºÇØ¼­ ScrollBox¿¡ Ãß°¡
+	// 1. Ä£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Å­ Entry Widget ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ScrollBoxï¿½ï¿½ ï¿½ß°ï¿½
 	for (const FHBSteamFriend& F : SortedFriends)
 	{
 		UHBSteamFriendEntryWidget* Entry =
@@ -171,22 +172,22 @@ void UHBLobbyWidget::OnFriendsReady(const TArray<FHBSteamFriend>& Friends, bool 
 
 		if (!Entry) continue;
 
-		// 2. Entry Widgt¿¡ Ç¥½ÃÇÒ µ¥ÀÌÅÍ ¼¼ÆÃ
+		// 2. Entry Widgtï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		Entry->Init(F.DisplayName, F.NetIdStr, F.bIsOnline);
 
-		// 3. ¿£Æ®¸®ÀÇ ¡°ÃÊ´ë¡± Å¬¸¯ ¡æ LobbyWidgetÀ¸·Î Àü´Þ
+		// 3. ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ê´ë¡± Å¬ï¿½ï¿½ ï¿½ï¿½ LobbyWidgetï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		Entry->OnInviteClicked.AddUObject(this, &ThisClass::HandleInviteClicked);
 
-		// 4. ScrollBox¿¡ Ãß°¡
+		// 4. ScrollBoxï¿½ï¿½ ï¿½ß°ï¿½
 		ScrollBox_Friends->AddChild(Entry);
 	}
 }
 
-//Ä£±¸ ÃÊ´ë 
+//Ä£ï¿½ï¿½ ï¿½Ê´ï¿½ 
 void UHBLobbyWidget::HandleInviteClicked(const FString& NetIdStr)
 {
-	// ¿£Æ®¸® À§Á¬¿¡¼­ "ÃÊ´ë ¹öÆ°"À» ´©¸£¸é ¿©±â·Î µé¾î¿È
-// UI´Â Subsystem¿¡°Ô "ÀÌ NetId Ä£±¸ ÃÊ´ëÇØ"¶ó°í Àü´Þ¸¸ ÇÑ´Ù.
+	// ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ "ï¿½Ê´ï¿½ ï¿½ï¿½Æ°"ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+// UIï¿½ï¿½ Subsystemï¿½ï¿½ï¿½ï¿½ "ï¿½ï¿½ NetId Ä£ï¿½ï¿½ ï¿½Ê´ï¿½ï¿½ï¿½"ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Þ¸ï¿½ ï¿½Ñ´ï¿½.
 
 	if (!MultiplayerSessionsSubsystem)
 	{
@@ -196,7 +197,7 @@ void UHBLobbyWidget::HandleInviteClicked(const FString& NetIdStr)
 	MultiplayerSessionsSubsystem->InviteFriendByNetIdStr(NetIdStr);
 }
 
-// ·ÎºñÀÇ ÇÃ·¹ÀÌ¾î ¸ñ·Ï °»½Å, Ç¥½Ã
+// ï¿½Îºï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, Ç¥ï¿½ï¿½
 void UHBLobbyWidget::RefreshPlayersInRoom()
 {
 	if (!CachedMafiaGS || !ScrollBox_LobbyPlayers) return;
@@ -206,9 +207,9 @@ void UHBLobbyWidget::RefreshPlayersInRoom()
 	for (APlayerState* PS : CachedMafiaGS->PlayerArray)
 	{
 		if (!PS) continue;
-		// TextBlock ÇÏ³ª·Î ÀÌ¸§ Ç¥½Ã
+		// TextBlock ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ Ç¥ï¿½ï¿½
 		UTextBlock* NameText = NewObject<UTextBlock>(this);
-		// ÇÃ·¹ÀÌ¾î ¸ñ·Ï ¹Þ¾Æ¿À±â
+		// ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
 		NameText->SetText(FText::FromString(PS->GetPlayerName()));
 		ScrollBox_LobbyPlayers->AddChild(NameText);
 	}
@@ -218,7 +219,7 @@ void UHBLobbyWidget::RefreshPlayersInRoom()
 
 	//ScrollBox_LobbyPlayers->ClearChildren();
 
-	//// ¹æ¿¡ ÀÖ´Â ¸ðµç PlayerState ¼øÈ¸
+	//// ï¿½æ¿¡ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ PlayerState ï¿½ï¿½È¸
 	//AGameStateBase* GS = GetWorld()->GetGameState();
 	//if (!GS) return;
 
@@ -226,7 +227,7 @@ void UHBLobbyWidget::RefreshPlayersInRoom()
 	//{
 	//	if (!PS) continue;
 
-	//	// TextBlock ÇÏ³ª·Î ÀÌ¸§ Ç¥½Ã
+	//	// TextBlock ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ Ç¥ï¿½ï¿½
 	//	UTextBlock* NameText = NewObject<UTextBlock>(this);
 	//	NameText->SetText(FText::FromString(PS->GetPlayerName()));
 

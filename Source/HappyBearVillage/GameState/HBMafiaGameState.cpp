@@ -14,6 +14,7 @@
 #include "ProceduralGeneration/Noise/HBPerlinNoise.h"
 #include "Subsystem/HBVillageGenerationWorldSubsystem.h"
 #include "Utils/HBUtils.h"
+#include "Character/Stat/HBPlayerStatComponent.h"
 
 AHBMafiaGameState::AHBMafiaGameState()
 {
@@ -77,6 +78,7 @@ void AHBMafiaGameState::OnRep_GamePhase()
 	for (TActorIterator<AHBCharacterPlayer> It(GetWorld()); It; ++It)
 	{
 		It->ApplyNightColor(bIsNight);
+
 	}
 	
 	if (CurrentPhase == EGamePhase::VoteCheck)
