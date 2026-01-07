@@ -33,7 +33,7 @@ enum class EPlayerNightState : uint8
 };
 
 /* ================================================= */
-
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPoliceEffectChanged, bool /* bHasPoliceEffect */)
 
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBCharacterPlayer : public AHBCharacterBase, public IHBCharacterHUDInterface
@@ -86,6 +86,7 @@ protected:
 	/* ========== Night Flow : State ========== */
 public:
 	FOnStaminaChanged OnStaminaChanged;
+	FOnPoliceEffectChanged OnPoliceEffectChanged;
 
 protected:
 	// 남은 외출 가능 횟수 (RepNotify로 HUD 갱신)
@@ -316,4 +317,8 @@ public:
 protected:
 	UPROPERTY(Replicated)
 	TObjectPtr<UHBJobBaseComponent> JobComponent;
+
+public:
+	UFUNCTION(Client, Reliable)
+	void ClientRPCSetPoliceNotice(bool bIsSealed);
 };

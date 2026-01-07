@@ -31,7 +31,8 @@ void UHBMinimapWidgetComponent::CreateMinimapWidget(APlayerController* InPlayerC
 
 void UHBMinimapWidgetComponent::ShowMinimapWidget()
 {
-	MinimapWidget->SetVisibility(ESlateVisibility::Visible);
+	//MinimapWidget->SetVisibility(ESlateVisibility::Visible);
+	MinimapWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	SetComponentTickEnabled(true);
 }
 

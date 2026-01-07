@@ -101,6 +101,8 @@ void UHBJobPoliceComponent::SealPlayer(AActor* InActor)
 		Player->GetJobComponent()->OnRep_IsActionActive();
 
 		UE_LOG(LogTemp, Warning, TEXT("SealPlayer"));
+		
+		Player->ClientRPCSetPoliceNotice(true);
 	}
 }
 
@@ -126,6 +128,8 @@ void UHBJobPoliceComponent::UnsealPlayer(AActor* InActor)
 		Player->GetJobComponent()->OnRep_IsActionActive();
 		
 		UE_LOG(LogTemp, Warning, TEXT("UnSeal Player"));
+		
+		Player->ClientRPCSetPoliceNotice(false);
 	}
 }
 

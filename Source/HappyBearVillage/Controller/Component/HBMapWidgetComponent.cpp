@@ -47,7 +47,8 @@ void UHBMapWidgetComponent::ShowMapWidget()
 {
 	if (!IsMapValid()) return;
 	
-	MapWidget->SetVisibility(ESlateVisibility::Visible);
+	//MapWidget->SetVisibility(ESlateVisibility::Visible);
+	MapWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	bIsMapVisible = true;
 	SetComponentTickEnabled(true);
 }
