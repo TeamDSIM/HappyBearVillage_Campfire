@@ -32,6 +32,7 @@ public:
 	void UpdateVoteNum(int32 NewVoteNum);
 	void UpdateGameEnd(int32 NewMafiaWin);
 	void UpdateStamina(int32 NewStamina);
+	void UpdatePoliceNotice(bool bIsPoliceNotice);
 
 	void PlayFadeAnimation(bool bIsFadeIn);
 
@@ -55,4 +56,7 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UHBNightStaminaWidget> NightStaminaWidget;
+
+	UPROPERTY()
+	TObjectPtr<class UHBPoliceNoticeHUD> PoliceNoticeHUDWidget;
 };

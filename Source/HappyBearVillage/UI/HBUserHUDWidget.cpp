@@ -7,6 +7,7 @@
 #include "HBFightHUD.h"
 #include "HBGameEndHUD.h"
 #include "HBPhaseHUD.h"
+#include "HBPoliceNoticeHUD.h"
 #include "HBVoteHUD.h"
 #include "Interface/HBCharacterHUDInterface.h"
 #include "UI/HBNightStaminaWidget.h"
@@ -24,6 +25,8 @@ void UHBUserHUDWidget::NativeConstruct()
 	GameEndHUDWidget = Cast<UHBGameEndHUD>(GetWidgetFromName(TEXT("GameEndHUD")));
 
 	FadeHUDWidget = Cast<UHBFadeHUD>(GetWidgetFromName(TEXT("FadeHUD")));
+
+	PoliceNoticeHUDWidget = Cast<UHBPoliceNoticeHUD>(GetWidgetFromName(TEXT("PoliceNoticeHUD")));
 
 	IHBCharacterHUDInterface* HUDPawn = Cast<IHBCharacterHUDInterface>(GetOwningPlayerPawn());
 	if (HUDPawn)
@@ -97,6 +100,18 @@ void UHBUserHUDWidget::UpdateStamina(int32 NewStamina)
 	if (NightStaminaWidget)
 	{
 		NightStaminaWidget->SetStamina(NewStamina);
+	}
+}
+
+void UHBUserHUDWidget::UpdatePoliceNotice(bool bIsPoliceNotice)
+{
+	if (bIsPoliceNotice)
+	{
+		PoliceNoticeHUDWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		PoliceNoticeHUDWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
