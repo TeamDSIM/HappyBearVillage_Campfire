@@ -865,7 +865,7 @@ void AHBCharacterPlayer::PlayAttackAnimation()
 	}
 }
 
-void AHBCharacterPlayer::ClientRPCPlayDance_Implementation(int32 MontageIndex, float StartTime)
+void AHBCharacterPlayer::ClientRPCPlayDance_Implementation(AHBCharacterPlayer* CharacterToPlay, int32 MontageIndex, float StartTime)
 {
 	// 서버가 클라이언트에게 춤 재생을 지시할 때 클라이언트에서 실행됩니다.
 	// attack 흐름을 참고하여 몽타주 유효성 검사 후 재생합니다.
@@ -881,14 +881,16 @@ void AHBCharacterPlayer::ClientRPCPlayDance_Implementation(int32 MontageIndex, f
 	LastDanceIndex = MontageIndex;
 
 	// 메시에 연결된 AnimInstance에서 몽타주 재생
-	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	if (CharacterToPlay)
 	{
-		// 필요 시 기존 몽타주를 중단 (공격과 동일한 처리 방식)
-		AnimInstance->StopAllMontages(0.f);
+	//	// 필요 시 기존 몽타주를 중단 (공격과 동일한 처리 방식)
+	//	AnimInstance->StopAllMontages(0.f);
 
-		// 1인칭에서는 춤 애니메이션을 재생하지 않도록 기존 설계에 맞춰
-		// Mesh(3인칭)만 재생. StartTime을 사용해 서버와의 싱크 보정.
-		AnimInstance->Montage_Play(DanceMontages[MontageIndex], 1.f, EMontagePlayReturnType::MontageLength, StartTime);
+	//	// 1인칭에서는 춤 애니메이션을 재생하지 않도록 기존 설계에 맞춰
+	//	// Mesh(3인칭)만 재생. StartTime을 사용해 서버와의 싱크 보정.
+	//	AnimInstance->Montage_Play(DanceMontages[MontageIndex], 1.f, EMontagePlayReturnType::MontageLength, StartTime);
+	//
+		CharacterToPlay->PlayDanceAnimation(MontageIndex);
 	}
 	else
 	{
@@ -931,26 +933,26 @@ void AHBCharacterPlayer::ServerRPCDance_Implementation(int32 MontageIndex, float
 		return;
 	}
 
-	for (APlayerState* PS : GameState->PlayerArray)
+	// 서버 자신은 직접 재생
+	PlayDanceAnimation(MontageIndex);
+
+	// 각 클라이언트의 소유 액터에 RPC를 호출하되,
+	// RPC 파라미터로는 '춤을 실제로 재생할 액터'인 this(서버의 춤추는 캐릭터)를 전달
+	for (APlayerController* PlayerController : TActorRange<APlayerController>(GetWorld()))
 	{
-		if (!PS) continue;
-
-		AController* PC = PS->GetPlayerController();
-		if (!PC) continue;
-
-		AHBCharacterPlayer* OtherChar = Cast<AHBCharacterPlayer>(PC->GetPawn());
-		if (!OtherChar) continue;
-
-		// 서버가 호스트(listen server)인 경우 자신의 클라이언트에도 즉시 재생
-		if (OtherChar == this)
+		if (PlayerController && GetController() != PlayerController)
 		{
-			// 서버의 로컬 표현(호스트 플레이어)이 있다면 바로 재생
-			PlayDanceAnimation(MontageIndex);
-		}
-		else
-		{
-			// 다른 클라이언트에게 RPC로 재생 지시
-			OtherChar->ClientRPCPlayDance(MontageIndex, StartTime);
+			// 서버 로컬 컨트롤러(호스트 자체)는 건너뜀
+			if (!PlayerController->IsLocalController())
+			{
+				AHBCharacterPlayer* OtherPlayer = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
+				if (OtherPlayer)
+				{
+					// OtherPlayer(클라이언트가 소유한 액터)에서 RPC 호출하여
+					// 해당 클라이언트 측에서 this 캐릭터의 춤을 재생하게 함
+					OtherPlayer->ClientRPCPlayDance(this, MontageIndex, StartTime);
+				}
+			}
 		}
 	}
 }
@@ -970,6 +972,7 @@ void AHBCharacterPlayer::PlayDanceAnimation(int32 MontageIndex)
 	// 3인칭 메시(겉보기)에서 몽타주 재생 (기존 설계: 1인칭은 재생하지 않음)
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
 	{
+		UE_LOG(LogTemp, Log, TEXT("PlayDanceAnimation: Playing dance montage index %d"), MontageIndex);
 		AnimInstance->StopAllMontages(0.f);
 		AnimInstance->Montage_Play(DanceMontages[MontageIndex]);
 	}
@@ -1189,7 +1192,7 @@ void AHBCharacterPlayer::ServerRPCAttack_Implementation(float AttackStartTime)
 			if (!PlayerController->IsLocalController())
 			{
 				AHBCharacterPlayer* OtherPlayer = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
-				if (OtherPlayer)
+				if (OtherPlayer && OtherPlayer != this)
 				{
 					// Ŭ���̾�Ʈ�� PlayAnimation �� ���
 					OtherPlayer->ClientRPCPlayAnimation(this);
@@ -1376,9 +1379,6 @@ void AHBCharacterPlayer::ProcessNightEnd()
 
 void AHBCharacterPlayer::Dance()
 {
-	if (!IsLocallyControlled())
-		return;
-
 	if (DanceMontages.Num() == 0)
 		return;
 
@@ -1400,7 +1400,11 @@ void AHBCharacterPlayer::Dance()
 	LastDanceIndex = Index;
 
 	// 로컬 즉시 재생
-	PlayDanceAnimation(Index);
+	if(!HasAuthority())
+	{
+		UE_LOG(LogTemp, Log, TEXT("Dance: Playing dance montage index %d locally"), Index);
+		PlayDanceAnimation(Index);
+	}
 
 	// 서버 시간 안전 처리
 	UWorld* World = GetWorld();

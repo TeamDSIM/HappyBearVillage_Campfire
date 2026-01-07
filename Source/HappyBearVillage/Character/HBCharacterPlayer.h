@@ -311,7 +311,7 @@ protected:
 	void ServerRPCDance(int32 MontageIndex, float StartTime);
 
 	UFUNCTION(Client, Unreliable)
-	void ClientRPCPlayDance(int32 MontageIndex, float StartTime);
+	void ClientRPCPlayDance(AHBCharacterPlayer* CharacterToPlay, int32 MontageIndex, float StartTime);
 
 	void PlayDanceAnimation(int32 MontageIndex);
 
