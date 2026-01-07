@@ -31,6 +31,8 @@ public:
 	void UpdatePlayerName(FString NewName);
 	void UpdateTotalDamaged(float NewTotalDamaged);
 
+	FORCEINLINE UImage* GetRankImage() { return RankImage; }
+
 protected:
 	UPROPERTY()
 	TObjectPtr<UImage> RankImage;
@@ -45,5 +47,5 @@ protected:
 	TObjectPtr<UTextBlock> PlayerTotalDamagedText;
 
 	UPROPERTY()
-	FString PlayerNameString;	
+	FString PlayerNameString;
 };

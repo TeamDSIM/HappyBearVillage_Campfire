@@ -36,4 +36,13 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<UHBDamagedPlayerHUD> ThirdDamagedPlayerWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DamageRank")
+	TObjectPtr<UTexture2D> FirstMedalTexture;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DamageRank")
+	TObjectPtr<UTexture2D> SecondMedalTexture;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DamageRank")
+	TObjectPtr<UTexture2D> ThirdMedalTexture;
 };
