@@ -8,6 +8,9 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
+#include "Components/ListView.h"
+#include "GameFramework/GameStateBase.h"
+#include "PlayerState/HBPlayerState.h"
 
 UHBMapWidget::UHBMapWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -52,6 +55,14 @@ void UHBMapWidget::ClearMapMarks()
 	}
 
 	MarksByColor.Empty();
+}
+
+void UHBMapWidget::RefreshPlayerColorList()
+{
+	for (APlayerState* HBPlayerState : GetWorld()->GetGameState()->PlayerArray)
+	{
+		PlayerColorInfoList->AddItem(HBPlayerState);
+	}
 }
 
 void UHBMapWidget::NativeConstruct()

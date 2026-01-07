@@ -50,6 +50,7 @@ public:
 	FHBMapData UpdateMap();
 
 	UTexture2D* GenerateForestTexture2D();
+	UTexture2D* GenerateMapTexture();
 	
 	void PrintMapData();
 
