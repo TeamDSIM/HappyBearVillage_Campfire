@@ -134,7 +134,7 @@ void UHBMapWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 void UHBMapWidgetComponent::SetMapTexture()
 {
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
-	UTexture2D* Texture = VillageGenerationSystem->GetMapData().ForestAsTexture2D;
+	UTexture2D* Texture = VillageGenerationSystem->GetMapData().MapTexture;
 	MapWidget->SetMapTexture(Texture);
 }
 
