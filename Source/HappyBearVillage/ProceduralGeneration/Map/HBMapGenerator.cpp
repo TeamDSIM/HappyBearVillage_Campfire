@@ -9,6 +9,7 @@
 #include "ProceduralGeneration/Map/HBForestSpline.h"
 #include "ProceduralGeneration/Map/HBRoadField.h"
 #include "Prop/HBHouse.h"
+#include "Prop/HBVillage.h"
 #include "Utils/HBUtils.h"
 
 UHBMapGenerator::UHBMapGenerator()
@@ -65,6 +66,10 @@ void UHBMapGenerator::GenerateField(FHBMapData InMapData, UWorld* InWorld)
 		return;
 	}
 
+	AHBVillage* Village = InWorld->SpawnActor<AHBVillage>(AHBVillage::StaticClass());
+	Village->ApplyVillageLocation(InMapData);
+	Village->ApplyVillageSize(InMapData);
+
 	for (int32 Row = 0; Row < Height; ++Row)
 	{
 		for (int32 Col = 0; Col < Width; ++Col)
@@ -78,17 +83,10 @@ void UHBMapGenerator::GenerateField(FHBMapData InMapData, UWorld* InWorld)
 			
 			FVector SpawnLocation = FVector(Col * FieldElementSize, Row * FieldElementSize, 0.0f);
 			
-			if (TileType != ' ')
+			if (TileType == ' ')
 			{
-				AActor* FieldActor = InWorld->SpawnActor<AHBRoadField>(RoadFieldClass, SpawnTransform);
-				FieldActors.Add(FieldActor);
-			}
-			else
-			{
-				//AActor* FieldActor = InWorld->SpawnActor<AHBForestField>(ForestFieldClass, SpawnTransform);
+				//AActor* FieldActor = InWorld->SpawnActor<AHBRoadField>(RoadFieldClass, SpawnTransform);
 				//FieldActors.Add(FieldActor);
-				AActor* FieldActor = InWorld->SpawnActor<AHBRoadField>(RoadFieldClass, SpawnTransform);
-				FieldActors.Add(FieldActor);
 			}
 		}
 	}
