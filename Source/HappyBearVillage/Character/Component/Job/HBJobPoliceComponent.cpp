@@ -30,10 +30,13 @@ void UHBJobPoliceComponent::OnRep_IsRemainAction()
 
 void UHBJobPoliceComponent::ServerRPCAction_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Police Action - ServerRPCAction"));
+	BindSealEvent();
 }
 
 void UHBJobPoliceComponent::BindSealEvent()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Police BindSealEvent"));
 	// 집 알아오기
 	AHBCharacterPlayer* CharacterPlayer = GetOwner<AHBCharacterPlayer>();
 	if (!CharacterPlayer)
@@ -171,6 +174,7 @@ void UHBJobPoliceComponent::Action()
 	
 	if (OwnerCharacter->HasAuthority())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Police Action - HasAuthority"));
 		BindSealEvent();
 	}
 	else
