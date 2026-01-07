@@ -486,7 +486,6 @@ void AHBVillageGameMode::StartNight()
 				UHBJobBaseComponent* JobComponent = Character->GetJobComponent();
 				if (JobComponent)
 				{
-					UE_LOG(LogTemp, Log, TEXT("GameMode에서 JobComponent 호출"));
 					JobComponent->NightPhaseBegin();
 				}
 			}

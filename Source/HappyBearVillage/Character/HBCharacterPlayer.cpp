@@ -1043,6 +1043,7 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 
 			GameState->OnFadeAnimationPlay.AddUObject(InHUDWidget, &UHBUserHUDWidget::PlayFadeAnimation);
 			OnStaminaChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateStamina);
+			OnPoliceEffectChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdatePoliceNotice);
 		}
 
 		// HUD�� Stamina ����: �ʱⰪ ���� �� ĳ�� (���� Ŭ���̾�Ʈ������)
@@ -1074,6 +1075,16 @@ void AHBCharacterPlayer::AssignJob(TSubclassOf<UHBJobBaseComponent> JobClass)
 	{
 		JobComponent->RegisterComponent();
 	}
+}
+
+void AHBCharacterPlayer::ClientRPCSetPoliceNotice_Implementation(bool bIsSealed)
+{
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+
+	OnPoliceEffectChanged.Broadcast(bIsSealed);
 }
 
 // @PHYTODO : ���� �й� �ӽ� Ȯ�ο�

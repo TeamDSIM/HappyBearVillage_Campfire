@@ -69,8 +69,6 @@ float UHBPlayerStatComponent::ApplyDamage(float InDamageAmount)
 
 int32 UHBPlayerStatComponent::ApplyNightDamage()
 {
-	UE_LOG(LogTemp, Log, TEXT("ApplyNightDamage"));
-	
 	if (Health <= 0)
 	{
 		return 0;
@@ -108,7 +106,6 @@ void UHBPlayerStatComponent::InitCharacterRole()
 void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 {
 	// 랜덤 직업 설정
-	UE_LOG(LogTemp, Log, TEXT(" PlayerJobs : %d"), static_cast<int32>(InJob));
 	CharacterRole.InitRole(InJob);
 
 	AHBCharacterPlayer* HBCharacterPlayer = Cast<AHBCharacterPlayer>(GetOwner());
@@ -186,8 +183,6 @@ void UHBPlayerStatComponent::ApplyVote(AActor* InActor)
 	VoteNum += 1;
 
 	OnRep_VoteNum();
-
-	HB_SUBLOG(LogTemp, Log, TEXT("VoteNum : %d"), VoteNum);
 }
 
 void UHBPlayerStatComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -221,7 +216,6 @@ void UHBPlayerStatComponent::OnRep_VoteNum()
 		AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 		if (HBGameState)
 		{
-			UE_LOG(LogTemp, Log, TEXT("OnRep_VoteNum = %d"), VoteNum);
 			HBGameState->TargetVoteNum = VoteNum;
 
 			HBGameState->OnRep_TargetVoteNum();

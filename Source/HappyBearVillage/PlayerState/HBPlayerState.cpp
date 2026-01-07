@@ -18,7 +18,6 @@ void AHBPlayerState::SyncTotalTakenDamagedFromPlayerStat(float NewDamage)
 {
 	if (HasAuthority())
 	{
-		UE_LOG(LogTemp, Log, TEXT("[PlayerState] Call SyncTotalTakenDamagedFromPlayerStat"));
 		TotalTakenDamaged = NewDamage;
 		
 		OnDamageChanged.Broadcast();

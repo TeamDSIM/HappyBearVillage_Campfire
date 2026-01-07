@@ -45,7 +45,6 @@ void UHBJobPoliceComponent::BindSealEvent()
 	}
 	
 	TArray<AActor*> OverlappingActors;
-	AHBHouse* HBHouse = nullptr;
 	CharacterPlayer->GetCapsuleComponent()->GetOverlappingActors(OverlappingActors, AHBHouse::StaticClass());
 
 	for (AActor* Actor : OverlappingActors)
@@ -71,8 +70,8 @@ void UHBJobPoliceComponent::BindSealEvent()
 			SealPlayer(InsidePlayer);
 		}
 		
-		HBHouse->OnCharacterEnter.AddUObject(this, &UHBJobPoliceComponent::SealPlayer);
-		HBHouse->OnCharacterExit.AddUObject(this, &UHBJobPoliceComponent::UnsealPlayer);
+		EnterDelegateHandle = HBHouse->OnCharacterEnter.AddUObject(this, &UHBJobPoliceComponent::SealPlayer);
+		ExitDelegateHandle = HBHouse->OnCharacterExit.AddUObject(this, &UHBJobPoliceComponent::UnsealPlayer);
 	}
 }
 
@@ -101,6 +100,8 @@ void UHBJobPoliceComponent::SealPlayer(AActor* InActor)
 		Player->GetJobComponent()->OnRep_IsActionActive();
 
 		UE_LOG(LogTemp, Warning, TEXT("SealPlayer"));
+		
+		Player->ClientRPCSetPoliceNotice(true);
 	}
 }
 
@@ -126,6 +127,8 @@ void UHBJobPoliceComponent::UnsealPlayer(AActor* InActor)
 		Player->GetJobComponent()->OnRep_IsActionActive();
 		
 		UE_LOG(LogTemp, Warning, TEXT("UnSeal Player"));
+		
+		Player->ClientRPCSetPoliceNotice(false);
 	}
 }
 
@@ -139,6 +142,36 @@ void UHBJobPoliceComponent::NightPhaseBegin()
 		OnRep_IsRemainAction();
 		
 		UE_LOG(LogTemp, Warning, TEXT("Police NightPhaseBegin"));
+	}
+}
+
+void UHBJobPoliceComponent::NightPhaseEnd()
+{
+	Super::NightPhaseEnd();
+
+	if (GetOwner()->HasAuthority())
+	{
+		if (!HBHouse)
+		{
+			return;
+		}
+		
+		// NightPhaseEnd 는 StartDay 전에 호출
+		// 이동 전에 호출되기 때문에 Exit 이 안돼서 UnSeal 작동 X
+		// UnSeal 수동으로 한번 작동
+		for (AHBCharacterPlayer* InsidePlayer : HBHouse->GetOverlapCharacters())
+		{
+			UnsealPlayer(InsidePlayer);
+		}
+		
+		UE_LOG(LogTemp, Warning, TEXT("Police NightPhaseEnd"));
+		HBHouse->OnCharacterEnter.Remove(EnterDelegateHandle);
+		HBHouse->OnCharacterExit.Remove(ExitDelegateHandle);
+
+		EnterDelegateHandle.Reset();
+		ExitDelegateHandle.Reset();
+
+		HBHouse = nullptr;
 	}
 }
 
