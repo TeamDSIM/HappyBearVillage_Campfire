@@ -23,7 +23,6 @@ void UHBVillageGenerationWorldSubsystem::GenerateVillage(FHBVillageGenerationDat
 	MapDataGenerator->GenerateHouseColorData(InVillageGenerationData.HouseColorList);
 	MapDataGenerator->GenerateForestData();
 	MapDataGenerator->UpdateMap();
-	MapDataGenerator->PrintMapData();
 	
 	MapDataGenerator->GenerateForestTexture2D();
 	MapDataGenerator->GenerateMapTexture();

@@ -1,5 +1,6 @@
 ﻿#include "HBVillage.h"
 
+#include "HBBlockingVolume.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -71,4 +72,26 @@ void AHBVillage::ApplyVillageSize(const FHBMapData& InMapData)
 {
 	FVector MeshScale = FVector(InMapData.Resolution.X * InMapData.AreaScale, InMapData.Resolution.Y * InMapData.AreaScale, 1);
 	FieldMesh->SetRelativeScale3D(MeshScale);
+}
+
+void AHBVillage::SpawnBlockingVolumes(const FHBMapData& InMapData)
+{
+	for (int32 Row = 0; Row < InMapData.Resolution.Y; ++Row)
+	{
+		for (int32 Col = 0; Col < InMapData.Resolution.X; ++Col)
+		{
+			TCHAR TileType = InMapData.Map[Row][Col];
+
+			FTransform SpawnTransform;
+			SpawnTransform.SetLocation(FVector(Col * InMapData.AreaScale * 100.f, Row * InMapData.AreaScale * 100.f, 0));
+			SpawnTransform.SetRotation(FQuat(FRotator::ZeroRotator));
+			SpawnTransform.SetScale3D(FVector::OneVector * InMapData.AreaScale);
+			
+			if (TileType == ' ')
+			{
+				AHBBlockingVolume* BlockingVolume = GetWorld()->SpawnActor<AHBBlockingVolume>(AHBBlockingVolume::StaticClass(), SpawnTransform);
+				BlockingVolumes.Add(BlockingVolume);
+			}
+		}
+	}
 }
