@@ -38,6 +38,7 @@ void UHBMapWidgetComponent::CreateMapWidget(APlayerController* InPlayerControlle
 
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
 	VillageGenerationSystem->OnVillageGenerated.AddUObject(this, &UHBMapWidgetComponent::SetMapTexture);
+	VillageGenerationSystem->OnVillageGenerated.AddUObject(MapWidget, &UHBMapWidget::RefreshPlayerColorList);
 
 	AHBMafiaGameState* HBGameState = Cast<AHBMafiaGameState>(GetWorld()->GetGameState());
 	HBGameState->OnGamePhaseChanged.AddUObject(this, &UHBMapWidgetComponent::SetSyncStateByPhase);
@@ -133,7 +134,7 @@ void UHBMapWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 void UHBMapWidgetComponent::SetMapTexture()
 {
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
-	UTexture2D* Texture = VillageGenerationSystem->GetMapData().ForestAsTexture2D;
+	UTexture2D* Texture = VillageGenerationSystem->GetMapData().MapTexture;
 	MapWidget->SetMapTexture(Texture);
 }
 

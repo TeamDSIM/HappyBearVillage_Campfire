@@ -31,9 +31,8 @@ enum class EPlayerNightState : uint8
 	InHouse UMETA(DisplayName = "In House"),
 	Outside UMETA(DisplayName = "Outside")
 };
+
 /* ================================================= */
-
-
 
 
 UCLASS()
@@ -87,7 +86,6 @@ protected:
 	/* ========== Night Flow : State ========== */
 public:
 	FOnStaminaChanged OnStaminaChanged;
-
 
 protected:
 	// 남은 외출 가능 횟수 (RepNotify로 HUD 갱신)
@@ -200,12 +198,12 @@ public:
 	TObjectPtr<UStaticMeshComponent> FPSCurrentWeapon;
 
 	UPROPERTY(VisibleAnywhere, Category = State)
-	TObjectPtr<class UHBCharacterRagdollComponent> RagdollComponent; 
+	TObjectPtr<class UHBCharacterRagdollComponent> RagdollComponent;
 
 	// 플레이어 색상 섹션 ===================================
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterial;
-	
+
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> HandMeshDynamicMaterial;
 
@@ -252,7 +250,7 @@ protected:
 
 	// 시선 변경 시 trace 할 각도 값
 	UPROPERTY(EditDefaultsOnly, Category = Interaction)
-	float ViewAngleThreshold = 0.5f;	// degrees
+	float ViewAngleThreshold = 0.5f; // degrees
 
 	UPROPERTY();
 	TObjectPtr<AActor> InteractionTarget;
@@ -277,7 +275,8 @@ protected:
 	void ServerRPCNotifyHit(const FHitResult& HitResult, float HitCheckTime);
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerRPCNotifyMiss(FVector_NetQuantize TraceStart, FVector_NetQuantize TraceEnd, FVector_NetQuantizeNormal TraceDir, float HitCheckTime);
+	void ServerRPCNotifyMiss(FVector_NetQuantize TraceStart, FVector_NetQuantize TraceEnd,
+	                         FVector_NetQuantizeNormal TraceDir, float HitCheckTime);
 
 	UFUNCTION(Client, Unreliable)
 	void ClientRPCPlayAnimation(AHBCharacterPlayer* CharacterToPlay);
@@ -303,6 +302,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UHBCharacterMafiaAttackComponent> MafiaAttackComp;
 
+public:
+	FORCEINLINE UHBCharacterMafiaAttackComponent* GetMafiaAttackComp() { return MafiaAttackComp; }
+
 
 	// 직업 컴포넌트
 public:
@@ -310,9 +312,8 @@ public:
 
 	UFUNCTION()
 	void AssignJob(TSubclassOf<UHBJobBaseComponent> JobClass);
-	
+
 protected:
 	UPROPERTY(Replicated)
 	TObjectPtr<UHBJobBaseComponent> JobComponent;
-
 };

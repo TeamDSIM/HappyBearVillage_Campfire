@@ -492,6 +492,49 @@ UTexture2D* UHBMapDataGenerator::GenerateForestTexture2D()
 	return ForestTexture2D;
 }
 
+UTexture2D* UHBMapDataGenerator::GenerateMapTexture()
+{
+	UTexture2D* MapTexture = UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
+
+	TArray<FColor> Pixels;
+	Pixels.SetNumUninitialized(Width * Height);
+
+	for (int32 Row=0; Row<Height; ++Row)
+	{
+		for (int32 Col=0; Col<Width; ++Col)
+		{
+			TCHAR Type = MapData.Map[Row][Col];
+
+			if (Type == 'A' || Type == 'R')
+			{
+				Pixels[Width * Row + Col] = FColor(198, 219, 218, 240);
+			}
+			else if (Type == 'H' || Type == 'h')
+			{
+				Pixels[Width * Row + Col] = MapData.HouseColorLayer[Row][Col].ToFColor(true);
+			}
+			else
+			{
+				Pixels[Width * Row + Col] = FColor(0, 0, 0, 0);
+			}
+		}
+	}
+
+	void* TextureData = MapTexture->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+	FMemory::Memcpy(TextureData, Pixels.GetData(), Pixels.Num() * sizeof(FColor));
+	MapTexture->GetPlatformData()->Mips[0].BulkData.Unlock();
+	MapTexture->SRGB = true;
+	MapTexture->Filter = TF_Nearest;
+	MapTexture->AddressX = TA_Clamp;
+	MapTexture->AddressY = TA_Clamp;
+	MapTexture->NeverStream = true;
+	MapTexture->UpdateResource();
+
+	MapData.MapTexture = MapTexture;
+	
+	return MapTexture;
+}
+
 void UHBMapDataGenerator::PrintMapData()
 {
 	if (Width <= 0 || Height <= 0)
@@ -532,6 +575,20 @@ void UHBMapDataGenerator::PrintMapData()
 
 	UE_LOG(LogTemp, Log, TEXT("[Area Info] : \n%s"), *AreaLogText);
 	UE_LOG(LogTemp, Log, TEXT("[Type Info] : \n%s"), *TypeLogText);
+
+	FString MapDataTypeLogText;
+
+	for (int32 Row=0; Row<Height; ++Row)
+	{
+		for (int32 Col=0; Col<Width; ++Col)
+		{
+			MapDataTypeLogText += FString::Printf(TEXT("%c"), MapData.Map[Row][Col]);
+		}
+
+		MapDataTypeLogText += TEXT("\n");
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("[Map Type Info] : \n%s"), *MapDataTypeLogText);
 }
 
 void UHBMapDataGenerator::Union(int32 ID1, int32 ID2, TArray<int32>& Parents)

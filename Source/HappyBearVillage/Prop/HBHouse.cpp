@@ -8,12 +8,13 @@
 #include "Components/CapsuleComponent.h"
 #include "Character/HBCharacterPlayer.h"
 #include "Components/ArrowComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AHBHouse::AHBHouse()
 {
 	Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
 	RootComponent = Arrow;
-	
+
 	HouseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HouseMesh"));
 	HouseMesh->SetupAttachment(RootComponent);
 
@@ -38,7 +39,9 @@ void AHBHouse::BeginPlay()
 	}
 }
 
-void AHBHouse::OnEnterOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AHBHouse::OnEnterOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                              UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                              const FHitResult& SweepResult)
 {
 	AHBCharacterPlayer* Player = Cast<AHBCharacterPlayer>(OtherActor);
 	if (!Player)
@@ -57,9 +60,18 @@ void AHBHouse::OnEnterOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	}
 
 	Player->EnterHouse();
+
+	if (!OverlapCharacters.Contains(Player))
+	{
+		OverlapCharacters.Add(Player);
+	}
+
+	// 플레이어 입장 시 바인딩 된 함수 실행
+	OnCharacterEnter.Broadcast(OtherActor);
 }
 
-void AHBHouse::OnExitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void AHBHouse::OnExitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                             UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	AHBCharacterPlayer* Player = Cast<AHBCharacterPlayer>(OtherActor);
 	if (!Player)
@@ -78,8 +90,12 @@ void AHBHouse::OnExitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 	}
 
 	Player->ExitHouse();
+
+	if (OverlapCharacters.Contains(Player))
+	{
+		OverlapCharacters.Remove(Player);
+	}
+
+	// 플레이어 퇴장 시 바인딩 된 함수 실행
+	OnCharacterExit.Broadcast(OtherActor);
 }
-
-
-
-

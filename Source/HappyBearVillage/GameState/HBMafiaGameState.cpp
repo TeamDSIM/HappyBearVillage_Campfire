@@ -43,6 +43,25 @@ void AHBMafiaGameState::SetTopDamagePlayers(const TArray<FDamageRankEntry>& NewT
 	}
 }
 
+AHBCharacterPlayer* AHBMafiaGameState::GetPlayerByColor(FLinearColor InColor)
+{
+	for (APlayerState* PS : PlayerArray)
+	{
+		AController* PlayerController = PS->GetPlayerController();
+		if (PlayerController)
+		{
+			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
+			if (Character && Character->PlayerColor == InColor)
+			{
+				return Character;
+			}
+		}
+	}
+
+	UE_LOG(LogTemp, Error, TEXT("Player not found"));
+	return nullptr;
+}
+
 void AHBMafiaGameState::OnRep_TopDamagePlayers()
 {
 	for (int i = 0; i < TopDamagePlayers.Num(); ++i)

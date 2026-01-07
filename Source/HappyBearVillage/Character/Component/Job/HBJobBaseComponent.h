@@ -27,6 +27,14 @@ public:
 	// Sets default values for this component's properties
 	UHBJobBaseComponent();
 
+	void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void OnRep_IsActionActive();
+
+	FORCEINLINE bool GetIsActionActive() const { return bIsActionActive; }
+	FORCEINLINE void SetIsActionActive(bool bInIsActionActive) { bIsActionActive = bInIsActionActive; }
+
 public:
 	// 직업 호출 시점
 	// 게임 시작 시점 (GameMode -> StartGame -> InitPlayer 마지막)
@@ -37,6 +45,9 @@ public:
 
 	// 밤 시작 시점 (GameMode -> StartNight)
 	virtual void NightPhaseBegin();
+
+	// 밤 끝나고 초기화 시점
+	virtual void NightPhaseEnd();
 
 	// 공격 시 (CharacterPlayer -> AttackHitConfirm 에서 호출, 피격 대상을 인자로 받음)
 	virtual void Attack(AActor* HitActor);
@@ -57,6 +68,6 @@ protected:
 	
 protected:
 	// 직업 스킬 사용 가능 여부
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_IsActionActive)
 	uint8 bIsActionActive : 1;	
 };

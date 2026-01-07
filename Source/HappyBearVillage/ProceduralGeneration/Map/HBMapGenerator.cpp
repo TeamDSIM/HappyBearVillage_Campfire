@@ -8,6 +8,7 @@
 #include "ProceduralGeneration/Map/HBForestField.h"
 #include "ProceduralGeneration/Map/HBForestSpline.h"
 #include "ProceduralGeneration/Map/HBRoadField.h"
+#include "Prop/HBHouse.h"
 #include "Utils/HBUtils.h"
 
 UHBMapGenerator::UHBMapGenerator()
@@ -125,6 +126,10 @@ void UHBMapGenerator::GenerateHouse(FHBMapData InMapData, UWorld* InWorld)
 			{
 				AActor* HouseActor = InWorld->SpawnActor<AActor>(RandomClass, SpawnLocation, FRotator::ZeroRotator);
 				HouseActors.Add(HouseActor);
+
+				AHBHouse* House = Cast<AHBHouse>(HouseActor);
+				FLinearColor HouseColor = MapData.HouseColorLayer[Row][Col];
+				House->SetHouseColor(HouseColor);
 			}
 		}
 	}

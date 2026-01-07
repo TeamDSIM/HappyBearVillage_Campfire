@@ -20,13 +20,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MapData")
 	int32 AreaScale = 4;
-	
-	TArray<TArray<TCHAR>> Map;
-	TArray<TArray<FLinearColor>> HouseColorLayer;
-	TArray<TArray<FVector>> ForestBorderGridIndices;
 
 	UPROPERTY(VisibleAnywhere, Category = "MapData")
 	TMap<FLinearColor, FVector> HouseLocationsByColor;
 	UPROPERTY(VisibleAnywhere, Category = "MapData")
 	TObjectPtr<UTexture2D> ForestAsTexture2D;
+	UPROPERTY(VisibleAnywhere, Category = "MapData")
+	TObjectPtr<UTexture2D> MapTexture;
+	
+	TArray<TArray<TCHAR>> Map;
+	TArray<TArray<FLinearColor>> HouseColorLayer;
+	TArray<TArray<FVector>> ForestBorderGridIndices;
 };

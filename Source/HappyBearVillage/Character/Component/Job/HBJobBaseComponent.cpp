@@ -4,12 +4,25 @@
 #include "Character/Component/Job/HBJobBaseComponent.h"
 
 #include "GameState/HBMafiaGameState.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UHBJobBaseComponent::UHBJobBaseComponent()
 {
 	SetIsReplicatedByDefault(true);
 	bIsActionActive = true;
+}
+
+void UHBJobBaseComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UHBJobBaseComponent, bIsActionActive);
+}
+
+void UHBJobBaseComponent::OnRep_IsActionActive()
+{
+	
 }
 
 void UHBJobBaseComponent::GameBegin()
@@ -24,6 +37,10 @@ void UHBJobBaseComponent::NightPhaseBegin()
 {
 }
 
+void UHBJobBaseComponent::NightPhaseEnd()
+{
+}
+
 void UHBJobBaseComponent::Attack(AActor* HitActor)
 {
 }
@@ -32,6 +49,7 @@ void UHBJobBaseComponent::Action()
 {
 }
 
+// 아직 사용하시면 안됩니다
 AHBCharacterPlayer* UHBJobBaseComponent::DetectTarget()
 {
 	return nullptr;

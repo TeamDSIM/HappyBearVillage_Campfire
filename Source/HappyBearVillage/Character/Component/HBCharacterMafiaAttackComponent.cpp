@@ -7,34 +7,45 @@
 #include "Character/Stat/HBPlayerStatComponent.h"
 #include "Character/HBCharacterPlayer.h"
 #include "Character/Stat/HBCharacterRole.h"
+#include "Net/UnrealNetwork.h"
 
 UHBCharacterMafiaAttackComponent::UHBCharacterMafiaAttackComponent()
 {
     PrimaryComponentTick.bCanEverTick = false;
     SetIsReplicatedByDefault(true);
+
+    bIsCanActiveEquip = true;
 }
 
 void UHBCharacterMafiaAttackComponent::ToggleWeapon()
 {
-    // 1) Owner Pawn È®ÀÎ
+    // 1) Owner Pawn È®ï¿½ï¿½
     APawn* PawnOwner = Cast<APawn>(GetOwner());
     if (!PawnOwner) return;
 
-    // 2) ·ÎÄÃ ÇÃ·¹ÀÌ¾î¸¸ ÀÔ·Â Ã³¸®
+    // 2) ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î¸¸ ï¿½Ô·ï¿½ Ã³ï¿½ï¿½
     if (!PawnOwner->IsLocallyControlled())
         return;
 
-    // 3) UX¿ë ·ÎÄÃ Ã¼Å© (¼­¹ö¿¡¼­µµ ´Ù½Ã Ã¼Å©)
+    // 3) UXï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å© (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ Ã¼Å©)
     if (!CanToggleWeapon())
         return;
 
-    // 4) ¼­¹ö¿¡ ½ÇÁ¦ Åä±Û ¿äÃ»
+    // 4) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»
     Server_ToggleWeapon();
+}
+
+void UHBCharacterMafiaAttackComponent::GetLifetimeReplicatedProps(
+    TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(UHBCharacterMafiaAttackComponent, bIsCanActiveEquip);
 }
 
 void UHBCharacterMafiaAttackComponent::Server_ToggleWeapon_Implementation()
 {
-    // 5) ¼­¹ö¿¡¼­ ÃÖÁ¾ °ËÁõ (º¸¾È)
+    // 5) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½)
     if (!CanToggleWeapon())
         return;
 
@@ -69,6 +80,9 @@ bool UHBCharacterMafiaAttackComponent::CanToggleWeapon() const
 
     const FHBCharacterRole& RoleData = StatComp->GetCharacterRole();
     if (RoleData.Role != ERoleType::MAFIA)
+        return false;
+
+    if (bIsCanActiveEquip == false)
         return false;
 
     return true;

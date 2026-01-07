@@ -593,7 +593,11 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 					break;
 
 				case EGamePhase::Night:
-					StartDay();
+					{
+						// 직업의 밤 종료 함수 호출
+						GetHBGameModePlayerControlComponent()->CallJobNightPhaseEnd(HBGameState);
+						StartDay();
+					}
 					break;
 
 				default:

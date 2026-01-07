@@ -125,6 +125,28 @@ void UHBGameModePlayerControlComponent::UnEquippedAllPlayer(AHBMafiaGameState* I
 	}
 }
 
+void UHBGameModePlayerControlComponent::CallJobNightPhaseEnd(AHBMafiaGameState* InGameState)
+{
+	// Night 시작 시 플레이어 Night 상태 초기화
+	for (APlayerState* PS : InGameState->PlayerArray)
+	{
+		// 플레이어 직업 컴포넌트 저녁 초기화 실행
+		AController* PlayerController = PS->GetPlayerController();
+		if (PlayerController)
+		{
+			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
+			if (Character)
+			{
+				UHBJobBaseComponent* JobComponent = Character->GetJobComponent();
+				if (JobComponent)
+				{
+					JobComponent->NightPhaseEnd();
+				}
+			}
+		}
+	}
+}
+
 void UHBGameModePlayerControlComponent::ResetPlayersTotalTakenDamage(AHBMafiaGameState* InGameState)
 {
 	// 플레이어 목록 불러오기
@@ -204,38 +226,38 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 	Algo::RandomShuffle(MafiaPool);
 	Algo::RandomShuffle(CitizenPool);
 
-	//// // 일단 현재 마피아와 시민만 배치
-	// for (int i = 0; i < InPlayerNum; ++i)
-	// {
-	// 	if (i < MafiaNum)
-	// 	{
-	// 		PlayerJobs.Add(EJobType::SHACO);
-	// 	}
-	// 	else
-	// 	{
-	// 		if (i % 2 == 0)
-	// 		{
-	// 			PlayerJobs.Add(EJobType::ARMY);
-	// 		}
-	// 		else
-	// 		{
-	// 			PlayerJobs.Add(EJobType::CELEBRITY);
-	// 		}
-	// 	}
-	// }
-
 	// 마피아와 시민 직업 풀을 이용해서 직업 부여
 	for (int i = 0; i < InPlayerNum; ++i)
 	{
 		if (i < MafiaNum)
 		{
-			PlayerJobs.Add(MafiaPool.Pop());
+			PlayerJobs.Add(EJobType::ASSASSIN);
 		}
 		else
 		{
-			PlayerJobs.Add(CitizenPool.Pop());
+			if (i % 2 == 0)
+			{
+				PlayerJobs.Add(EJobType::ARMY);
+			}
+			else
+			{
+				PlayerJobs.Add(EJobType::POLICE);
+			}
 		}
 	}
+
+	// 마피아와 시민 직업 풀을 이용해서 직업 부여
+	// for (int i = 0; i < InPlayerNum; ++i)
+	// {
+	// 	if (i < MafiaNum)
+	// 	{
+	// 		PlayerJobs.Add(MafiaPool.Pop());
+	// 	}
+	// 	else
+	// 	{
+	// 		PlayerJobs.Add(CitizenPool.Pop());
+	// 	}
+	// }
 	
 	InitPlayerNum(InPlayerNum);
 }

@@ -51,7 +51,7 @@ void UHBMinimapWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 void UHBMinimapWidgetComponent::SetMinimapTexture()
 {
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
-	UTexture2D* Texture = VillageGenerationSystem->GetMapData().ForestAsTexture2D;
+	UTexture2D* Texture = VillageGenerationSystem->GetMapData().MapTexture;
 	MinimapWidget->SetMinimapTexture(Texture);
 }
 

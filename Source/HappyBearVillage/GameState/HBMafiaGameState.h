@@ -12,6 +12,7 @@
  * 
  */
 
+class AHBCharacterPlayer;
 class AHBPlayerState;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGamePhaseChanged, EGamePhase)
@@ -93,6 +94,9 @@ public:
 
 public:
 	void SetTopDamagePlayers(const TArray<FDamageRankEntry>& NewTopDamagePlayers);
+
+	// 입력받은 색으로 플레이어 찾는 함수
+	AHBCharacterPlayer* GetPlayerByColor(FLinearColor InColor);
 	
 public:
 	// @PHYTODO : 나중에 다 컴포넌트로 생성해서 옮겨주기

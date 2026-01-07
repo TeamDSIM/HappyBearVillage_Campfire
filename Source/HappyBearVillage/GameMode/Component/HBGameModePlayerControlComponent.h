@@ -35,6 +35,8 @@ public:
 	// 플레이어 전체 무기 장착 해제
 	void UnEquippedAllPlayer(AHBMafiaGameState* InGameState);
 
+	void CallJobNightPhaseEnd(AHBMafiaGameState* InGameState);
+
 	// 플레이어 전체 누적 데미지 초기화
 	void ResetPlayersTotalTakenDamage(AHBMafiaGameState* InGameState);
 
