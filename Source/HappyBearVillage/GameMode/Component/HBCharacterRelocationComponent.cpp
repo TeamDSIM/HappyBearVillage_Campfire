@@ -57,15 +57,15 @@ void UHBCharacterRelocationComponent::RelocateCharacterToCouncil(AHBMafiaGameSta
 	if (!InGameState) return;
 	if (!GetOwner() || !GetWorld()) return;
 
-	//  ���������� ����
+	//  서버에서만 실행
 	if (!GetOwner()->HasAuthority())
 		return;
 
-    // ������
-    const FVector Center = FVector(200000.0f, 0.0f, 100.0f); // �߽� ��ġ
-    const float Radius = 300.f;                           // �� ������
+	//회의장 위치로 이동
+    const FVector Center = FVector(200000.0f, 0.0f, 100.0f); // 중심 위치
+    const float Radius = 300.f;                           // 원 반지름
 
-    // ĳ���� ����
+	// 설정값
     TArray<AHBCharacterPlayer*> Characters;
 
     for (APlayerState* PS : InGameState->PlayerArray)
@@ -84,13 +84,13 @@ void UHBCharacterRelocationComponent::RelocateCharacterToCouncil(AHBMafiaGameSta
     const int32 NumPlayers = Characters.Num();
     if (NumPlayers == 0) return;
 
-    // ���� ��ġ
+	// 원형 배치
   
     const float AngleStep = 360.f / NumPlayers;
 
     for (int32 i = 0; i < NumPlayers; ++i)
     {
-    	// ���� ����� �̵� ����
+		// 죽은 사람은 이동 제외
 		if (Characters[i]->GetStat()->GetIsAlive() == false)
 		{
 			continue;
@@ -104,10 +104,10 @@ void UHBCharacterRelocationComponent::RelocateCharacterToCouncil(AHBMafiaGameSta
         TargetLocation.Y = Center.Y + FMath::Sin(AngleRad) * Radius;
         TargetLocation.Z = Center.Z;
 
-        //�߽��� �ٶ󺸰� ȸ��
+		//중심을 바라보게 회전
         FRotator LookAtRotation = (Center - TargetLocation).Rotation();
-        //BP���� -90���� �����Ǿ� ����
-        //LookAtRotation.Yaw += 90.f;
+		//BP에서 -90도로 설정되어 있음
+		//LookAtRotation.Yaw += 90.f;
         AController* Con = Characters[i]->GetController();
         if (Con)
         {
@@ -127,7 +127,7 @@ void UHBCharacterRelocationComponent::RelocateCharacterToExecutePlatform(AHBMafi
 		AHBCharacterPlayer* Target = VoteSubsystem->GetCurrentVoteTarget();
 		if (Target)
 		{
-			// ó���� ��ġ�� �̵�
+			// 처형대 위치로 이동
 			Target->SetActorLocation(VoteSubsystem->GetExecutePlatform()->GetTargetPosition());
 		}
 	}
