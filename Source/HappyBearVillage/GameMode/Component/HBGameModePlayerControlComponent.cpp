@@ -6,6 +6,7 @@
 #include "HappyBearVillage.h"
 #include "Algo/RandomShuffle.h"
 #include "Character/HBCharacterPlayer.h"
+#include "Character/Stat/HBCharacterColor.h"
 #include "Character/Stat/HBPlayerStatComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "GameState/HBMafiaGameState.h"
@@ -30,6 +31,10 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 	InitPlayersJobList(Players.Num());
 	Algo::RandomShuffle(PlayerJobs);
 
+	TArray<FLinearColor> PlayerColors;
+	InitPlayersColorList(PlayerColors, Players.Num());
+	Algo::RandomShuffle(PlayerColors);
+	
 	// 플레이어 목록을 돌며 직업 배정
 	for (int32 i = 0; i < Players.Num(); ++i)
 	{
@@ -50,14 +55,14 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 					PlayerStatComponent->ResetTotalTakenDamage();
 				}
 
-				Character->PlayerColor = FLinearColor::MakeRandomColor();
+				Character->PlayerColor = PlayerColors[i];
 				Character->OnRep_PlayerColor();
 
 				AHBPlayerState* HBPlayerState = Cast<AHBPlayerState>(Players[i]);
 				if (HBPlayerState)
 				{
 					HBPlayerState->SyncPlayerColorFromPlayerStat(Character->PlayerColor);
-					HBPlayerState->SetUserID(i);
+					HBPlayerState->SetUserID(HBPlayerState->GetPlayerName());
 				}
 
 				// 플레이어의 직업 초기화 함수 실행
@@ -265,6 +270,36 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 void UHBGameModePlayerControlComponent::InitPlayerNum(int InPlayerNum)
 {
 	PlayerNum = InPlayerNum;
+}
+
+void UHBGameModePlayerControlComponent::InitPlayersColorList(TArray<FLinearColor>& OutColors, int InPlayerNum)
+{
+	TArray<EColorType> ColorPool;
+
+	const UEnum* ColorEnum = StaticEnum<EColorType>();
+	if (ColorEnum)
+	{
+		for (int32 i = 0; i < ColorEnum->NumEnums() - 1; ++i)
+		{
+			EColorType Color = static_cast<EColorType>(ColorEnum->GetValueByIndex(i));
+
+			if (Color < EColorType::END)
+			{
+				ColorPool.Add(Color);
+			}
+		}
+	}
+
+	// 풀 셔플
+	Algo::RandomShuffle(ColorPool);
+
+	// 마피아와 시민 직업 풀을 이용해서 직업 부여
+	for (int i = 0; i < InPlayerNum; ++i)
+	{
+		FHBCharacterColor Color;
+		Color.SetColor(ColorPool.Pop());
+		OutColors.Add(Color.GetColorValue());
+	}
 }
 
 

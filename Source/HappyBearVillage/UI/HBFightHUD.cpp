@@ -4,6 +4,7 @@
 #include "UI/HBFightHUD.h"
 
 #include "HBDamagedPlayerHUD.h"
+#include "Components/Image.h"
 #include "GameState/HBMafiaGameState.h"
 
 UHBFightHUD::UHBFightHUD(const FObjectInitializer& ObjectInitializer)
@@ -22,6 +23,25 @@ void UHBFightHUD::NativeConstruct()
 	
 	ThirdDamagedPlayerWidget = Cast<UHBDamagedPlayerHUD>(GetWidgetFromName(TEXT("DamagedPlayerThird")));
 	ensure(ThirdDamagedPlayerWidget);
+
+	UImage* FirstImage = FirstDamagedPlayerWidget->GetRankImage();
+	if (FirstImage)
+	{
+		FirstImage->SetBrushFromTexture(FirstMedalTexture, true);
+		FirstImage->SetDesiredSizeOverride(FVector2D(64.f, 64.f));
+	}
+	UImage* SecondImage = SecondDamagedPlayerWidget->GetRankImage();
+	if (SecondImage)
+	{
+		SecondImage->SetBrushFromTexture(SecondMedalTexture, true);
+		SecondImage->SetDesiredSizeOverride(FVector2D(64.f, 64.f));
+	}
+	UImage* ThirdImage = ThirdDamagedPlayerWidget->GetRankImage();
+	if (ThirdImage)
+	{
+		ThirdImage->SetBrushFromTexture(ThirdMedalTexture, true);
+		ThirdImage->SetDesiredSizeOverride(FVector2D(64.f, 64.f));
+	}
 }
 
 void UHBFightHUD::UpdateCurrentInfo(AHBPlayerState* InPlayer, FDamageRankEntry InEntry, int32 InRank)

@@ -32,7 +32,7 @@ void AHBPlayerState::SyncPlayerColorFromPlayerStat(FLinearColor NewColor)
 	}
 }
 
-void AHBPlayerState::SetUserID(int32 NewID)
+void AHBPlayerState::SetUserID(FString NewID)
 {
 	if (HasAuthority())
 	{

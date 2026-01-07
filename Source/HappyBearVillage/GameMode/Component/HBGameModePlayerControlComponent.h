@@ -47,6 +47,7 @@ private:
 private:
 	void InitPlayersJobList(int InPlayerNum);
 	void InitPlayerNum(int InPlayerNum);
+	void InitPlayersColorList(TArray<FLinearColor>& OutColors, int InPlayerNum);
 
 	UPROPERTY()
 	TArray<EJobType> PlayerJobs;
