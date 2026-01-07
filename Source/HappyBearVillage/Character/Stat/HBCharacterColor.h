@@ -39,13 +39,6 @@ public:
 	{
 	}
 
-	// 마피아 / 시민 종류 열거형
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
-	EColorType Color;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
-	FLinearColor ColorValue;
-
 	void SetColor(EColorType InColor)
 	{
 		Color = InColor;
@@ -83,6 +76,15 @@ public:
 	
 	EColorType GetColor() const { return Color; }
 	FLinearColor GetColorValue() const { return ColorValue; }
+	
+	// 마피아 / 시민 종류 열거형
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
+	EColorType Color;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
+	FLinearColor ColorValue;
+
+	
 
 	
 };
