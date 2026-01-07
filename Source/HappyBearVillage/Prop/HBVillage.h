@@ -13,15 +13,11 @@ class HAPPYBEARVILLAGE_API AHBVillage : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
 	AHBVillage();
-
-	UFUNCTION(BlueprintCallable, Category = "Village")
 	void ApplyVillageLocation(const FHBMapData& InMapData);
-
-	UFUNCTION(BlueprintCallable, Category = "Village")
 	void ApplyVillageSize(const FHBMapData& InMapData);
-
+	
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UArrowComponent> Arrow;

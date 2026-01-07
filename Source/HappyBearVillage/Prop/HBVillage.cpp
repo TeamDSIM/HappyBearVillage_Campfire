@@ -27,12 +27,15 @@ AHBVillage::AHBVillage()
 	for (int32 Index = 0; Index<4; ++Index)
 	{
 		UBoxComponent* BoundaryCollider = CreateDefaultSubobject<UBoxComponent>(*BoundaryColliderNames[Index]);
-		BoundaryCollider->SetupAttachment(FieldMesh);
+		BoundaryCollider->SetupAttachment(RootComponent);
 
-		FVector Extent = (Index < 2) ? FVector(50.f, 50.f, 500.f) : FVector(50.f, 50.f, 500.f);
+		FVector VerticalExtent = FVector(50.f, 0.f, 500.f);
+		FVector HorizontalExtent = FVector(0.f, 50.f, 500.f);
+		FVector Extent = (Index < 2) ? VerticalExtent : HorizontalExtent;
+		
 		BoundaryCollider->SetBoxExtent(Extent);
-		BoundaryCollider->SetRelativeLocation(FVector(DX[Index] * 100.f, DY[Index] * 100.f, 250.f - 50.f));
-		BoundaryCollider->SetCollisionProfileName(TEXT("BlockAll"));
+		BoundaryCollider->SetRelativeLocation(FVector(DX[Index] * 50.f, DY[Index] * 50.f, 500.f - 50.f));
+		BoundaryCollider->SetCollisionProfileName("BlockAllDynamic");
       
 		BoundaryColliders.Add(BoundaryCollider);
 	}
@@ -40,12 +43,32 @@ AHBVillage::AHBVillage()
 
 void AHBVillage::ApplyVillageLocation(const FHBMapData& InMapData)
 {
-	const FVector Center = FVector(InMapData.Resolution.X - 1, InMapData.Resolution.Y - 1, 0) * InMapData.AreaScale * 100 * 0.5f;
-	SetActorLocation(Center);
+	const FVector FirstCenter = FVector(0, 0, 0) * InMapData.AreaScale * 100;
+	const FVector LastCenter = FVector(InMapData.Resolution.X - 1, InMapData.Resolution.Y - 1, 0) * InMapData.AreaScale * 100;
+	
+	const FVector VillageCenter = (FirstCenter + LastCenter) * 0.5f;
+	SetActorLocation(VillageCenter);
+
+	int32 DX[4] = {0, 0, -1, 1};
+	int32 DY[4] = {-1, 1, 0, 0};
+	
+	for (int32 Index = 0; Index<4; ++Index)
+	{
+		UBoxComponent* BoundaryCollider = BoundaryColliders[Index];
+
+		FVector VerticalExtent = FVector(50.f * InMapData.Resolution.X * InMapData.AreaScale, 0.f, 500.f);
+		FVector HorizontalExtent = FVector(0.f, 50.f * InMapData.Resolution.Y * InMapData.AreaScale, 500.f);
+		FVector Extent = (Index < 2) ? VerticalExtent : HorizontalExtent;
+		
+		BoundaryCollider->SetBoxExtent(Extent);
+		BoundaryCollider->SetRelativeLocation(FVector(DX[Index] * 50.f * InMapData.Resolution.X * InMapData.AreaScale, DY[Index] * 50.f * InMapData.Resolution.Y * InMapData.AreaScale, 500.f - 50.f));
+      
+		BoundaryColliders.Add(BoundaryCollider);
+	}
 }
 
 void AHBVillage::ApplyVillageSize(const FHBMapData& InMapData)
 {
-	FVector ActorScale = FVector(InMapData.Resolution.X * InMapData.AreaScale, InMapData.Resolution.Y * InMapData.AreaScale, 1);
-	SetActorScale3D(ActorScale);
+	FVector MeshScale = FVector(InMapData.Resolution.X * InMapData.AreaScale, InMapData.Resolution.Y * InMapData.AreaScale, 1);
+	FieldMesh->SetRelativeScale3D(MeshScale);
 }
