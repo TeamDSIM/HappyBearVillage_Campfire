@@ -141,6 +141,14 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 		AttackMontage = AttackMontageRef.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> DanceActionRef(
+		TEXT("/Game/Character/Input/Action/IA_Dance.IA_Dance"));
+	if (DanceActionRef.Succeeded())
+	{
+		DanceAction = DanceActionRef.Object;
+	}
+
+
 	// ĳ���� �޽� ����
 	GetMesh()->SetRelativeScale3D(FVector(0.2f, 0.2f, 0.2f));
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -86.0f));
@@ -280,6 +288,10 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		// 직업 행동 바인드
 		EnhancedInputComponent->BindAction(JobAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::DoJobAction);
 		
+		// Dance Action Bind
+		EnhancedInputComponent->BindAction(DanceAction,ETriggerEvent::Triggered,this,&AHBCharacterPlayer::Dance
+		);
+
 	}
 }
 
@@ -853,6 +865,163 @@ void AHBCharacterPlayer::PlayAttackAnimation()
 	}
 }
 
+void AHBCharacterPlayer::ClientRPCPlayDance_Implementation(int32 MontageIndex, float StartTime)
+{
+	// 서버가 클라이언트에게 춤 재생을 지시할 때 클라이언트에서 실행됩니다.
+	// attack 흐름을 참고하여 몽타주 유효성 검사 후 재생합니다.
+
+	// 유효한 인덱스인지 확인
+	if (!DanceMontages.IsValidIndex(MontageIndex) || !DanceMontages[MontageIndex])
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ClientRPCPlayDance: Invalid montage index %d"), MontageIndex);
+		return;
+	}
+
+	// 상태 저장 (중복 재생 방지 등 로직에서 필요할 수 있음)
+	LastDanceIndex = MontageIndex;
+
+	// 메시에 연결된 AnimInstance에서 몽타주 재생
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		// 필요 시 기존 몽타주를 중단 (공격과 동일한 처리 방식)
+		AnimInstance->StopAllMontages(0.f);
+
+		// 1인칭에서는 춤 애니메이션을 재생하지 않도록 기존 설계에 맞춰
+		// Mesh(3인칭)만 재생. StartTime을 사용해 서버와의 싱크 보정.
+		AnimInstance->Montage_Play(DanceMontages[MontageIndex], 1.f, EMontagePlayReturnType::MontageLength, StartTime);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ClientRPCPlayDance: No AnimInstance found for player"));
+	}
+}
+
+void AHBCharacterPlayer::ServerRPCDance_Implementation(int32 MontageIndex, float StartTime)
+{
+	// 서버에서만 실행되어야 함
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	// 유효성 검사
+	if (!DanceMontages.IsValidIndex(MontageIndex) || !DanceMontages[MontageIndex])
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ServerRPCDance: Invalid montage index %d"), MontageIndex);
+		return;
+	}
+
+	// 상태 저장 (중복 재생 방지용 등)
+	LastDanceIndex = MontageIndex;
+
+	// 무기 숨기기(서버 측 로컬 처리가 필요하면 실행)
+	// 서버의 Pawn(호스트 클라이언트인 경우)은 직접 처리
+	SetWeaponVisibleForDance(false);
+
+	// 모든 플레이어에게 춤 재생을 지시
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	AHBMafiaGameState* GameState = World->GetGameState<AHBMafiaGameState>();
+	if (!GameState)
+	{
+		return;
+	}
+
+	for (APlayerState* PS : GameState->PlayerArray)
+	{
+		if (!PS) continue;
+
+		AController* PC = PS->GetPlayerController();
+		if (!PC) continue;
+
+		AHBCharacterPlayer* OtherChar = Cast<AHBCharacterPlayer>(PC->GetPawn());
+		if (!OtherChar) continue;
+
+		// 서버가 호스트(listen server)인 경우 자신의 클라이언트에도 즉시 재생
+		if (OtherChar == this)
+		{
+			// 서버의 로컬 표현(호스트 플레이어)이 있다면 바로 재생
+			PlayDanceAnimation(MontageIndex);
+		}
+		else
+		{
+			// 다른 클라이언트에게 RPC로 재생 지시
+			OtherChar->ClientRPCPlayDance(MontageIndex, StartTime);
+		}
+	}
+}
+
+void AHBCharacterPlayer::PlayDanceAnimation(int32 MontageIndex)
+{
+	// 유효성 검사
+	if (!DanceMontages.IsValidIndex(MontageIndex) || !DanceMontages[MontageIndex])
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PlayDanceAnimation: Invalid montage index %d"), MontageIndex);
+		return;
+	}
+
+	// 상태 저장
+	LastDanceIndex = MontageIndex;
+
+	// 3인칭 메시(겉보기)에서 몽타주 재생 (기존 설계: 1인칭은 재생하지 않음)
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		AnimInstance->StopAllMontages(0.f);
+		AnimInstance->Montage_Play(DanceMontages[MontageIndex]);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PlayDanceAnimation: No AnimInstance on Mesh"));
+	}
+
+	// 춤 재생 중에는 무기 숨기기
+	SetWeaponVisibleForDance(false);
+
+	// 몽타주 길이만큼 대기 후 무기 복구
+	float MontageLength = DanceMontages[MontageIndex]->GetPlayLength();
+	if (MontageLength <= 0.f)
+	{
+		// 안전한 기본값
+		MontageLength = 1.0f;
+	}
+
+	FTimerHandle RestoreHandle;
+	GetWorldTimerManager().SetTimer(
+		RestoreHandle,
+		FTimerDelegate::CreateLambda([this]()
+			{
+				SetWeaponVisibleForDance(true);
+			}),
+		MontageLength,
+		false
+	);
+}
+
+void AHBCharacterPlayer::SetWeaponVisibleForDance(bool bVisible)
+{
+	// 3인칭(Third-person) 무기 컴포넌트 처리 (AHBCharacterBase::CurrentWeapon 사용)
+	if (CurrentWeapon)
+	{
+		// 가시성 및 히든 플래그 동기화
+		CurrentWeapon->SetVisibility(bVisible, true);
+		CurrentWeapon->SetHiddenInGame(!bVisible, true);
+	}
+
+	// 1인칭(First-person) 무기 처리
+	if (FPSCurrentWeapon)
+	{
+		// FPS 무기는 원래 OnlyOwnerSee 설정이 있을 수 있으므로 단순히 히든/가시성 토글
+		FPSCurrentWeapon->SetVisibility(bVisible, true);
+		FPSCurrentWeapon->SetHiddenInGame(!bVisible, true);
+	}
+
+	// 필요 시 추가적으로 충돌 비활성화/활성화 등도 여기서 처리할 수 있음
+}
+
 void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 {
 	if (InHUDWidget)
@@ -1193,3 +1362,42 @@ void AHBCharacterPlayer::ProcessNightEnd()
 	// ���� ����Ŭ�� ���� ���� �� �÷��� ���� (���� bExitedPreviousNight�� ��� ���� ���� ���� ���η� ����)
 	bExitedPreviousNight = bExitedHouseThisNight;
 }
+
+void AHBCharacterPlayer::Dance()
+{
+	if (!IsLocallyControlled())
+		return;
+
+	if (DanceMontages.Num() == 0)
+		return;
+
+	int32 Index = 0;
+
+	// 랜덤 선택 (연속 중복 방지)
+	if (DanceMontages.Num() == 1)
+	{
+		Index = 0;
+	}
+	else
+	{
+		do
+		{
+			Index = FMath::RandRange(0, DanceMontages.Num() - 1);
+		} while (Index == LastDanceIndex);
+	}
+
+	LastDanceIndex = Index;
+
+	// 로컬 즉시 재생
+	PlayDanceAnimation(Index);
+
+	// 서버 시간 안전 처리
+	UWorld* World = GetWorld();
+	AGameStateBase* GS = World ? World->GetGameState() : nullptr;
+	const float StartTime = GS ? GS->GetServerWorldTimeSeconds() : (World ? World->GetTimeSeconds() : 0.f);
+
+	// 서버에 알림
+	ServerRPCDance(Index, StartTime);
+}
+
+

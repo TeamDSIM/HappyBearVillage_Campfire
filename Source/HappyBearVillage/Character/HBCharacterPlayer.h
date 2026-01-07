@@ -83,6 +83,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TObjectPtr<UInputAction> JobAction;
 
+	// ===== Dance Input =====
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	TObjectPtr<UInputAction> DanceAction;
+
 	/* ========== Night Flow : State ========== */
 public:
 	FOnStaminaChanged OnStaminaChanged;
@@ -166,6 +170,10 @@ public:
 	UFUNCTION()
 	void MouseLook(const FInputActionValue& Value);
 
+	// ===== Dance Functions =====
+	UFUNCTION()
+	void Dance();
+
 	// @PHYTODO : 직업 분배 임시 확인용
 
 	UFUNCTION()
@@ -233,6 +241,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<UAnimMontage> AttackMontage;
 
+	// ===== Dance Animation =====
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation|Dance")
+	TArray<TObjectPtr<UAnimMontage>> DanceMontages;
+
 	// 상호작용 섹션 ===========================================
 protected:
 	FTimerHandle InteracticonTraceTimerHandle;
@@ -289,6 +301,21 @@ protected:
 
 	void PlayAttackAnimation();
 
+	// Dance 섹션 ===========================================
+
+	// 마지막 춤 인덱스 (연속 중복 방지용, 선택)
+	int32 LastDanceIndex = -1;
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPCDance(int32 MontageIndex, float StartTime);
+
+	UFUNCTION(Client, Unreliable)
+	void ClientRPCPlayDance(int32 MontageIndex, float StartTime);
+
+	void PlayDanceAnimation(int32 MontageIndex);
+
+	// ===== Weapon Control =====
+	void SetWeaponVisibleForDance(bool bVisible);
 
 	// @PHYTODO : 직업 분배 임시 확인용
 	UFUNCTION(Server, Reliable)
