@@ -171,7 +171,6 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	MafiaAttackComp = CreateDefaultSubobject<UHBCharacterMafiaAttackComponent>(TEXT("MafiaAttackComp"));
 
 	RenderColor = FLinearColor::Black;
-
 }
 
 void AHBCharacterPlayer::BeginPlay()
@@ -189,21 +188,14 @@ void AHBCharacterPlayer::BeginPlay()
 	/* ================================================================ */
 
 	DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
+	if (DynamicMaterial)
+	{
+		DynamicMaterial->SetScalarParameterValue(TEXT("HitFlash"), 0.f);
+		DynamicMaterial->SetVectorParameterValue(TEXT("HitTint"), FLinearColor(1.f, 0.f, 0.f, 1.f));
+	}
+
+
 	HandMeshDynamicMaterial = FPSMeshComponent->CreateDynamicMaterialInstance(0);
-
-	// InputMappingContext ����
-	// @PHYTODO : �̰� PossessedBy �� �Ű���� ��
-	// APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	// if (PlayerController)
-	// {
-	// 	UEnhancedInputLocalPlayerSubsystem* Subsystem =
-	// 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-	// 	if (Subsystem)
-	// 	{
-	// 		Subsystem->AddMappingContext(InputMappingContext, 0);
-	// 	}
-	// }
-
 
 	if (IsLocallyControlled())
 	{
@@ -222,24 +214,6 @@ void AHBCharacterPlayer::BeginPlay()
 void AHBCharacterPlayer::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-
-	// if (IsLocallyControlled())
-	// {
-	// 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	// 	if (PlayerController)
-	// 	{
-	// 		ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
-	// 		if (LocalPlayer)
-	// 		{
-	// 			UEnhancedInputLocalPlayerSubsystem* Subsystem =
-	// 				ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-	// 			if (Subsystem)
-	// 			{
-	// 				Subsystem->AddMappingContext(InputMappingContext, 0);
-	// 			}
-	// 		}
-	// 	}
-	// }
 }
 
 void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -270,10 +244,10 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::Attack);
 		EnhancedInputComponent->BindAction(InteractionAction, ETriggerEvent::Triggered, this,
-			&AHBCharacterPlayer::Interaction);
+		                                   &AHBCharacterPlayer::Interaction);
 
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this,
-			&AHBCharacterPlayer::MouseLook);
+		                                   &AHBCharacterPlayer::MouseLook);
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -283,15 +257,14 @@ void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// ���� Ż/��
 		EnhancedInputComponent->BindAction(ToggleWeaponAction, ETriggerEvent::Triggered, this,
-			&AHBCharacterPlayer::ToggleWeapon);
+		                                   &AHBCharacterPlayer::ToggleWeapon);
 
 		// 직업 행동 바인드
 		EnhancedInputComponent->BindAction(JobAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::DoJobAction);
-		
-		// Dance Action Bind
-		EnhancedInputComponent->BindAction(DanceAction,ETriggerEvent::Triggered,this,&AHBCharacterPlayer::Dance
-		);
 
+		// Dance Action Bind
+		EnhancedInputComponent->BindAction(DanceAction, ETriggerEvent::Triggered, this, &AHBCharacterPlayer::Dance
+		);
 	}
 }
 
@@ -308,6 +281,19 @@ void AHBCharacterPlayer::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	DOREPLIFETIME(AHBCharacterPlayer, bExitedPreviousNight);
 }
 
+float AHBCharacterPlayer::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+                                     class AController* EventInstigator, AActor* DamageCauser)
+{
+	const float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (HasAuthority() && ActualDamage > 0.f)
+	{
+		MulticastRPCApplyHitFlash(0.12f);
+	}
+
+	return ActualDamage;
+}
+
 void AHBCharacterPlayer::OnRep_Stamina()
 {
 	// RepNotify: Stamina�� �ٲ�� ���� �÷��̾� HUD�� �ݿ�
@@ -318,16 +304,16 @@ void AHBCharacterPlayer::OnRep_Stamina()
 
 	if (CachedHUDWidget)
 	{
-		
 	}
 	else
 	{
-		UE_LOG(LogTemp, Verbose, TEXT("[NightFlow] OnRep_Stamina called but CachedHUDWidget is null. Stamina=%d"), Stamina);
+		UE_LOG(LogTemp, Verbose, TEXT("[NightFlow] OnRep_Stamina called but CachedHUDWidget is null. Stamina=%d"),
+		       Stamina);
 	}
 }
 
 void AHBCharacterPlayer::Move(const FInputActionValue& Value)
-{	
+{
 	UWorld* World = Cast<UWorld>(GetWorld());
 	if (!World)
 	{
@@ -370,7 +356,7 @@ void AHBCharacterPlayer::Attack()
 	{
 		return;
 	}
-	
+
 	if (Stat->GetIsVoteTarget())
 	{
 		return;
@@ -486,10 +472,10 @@ void AHBCharacterPlayer::DoJobAction()
 void AHBCharacterPlayer::OnRep_PlayerColor()
 {
 	SetRandomBaseColor();
-	
+
 	AHBVillagePlayerController* HBPlayerController = Cast<AHBVillagePlayerController>(GetController());
 	if (!HBPlayerController) return;
-	
+
 	UHBMapWidgetComponent* MapWidgetComponent = HBPlayerController->GetComponentByClass<UHBMapWidgetComponent>();
 	if (!MapWidgetComponent) return;
 
@@ -569,7 +555,7 @@ void AHBCharacterPlayer::ApplyNightColor(bool bIsNight)
 
 	if (!DynamicMaterial)
 	{
-		 return;
+		return;
 	}
 
 	if (bIsNight)
@@ -580,6 +566,50 @@ void AHBCharacterPlayer::ApplyNightColor(bool bIsNight)
 	{
 		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
 	}
+}
+
+void AHBCharacterPlayer::ApplyHitFlash()
+{
+	HitFlashElapsed = 0.f;
+	GetWorldTimerManager().ClearTimer(HitFlashTimerHandle);
+
+	// 효과 키기
+	if (DynamicMaterial)
+	{
+		DynamicMaterial->SetScalarParameterValue(TEXT("HitFlash"), 1.f);
+	}
+
+	// 타이머 후 효과 끄기
+	GetWorldTimerManager().SetTimer(
+		HitFlashTimerHandle,
+		this,
+		&AHBCharacterPlayer::UpdateHitFlash,
+		0.016f,
+		true
+	);
+}
+
+void AHBCharacterPlayer::UpdateHitFlash()
+{
+	HitFlashElapsed += 0.016f;
+	
+	float Alpha = HitFlashElapsed / HitFlashDuration;
+	float FlashValue = FMath::Lerp(1.f, 0.f, Alpha);
+	
+	if (DynamicMaterial)
+	{
+		DynamicMaterial->SetScalarParameterValue(TEXT("HitFlash"), FlashValue);
+	}
+	
+	if (Alpha >= 1.f)
+	{
+		GetWorldTimerManager().ClearTimer(HitFlashTimerHandle);
+	}
+}
+
+void AHBCharacterPlayer::MulticastRPCApplyHitFlash_Implementation(float Duration)
+{
+	ApplyHitFlash();
 }
 
 void AHBCharacterPlayer::InteractionTraceTick()
@@ -770,7 +800,7 @@ void AHBCharacterPlayer::AttackHitConfirm(AActor* HitActor)
 }
 
 void AHBCharacterPlayer::DrawDebugAttackRange(const FColor& DrawColor, FVector TraceStart, FVector TraceEnd,
-	FVector Forward)
+                                              FVector Forward)
 {
 #if ENABLE_DRAW_DEBUG
 
@@ -780,7 +810,7 @@ void AHBCharacterPlayer::DrawDebugAttackRange(const FColor& DrawColor, FVector T
 	float CapsuleHalfHeight = AttackRange * 0.5f;
 
 	DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius,
-		FRotationMatrix::MakeFromZ(Forward).ToQuat(), DrawColor, false, 5.0f);
+	                 FRotationMatrix::MakeFromZ(Forward).ToQuat(), DrawColor, false, 5.0f);
 
 #endif
 }
@@ -811,7 +841,7 @@ void AHBCharacterPlayer::ServerRPCNotifyHit_Implementation(const FHitResult& Hit
 
 		// �浹 �� Notify �̴� ����� �÷��� Green �� �־ ������� ��
 		DrawDebugAttackRange(FColor::Green, HitResult.TraceStart, HitResult.TraceEnd,
-			HitActor->GetActorForwardVector());
+		                     HitActor->GetActorForwardVector());
 	}
 }
 
@@ -827,15 +857,15 @@ bool AHBCharacterPlayer::ServerRPCNotifyHit_Validate(const FHitResult& HitResult
 }
 
 void AHBCharacterPlayer::ServerRPCNotifyMiss_Implementation(FVector_NetQuantize TraceStart,
-	FVector_NetQuantize TraceEnd,
-	FVector_NetQuantizeNormal TraceDir, float HitCheckTime)
+                                                            FVector_NetQuantize TraceEnd,
+                                                            FVector_NetQuantizeNormal TraceDir, float HitCheckTime)
 {
 	// �浹 ���� �� ���� ���� ����� �׸���
 	DrawDebugAttackRange(FColor::Red, TraceStart, TraceEnd, TraceDir);
 }
 
 bool AHBCharacterPlayer::ServerRPCNotifyMiss_Validate(FVector_NetQuantize TraceStart, FVector_NetQuantize TraceEnd,
-	FVector_NetQuantizeNormal TraceDir, float HitCheckTime)
+                                                      FVector_NetQuantizeNormal TraceDir, float HitCheckTime)
 {
 	// ������ ���� ���� �ð��� 0 (ó�� ����)
 	if (LastAttackStartTime == 0.f)
@@ -865,7 +895,8 @@ void AHBCharacterPlayer::PlayAttackAnimation()
 	}
 }
 
-void AHBCharacterPlayer::ClientRPCPlayDance_Implementation(AHBCharacterPlayer* CharacterToPlay, int32 MontageIndex, float StartTime)
+void AHBCharacterPlayer::ClientRPCPlayDance_Implementation(AHBCharacterPlayer* CharacterToPlay, int32 MontageIndex,
+                                                           float StartTime)
 {
 	// 서버가 클라이언트에게 춤 재생을 지시할 때 클라이언트에서 실행됩니다.
 	// attack 흐름을 참고하여 몽타주 유효성 검사 후 재생합니다.
@@ -883,13 +914,13 @@ void AHBCharacterPlayer::ClientRPCPlayDance_Implementation(AHBCharacterPlayer* C
 	// 메시에 연결된 AnimInstance에서 몽타주 재생
 	if (CharacterToPlay)
 	{
-	//	// 필요 시 기존 몽타주를 중단 (공격과 동일한 처리 방식)
-	//	AnimInstance->StopAllMontages(0.f);
+		//	// 필요 시 기존 몽타주를 중단 (공격과 동일한 처리 방식)
+		//	AnimInstance->StopAllMontages(0.f);
 
-	//	// 1인칭에서는 춤 애니메이션을 재생하지 않도록 기존 설계에 맞춰
-	//	// Mesh(3인칭)만 재생. StartTime을 사용해 서버와의 싱크 보정.
-	//	AnimInstance->Montage_Play(DanceMontages[MontageIndex], 1.f, EMontagePlayReturnType::MontageLength, StartTime);
-	//
+		//	// 1인칭에서는 춤 애니메이션을 재생하지 않도록 기존 설계에 맞춰
+		//	// Mesh(3인칭)만 재생. StartTime을 사용해 서버와의 싱크 보정.
+		//	AnimInstance->Montage_Play(DanceMontages[MontageIndex], 1.f, EMontagePlayReturnType::MontageLength, StartTime);
+		//
 		CharacterToPlay->PlayDanceAnimation(MontageIndex);
 	}
 	else
@@ -955,7 +986,6 @@ void AHBCharacterPlayer::ServerRPCDance_Implementation(int32 MontageIndex, float
 			}
 		}
 	}
-
 }
 
 void AHBCharacterPlayer::PlayDanceAnimation(int32 MontageIndex)
@@ -997,9 +1027,9 @@ void AHBCharacterPlayer::PlayDanceAnimation(int32 MontageIndex)
 	GetWorldTimerManager().SetTimer(
 		RestoreHandle,
 		FTimerDelegate::CreateLambda([this]()
-			{
-				SetWeaponVisibleForDance(true);
-			}),
+		{
+			SetWeaponVisibleForDance(true);
+		}),
 		MontageLength,
 		false
 	);
@@ -1040,7 +1070,7 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 
 			GameState->OnGamePhaseChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdatePhase);
 			GameState->OnRemainingTimeChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateRemainingTime);
-			GameState->OnDateChanged.AddUObject(InHUDWidget,&UHBUserHUDWidget::UpdateDate);
+			GameState->OnDateChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateDate);
 			GameState->OnTopDamagePlayersChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateCurrentFightInfo);
 			GameState->OnTargetVoteNumChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateVoteNum);
 			GameState->OnGameEndChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateGameEnd);
@@ -1270,8 +1300,8 @@ void AHBCharacterPlayer::ExitHouse()
 	StopStaminaRecovery();
 
 	UE_LOG(LogTemp, Warning,
-		TEXT("[NightFlow] ExitHouse | Stamina: %d | ExitedThisNight: true"),
-		Stamina);
+	       TEXT("[NightFlow] ExitHouse | Stamina: %d | ExitedThisNight: true"),
+	       Stamina);
 }
 
 void AHBCharacterPlayer::StartStaminaRecovery()
@@ -1329,8 +1359,8 @@ void AHBCharacterPlayer::RecoverStaminaTick()
 	Stamina = FMath::Min(Stamina + StaminaRecoverAmount, MaxStamina);
 
 	UE_LOG(LogTemp, Log,
-		TEXT("[NightFlow] Recover %d -> %d"),
-		OldStamina, Stamina);
+	       TEXT("[NightFlow] Recover %d -> %d"),
+	       OldStamina, Stamina);
 
 	// �ִ�ġ�� ȸ�� ����
 	if (Stamina >= MaxStamina)
@@ -1354,8 +1384,8 @@ void AHBCharacterPlayer::ResetNightState()
 	StopStaminaRecovery();
 
 	UE_LOG(LogTemp, Log,
-		TEXT("[NightFlow] ResetNightState | Stamina: %d | PrevExited: %s"),
-		Stamina, bExitedPreviousNight ? TEXT("true") : TEXT("false"));
+	       TEXT("[NightFlow] ResetNightState | Stamina: %d | PrevExited: %s"),
+	       Stamina, bExitedPreviousNight ? TEXT("true") : TEXT("false"));
 }
 
 void AHBCharacterPlayer::ProcessNightEnd()
@@ -1370,8 +1400,8 @@ void AHBCharacterPlayer::ProcessNightEnd()
 		const int32 Old = Stamina;
 		Stamina = FMath::Min(Stamina + 1, MaxStamina);
 		UE_LOG(LogTemp, Log,
-			TEXT("[NightFlow] ProcessNightEnd: Recovered %d -> %d (PrevExited true, ThisNight no exit)"),
-			Old, Stamina);
+		       TEXT("[NightFlow] ProcessNightEnd: Recovered %d -> %d (PrevExited true, ThisNight no exit)"),
+		       Old, Stamina);
 	}
 
 	// ���� ����Ŭ�� ���� ���� �� �÷��� ���� (���� bExitedPreviousNight�� ��� ���� ���� ���� ���η� ����)
@@ -1395,13 +1425,14 @@ void AHBCharacterPlayer::Dance()
 		do
 		{
 			Index = FMath::RandRange(0, DanceMontages.Num() - 1);
-		} while (Index == LastDanceIndex);
+		}
+		while (Index == LastDanceIndex);
 	}
 
 	LastDanceIndex = Index;
 
 	// 로컬 즉시 재생
-	if(!HasAuthority())
+	if (!HasAuthority())
 	{
 		UE_LOG(LogTemp, Log, TEXT("Dance: Playing dance montage index %d locally"), Index);
 		PlayDanceAnimation(Index);
@@ -1415,5 +1446,3 @@ void AHBCharacterPlayer::Dance()
 	// 서버에 알림
 	ServerRPCDance(Index, StartTime);
 }
-
-

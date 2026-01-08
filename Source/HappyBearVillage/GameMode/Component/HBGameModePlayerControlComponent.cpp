@@ -231,38 +231,39 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 	Algo::RandomShuffle(MafiaPool);
 	Algo::RandomShuffle(CitizenPool);
 
-	// 마피아와 시민 직업 풀을 이용해서 직업 부여
-	for (int i = 0; i < InPlayerNum; ++i)
-	{
-		if (i < MafiaNum)
-		{
-			PlayerJobs.Add(EJobType::ASSASSIN);
-		}
-		else
-		{
-			if (i % 2 == 0)
-			{
-				PlayerJobs.Add(EJobType::ARMY);
-			}
-			else
-			{
-				PlayerJobs.Add(EJobType::POLICE);
-			}
-		}
-	}
-
+	// 디버깅용 직업 설정
 	// 마피아와 시민 직업 풀을 이용해서 직업 부여
 	// for (int i = 0; i < InPlayerNum; ++i)
 	// {
 	// 	if (i < MafiaNum)
 	// 	{
-	// 		PlayerJobs.Add(MafiaPool.Pop());
+	// 		PlayerJobs.Add(EJobType::ASSASSIN);
 	// 	}
 	// 	else
 	// 	{
-	// 		PlayerJobs.Add(CitizenPool.Pop());
+	// 		if (i % 2 == 0)
+	// 		{
+	// 			PlayerJobs.Add(EJobType::ARMY);
+	// 		}
+	// 		else
+	// 		{
+	// 			PlayerJobs.Add(EJobType::POLICE);
+	// 		}
 	// 	}
 	// }
+
+	// 마피아와 시민 직업 풀을 이용해서 직업 부여
+	for (int i = 0; i < InPlayerNum; ++i)
+	{
+		if (i < MafiaNum)
+		{
+			PlayerJobs.Add(MafiaPool.Pop());
+		}
+		else
+		{
+			PlayerJobs.Add(CitizenPool.Pop());
+		}
+	}
 	
 	InitPlayerNum(InPlayerNum);
 }
