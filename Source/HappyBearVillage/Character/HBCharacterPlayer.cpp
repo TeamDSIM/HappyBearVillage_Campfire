@@ -381,7 +381,7 @@ void AHBCharacterPlayer::Attack()
 					{
 						bCanAttack = true;
 					}
-				), AttackTime, false, -1.f
+				), AttackTime / AttackPlayRate, false, -1.f
 			);
 
 			// Ŭ���̾�Ʈ�� �ִϸ��̼� ���
@@ -868,7 +868,7 @@ void AHBCharacterPlayer::PlayAttackAnimation()
 	if (AnimInstance)
 	{
 		AnimInstance->StopAllMontages(0.f);
-		AnimInstance->Montage_Play(AttackMontage);
+		AnimInstance->Montage_Play(AttackMontage, AttackPlayRate);
 	}
 
 	// @Todo: 1��Ī ���� ��Ÿ�� ���
@@ -876,7 +876,7 @@ void AHBCharacterPlayer::PlayAttackAnimation()
 	if (FPSAnimInstance)
 	{
 		FPSAnimInstance->StopAllMontages(0.f);
-		FPSAnimInstance->Montage_Play(AttackMontage);
+		FPSAnimInstance->Montage_Play(AttackMontage, AttackPlayRate);
 	}
 }
 
@@ -1156,7 +1156,7 @@ void AHBCharacterPlayer::ServerRPCAttack_Implementation(float AttackStartTime)
 	AttackTimeDifference = GetWorld()->GetTimeSeconds() - AttackStartTime;
 
 	// �ش� �ð��� 0�ʿ��� ���� ���� �ִϸ��̼� ���̺��� ��¦ ª�� �ð����� ���� ���� (Clamp)
-	AttackTimeDifference = FMath::Clamp(AttackTimeDifference, 0.f, AttackTime - 0.1f);
+	AttackTimeDifference = FMath::Clamp(AttackTimeDifference, 0.f, AttackTime / AttackPlayRate - 0.1f);
 
 	// ���� ������ �ٽ� ���� ���� ���� �������ִ� Ÿ�̸� ����
 	FTimerHandle Handle;
@@ -1167,7 +1167,7 @@ void AHBCharacterPlayer::ServerRPCAttack_Implementation(float AttackStartTime)
 			{
 				bCanAttack = true;
 			}
-		), AttackTime - AttackTimeDifference, false, -1.f
+		), AttackTime / AttackPlayRate - AttackTimeDifference, false, -1.f
 	);
 
 	// ������ ���� ���� �ð��� �̹� ���� ���� �ð����� ����
@@ -1207,7 +1207,7 @@ bool AHBCharacterPlayer::ServerRPCAttack_Validate(float AttackStartTime)
 
 	// ���� ���� ���� �ð��� ���� ���� ���� �ð��� �ִϸ��̼� ���̺��� ���� true ��ȯ
 	// ª���� ���������� ������ ���� �ϴ°Ŷ� �Ǵ��ؼ� false
-	return (AttackStartTime - LastAttackStartTime) > AttackTime;
+	return (AttackStartTime - LastAttackStartTime) > AttackTime / AttackPlayRate;
 }
 
 /* ================= Night Flow ================= */
