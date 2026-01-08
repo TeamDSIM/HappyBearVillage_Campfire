@@ -9,6 +9,8 @@
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnClickMap, FLinearColor /* Color */, FVector2D /* MarkPosition */);
 
+class UTextBlock;
+
 UCLASS()
 class HAPPYBEARVILLAGE_API UHBMapWidget : public UUserWidget
 {
@@ -37,6 +39,9 @@ protected:
 
 	void SpawnMark(FLinearColor Color, const FVector2D& NormalizedPosition);
 
+	void SetRoleDescText();
+
+
 protected:
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Map")
 	TObjectPtr<class UImage> Map;
@@ -55,4 +60,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Player Color")
 	TObjectPtr<class UListView> PlayerColorInfoList;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> RoleDescText;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "JobInfo")
+	UDataTable* JobInfoTable;
 };

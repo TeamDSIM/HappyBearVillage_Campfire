@@ -3,8 +3,11 @@
 
 #include "Character/Component/Job/HBJobBaseComponent.h"
 
+#include "Character/HBCharacterPlayer.h"
+#include "Components/CapsuleComponent.h"
 #include "GameState/HBMafiaGameState.h"
 #include "Net/UnrealNetwork.h"
+#include "Prop/HBHouse.h"
 
 // Sets default values for this component's properties
 UHBJobBaseComponent::UHBJobBaseComponent()
@@ -62,6 +65,26 @@ TArray<AHBCharacterPlayer*> UHBJobBaseComponent::DetectTargets()
 
 AHBHouse* UHBJobBaseComponent::DetectHouse()
 {
+	// 집 알아오기
+	AHBCharacterPlayer* CharacterPlayer = GetOwner<AHBCharacterPlayer>();
+	if (!CharacterPlayer)
+	{
+		return nullptr;
+	}
+	
+	TArray<AActor*> OverlappingActors;
+	CharacterPlayer->GetCapsuleComponent()->GetOverlappingActors(OverlappingActors, AHBHouse::StaticClass());
+
+	for (AActor* Actor : OverlappingActors)
+	{
+		AHBHouse* House = Cast<AHBHouse>(Actor);
+		if (House)
+		{
+			return  House;
+			break;
+		}
+	}
+	
 	return nullptr;
 }
 

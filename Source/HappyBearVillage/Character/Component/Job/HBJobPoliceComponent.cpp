@@ -38,24 +38,7 @@ void UHBJobPoliceComponent::BindSealEvent()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Police BindSealEvent"));
 	// 집 알아오기
-	AHBCharacterPlayer* CharacterPlayer = GetOwner<AHBCharacterPlayer>();
-	if (!CharacterPlayer)
-	{
-		return;
-	}
-	
-	TArray<AActor*> OverlappingActors;
-	CharacterPlayer->GetCapsuleComponent()->GetOverlappingActors(OverlappingActors, AHBHouse::StaticClass());
-
-	for (AActor* Actor : OverlappingActors)
-	{
-		AHBHouse* House = Cast<AHBHouse>(Actor);
-		if (House)
-		{
-			HBHouse = House;
-			break;
-		}
-	}
+	HBHouse = DetectHouse();
 		
 	// 바인딩
 	// 이미 집에있는사람 받아서 Seal 처리
@@ -96,8 +79,11 @@ void UHBJobPoliceComponent::SealPlayer(AActor* InActor)
 		}
 
 		// 능력 사용 불가
-		Player->GetJobComponent()->SetIsActionActive(false);
-		Player->GetJobComponent()->OnRep_IsActionActive();
+		if (Player->GetJobComponent())
+		{
+			Player->GetJobComponent()->SetIsActionActive(false);
+			Player->GetJobComponent()->OnRep_IsActionActive();
+		}
 
 		UE_LOG(LogTemp, Warning, TEXT("SealPlayer"));
 		
@@ -123,8 +109,11 @@ void UHBJobPoliceComponent::UnsealPlayer(AActor* InActor)
 		}
 
 		// 능력 사용 가능
-		Player->GetJobComponent()->SetIsActionActive(true);
-		Player->GetJobComponent()->OnRep_IsActionActive();
+		if (Player->GetJobComponent())
+		{
+			Player->GetJobComponent()->SetIsActionActive(true);
+			Player->GetJobComponent()->OnRep_IsActionActive();
+		}
 		
 		UE_LOG(LogTemp, Warning, TEXT("UnSeal Player"));
 		
