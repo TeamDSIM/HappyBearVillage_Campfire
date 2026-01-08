@@ -20,6 +20,8 @@ class HAPPYBEARVILLAGE_API UHBMapGenerator : public UObject
 public:
 	UHBMapGenerator();
 
+	FORCEINLINE class AHBVillage* GetVillage() const { return VillageActor; }
+
 	void GenerateVillage(FHBMapData InMapData, UWorld* InWorld);
 	void GenerateField(FHBMapData InMapData, UWorld* InWorld);
 	void GenerateHouse(FHBMapData InMapData, UWorld* InWorld);
@@ -39,11 +41,11 @@ protected:
 	TArray<TSubclassOf<AActor>> HouseClasses;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")
-	TArray<TObjectPtr<AActor>> FieldActors;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")
 	TArray<TObjectPtr<AActor>> HouseActors;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")
 	float FieldElementSize = 400.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Map")
+	TObjectPtr<class AHBVillage> VillageActor;
 };

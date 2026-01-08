@@ -330,6 +330,9 @@ FHBMapData UHBMapDataGenerator::GenerateHouseData(int32 HouseCount)
 				}
 
 				Nodes[TargetNode.Row][TargetNode.Col].Type = 'H';
+
+				++AreaIndex;
+				if (AreaIndex == CandidateAreas.Num()) AreaIndex = 0;
 			}
 		}
 		while (!IsValid);
