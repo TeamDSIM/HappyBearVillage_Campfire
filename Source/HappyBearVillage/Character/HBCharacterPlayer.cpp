@@ -527,7 +527,12 @@ void AHBCharacterPlayer::ResetBaseColor()
 		// �����϶��� ���� ���� ���� ����
 		if (HasAuthority())
 		{
-			PlayerColor = FLinearColor::White;
+			AHBPlayerState* HBPlayerState = GetController()->GetPlayerState<AHBPlayerState>();
+			if (HBPlayerState)
+			{
+				HBPlayerState->SetPlayerColor(FLinearColor::Gray);
+			}
+			//PlayerColor = FLinearColor::White;
 		}
 
 		// CharacterBaseColor ������ RandomColor ���� �ο�
