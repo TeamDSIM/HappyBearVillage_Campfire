@@ -283,7 +283,7 @@ void AHBVillageGameMode::CheckStartGame()
 
 				if (ConnectedPlayerCounts == CurrentPlayers)
 				{
-					//StartGame();
+					StartGame();
 				}
 			}
 		}
@@ -315,7 +315,7 @@ void AHBVillageGameMode::AddPossessedPlayerCounts()
 
 				if (PossessedPlayerCounts == CurrentPlayers)
 				{
-					StartGame();
+					// StartGame();
 				}
 			}
 		}
