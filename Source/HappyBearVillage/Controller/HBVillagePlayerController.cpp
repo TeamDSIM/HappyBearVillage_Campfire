@@ -46,10 +46,6 @@ void AHBVillagePlayerController::BeginPlay()
 				Subsystem->AddMappingContext(PlayerIMC, 0);
 		}
 	}
-
-	InGameHUDComponent->ActivateHUD(this);
-	MinimapWidgetComponent->CreateMinimapWidget(this);
-	MapWidgetComponent->CreateMapWidget(this);
 		
 	FInputModeGameOnly InputMode;
 	SetInputMode(InputMode);
@@ -90,11 +86,14 @@ void AHBVillagePlayerController::OnPossess(APawn* InPawn)
 			GM->AddPossessedPlayerCounts();			
 		}
 	}
-	
 	else
 	{
 		ServerRPCPawnPossessed();
 	}
+
+	InGameHUDComponent->ActivateHUD(this);
+	MinimapWidgetComponent->CreateMinimapWidget(this);
+	MapWidgetComponent->CreateMapWidget(this);
 }
 
 void AHBVillagePlayerController::ServerRPCPawnPossessed_Implementation()

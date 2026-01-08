@@ -42,9 +42,6 @@ protected:
 
 	void SpawnMark(FLinearColor Color, const FVector2D& NormalizedPosition);
 
-	
-
-
 protected:
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Map")
 	TObjectPtr<class UImage> Map;

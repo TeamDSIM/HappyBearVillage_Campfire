@@ -4,6 +4,8 @@
 #include "HBMapWidgetComponent.h"
 
 #include "HappyBearVillage.h"
+#include "Character/HBCharacterPlayer.h"
+#include "Character/Stat/HBPlayerStatComponent.h"
 #include "GameState/HBMafiaGameState.h"
 #include "Subsystem/HBVillageGenerationWorldSubsystem.h"
 #include "UI/Map/HBMapWidget.h"
@@ -43,14 +45,15 @@ void UHBMapWidgetComponent::CreateMapWidget(APlayerController* InPlayerControlle
 	HBGameState->OnPlayerStateArrayChanged.AddUObject(MapWidget, &UHBMapWidget::RefreshPlayerColorList);
 	HBGameState->OnGamePhaseChanged.AddUObject(this, &UHBMapWidgetComponent::SetSyncStateByPhase);
 
-	
+	AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(InPlayerController->GetPawn());
+	UHBPlayerStatComponent* Stat = Character->GetStat();
+	Stat->OnPlayerJobChanged.AddUObject(MapWidget, &UHBMapWidget::SetRoleDescText);
 }
 
 void UHBMapWidgetComponent::ShowMapWidget()
 {
 	if (!IsMapValid()) return;
 	
-	//MapWidget->SetVisibility(ESlateVisibility::Visible);
 	MapWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	bIsMapVisible = true;
 	SetComponentTickEnabled(true);
