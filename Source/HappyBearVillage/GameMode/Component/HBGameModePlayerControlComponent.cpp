@@ -264,7 +264,7 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 			PlayerJobs.Add(CitizenPool.Pop());
 		}
 	}
-	
+
 	InitPlayerNum(InPlayerNum);
 }
 

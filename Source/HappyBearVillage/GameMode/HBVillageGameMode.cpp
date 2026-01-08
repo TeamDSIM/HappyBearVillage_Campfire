@@ -453,9 +453,8 @@ void AHBVillageGameMode::StartNight()
 		return;
 	}
 	SetPhase(EGamePhase::Night, 180.f);
-	//페이드인,아웃 및 밤 색상 설정
 	
-	
+	//모든 플레이어 집에 스폰
 	CharacterRelocationComponent->RelocateCharactersToHouse(HBGameState);
 
 	// 모든 플레이어 장착 해제
@@ -468,13 +467,13 @@ void AHBVillageGameMode::StartNight()
 		VoteSubsystem->ClearCurrentVoteTarget();
 	}
 
-	////페이드인,아웃 및 밤 색상 설정
+	//페이드인,아웃 및 밤 색상 설정
 	HBGameState->OnRep_GamePhase();
 
 	// Night 시작 시 플레이어 Night 상태 초기화
 	for (APlayerState* PS : HBGameState->PlayerArray)
 	{
-		// 플레이어 직업 컴포넌트 저녁 초기화 실행
+		// 플레이어 직업 컴포넌트 저녁 초기화 실행 (구조상 가장 마지막에 실행해야 함)
 		AController* PlayerController = PS->GetPlayerController();
 		if (PlayerController)
 		{

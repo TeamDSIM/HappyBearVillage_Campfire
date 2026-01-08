@@ -9,6 +9,8 @@
 #include "Character/Component/Job/HBJobAssassinComponent.h"
 #include "Character/Component/Job/HBJobPoliceComponent.h"
 #include "Character/Component/Job/HBJobCelebrityComponent.h"
+#include "Character/Component/Job/HBJobSleepwalkerComponent.h"
+
 #include "Components/CapsuleComponent.h"
 #include "Editor/WidgetCompilerLog.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -119,17 +121,22 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 			{
 				HBCharacterPlayer->AssignJob(UHBJobAssassinComponent::StaticClass());
 			}
-			break;
+				break;
 		case EJobType::FIREBUG:
 		case EJobType::BOMBER:
 		case EJobType::CITIZEN:
 			break;
 		case EJobType::ARMY:
-			{
-				HBCharacterPlayer->AssignJob(UHBJobArmyComponent::StaticClass());
-			}
+		{
+			HBCharacterPlayer->AssignJob(UHBJobArmyComponent::StaticClass());
+		}
 			break;
 		case EJobType::SLEEPWALKER:
+		{
+			HBCharacterPlayer->AssignJob(UHBJobSleepwalkerComponent::StaticClass());
+		}
+			break;
+
 		case EJobType::DETECTOR:
 		case EJobType::SANTA:
 			break;
@@ -141,10 +148,11 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 		case EJobType::INSIDER:
 			break;
 		case EJobType::CELEBRITY:
-			{
+		{
 			HBCharacterPlayer->AssignJob(UHBJobCelebrityComponent::StaticClass());
-			}
+		}
 			break;
+	
 		case EJobType::POOH:
 		case EJobType::TREASUREHUNTER:
 			break;
