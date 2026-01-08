@@ -50,6 +50,7 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	// 입력 섹션 ===========================================
 protected:
@@ -232,6 +233,19 @@ public:
 	void ResetBaseColor();
 
 	void ApplyNightColor(bool bIsNight);
+
+	// 피격 시 색상 변경
+	void ApplyHitFlash();
+	void UpdateHitFlash();
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastRPCApplyHitFlash(float Duration);
+
+private:
+	FTimerHandle HitFlashTimerHandle;
+	
+	float HitFlashDuration = 0.15f;
+	float HitFlashElapsed = 0.f;
 
 
 	// 애님 섹션 ===========================================

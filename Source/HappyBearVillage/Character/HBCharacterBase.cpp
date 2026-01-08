@@ -232,6 +232,8 @@ float AHBCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const
 			HBGameMode->CheckGameEnd();
 		}
 	}
+
+	
 	
 	return DamageAmount;
 }
