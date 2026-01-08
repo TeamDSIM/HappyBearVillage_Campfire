@@ -14,6 +14,7 @@
 #include "JobInfo/HBJobInfo.h"
 #include "Components/TextBlock.h"
 #include "Character/Stat/HBPlayerStatComponent.h"
+#include "Character/HBCharacterPlayer.h"
 
 UHBMapWidget::UHBMapWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -76,7 +77,16 @@ void UHBMapWidget::NativeConstruct()
 	MapDynamicMaterial = UMaterialInstanceDynamic::Create(MapMaterial, this);
 	Map->SetBrushFromMaterial(MapDynamicMaterial);
 
-	SetRoleDescText();
+	    AHBCharacterPlayer* Player = Cast<AHBCharacterPlayer>(GetOwningPlayerPawn());
+    if (!Player) return;
+
+    UHBPlayerStatComponent* Stat = Player->FindComponentByClass<UHBPlayerStatComponent>();
+    if (!Stat) return;
+
+    // 예시: Job 변경 이벤트에 바인딩
+    Stat->OnPlayerJobChanged.AddUObject(this, &UHBMapWidget::SetRoleDescText);
+
+	//SetRoleDescText();
 }
 
 FReply UHBMapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -137,21 +147,52 @@ void UHBMapWidget::SpawnMark(FLinearColor Color, const FVector2D& NormalizedPosi
 	}
 }
 
-void UHBMapWidget::SetRoleDescText()
+void UHBMapWidget::SetRoleDescText(EJobType NewJob)
 {
+	UE_LOG(LogTemp, Log, TEXT("SetRoleDescText called"));
 
-	FName FindingJobName = TEXT("ASSASIN");//테스트용으로 하나 지정
-	
-	//FHBCharacterRole CharacterRole=
+	//EJobType::ASSASIN 같은 형식으로 받아오기 때문에 문자열 보정 해줘야함
+	const FString JobStr = UEnum::GetValueAsString(NewJob);
+	const int32 Pos = JobStr.Find(TEXT("::"));
+	const FString JobName = (Pos != INDEX_NONE) ? *JobStr.Mid(Pos + 2) : *JobStr;
+	const FName FindingJobName = FName(JobName);
+	//const FName FindingJobName = (Pos != INDEX_NONE) ? FName(*JobStr.Mid(Pos + 2)) : FName(*JobStr);
 
-	//FName FindingJobName=
 
 	//RowName(첫번째줄)이 JobName인 ROW 찾기, 뒤에 UI는 디버그용
-	FHBJobInfo* FingingRow = JobInfoTable->FindRow<FHBJobInfo>(FindingJobName, TEXT("UI"));
+	FHBJobInfo* FindingRow = JobInfoTable->FindRow<FHBJobInfo>(FindingJobName, TEXT("UI"));
+	if (!FindingRow)
+	{
+		UE_LOG(LogTemp, Log, TEXT("FindingRow is NULLPTR"));
+		UE_LOG(LogTemp, Log,
+			TEXT("JobStr = %s, FindingJobName = %s"), *JobStr, *FindingJobName.ToString());
+
+		return;
+	}
 
 	//패시브 스킬
-	FString JobInfo = FingingRow->JobInfo1;
+	FString Job = FindingRow->JobNameDisplay;
+	FString JobPassiveInfo = FindingRow->JobInfo1;
+	FString JobActiveInfo = FindingRow->JobInfo2;
 
-	RoleDescText->SetText(FText::FromString(JobInfo));
+	if (!RolePassiveDescText||!RoleActiveDescText)
+	{
+		UE_LOG(LogTemp, Log, TEXT("RoleDescText is NULLPTR"));
+		return;
+	}
+
+	if (JobPassiveInfo == "")
+	{
+		JobPassiveInfo = TEXT("이 직업은 패시브 기술을 보유하고 있지 않습니다.");
+	}
+
+	if (JobActiveInfo == "")
+	{
+		JobActiveInfo = TEXT("이 직업은 액티브 기술을 보유하고 있지 않습니다.");
+	}
+
+	RoleText->SetText(FText::FromString(Job));
+	RolePassiveDescText->SetText(FText::FromString(JobPassiveInfo));
+	RoleActiveDescText->SetText(FText::FromString(JobActiveInfo));
 
 }

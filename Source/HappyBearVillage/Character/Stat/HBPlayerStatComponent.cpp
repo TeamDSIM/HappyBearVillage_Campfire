@@ -153,7 +153,7 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 		}
 			break;
 	
-		case EJobType::POOH:
+		case EJobType::HONEYBEAR:
 		case EJobType::TREASUREHUNTER:
 			break;
 		default:
