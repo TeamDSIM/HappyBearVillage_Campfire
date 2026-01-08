@@ -14,6 +14,7 @@
 #include "JobInfo/HBJobInfo.h"
 #include "Components/TextBlock.h"
 #include "Character/Stat/HBPlayerStatComponent.h"
+#include "Character/HBCharacterPlayer.h"
 
 UHBMapWidget::UHBMapWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -140,17 +141,41 @@ void UHBMapWidget::SpawnMark(FLinearColor Color, const FVector2D& NormalizedPosi
 void UHBMapWidget::SetRoleDescText()
 {
 
-	FName FindingJobName = TEXT("ASSASIN");//테스트용으로 하나 지정
+	//FName FindingJobName = TEXT("ASSASIN");//테스트용으로 하나 지정
 	
-	//FHBCharacterRole CharacterRole=
+	AHBCharacterPlayer* HBCharacterPlayer = Cast<AHBCharacterPlayer>(GetOwningPlayerPawn());
 
-	//FName FindingJobName=
+	UHBPlayerStatComponent* StatComponent =
+		HBCharacterPlayer->FindComponentByClass<UHBPlayerStatComponent>();
+
+	FHBCharacterRole RoleData = StatComponent->GetCharacterRole();
+
+
+	//EJobType::ASSASIN 같은 형식으로 받아오기 때문에 문자열 보정 해줘야함
+	const FString JobStr = UEnum::GetValueAsString(RoleData.Job);
+	const int32 Pos = JobStr.Find(TEXT("::"));
+	const FName FindingJobName =
+		(Pos != INDEX_NONE) ? FName(*JobStr.Mid(Pos + 2)) : FName(*JobStr);
 
 	//RowName(첫번째줄)이 JobName인 ROW 찾기, 뒤에 UI는 디버그용
 	FHBJobInfo* FingingRow = JobInfoTable->FindRow<FHBJobInfo>(FindingJobName, TEXT("UI"));
+	if (!FingingRow)
+	{
+		UE_LOG(LogTemp, Log, TEXT("FindingRow is NULLPTR"));
+		UE_LOG(LogTemp, Log,
+			TEXT("JobStr = %s, FindingJobName = %s"), *JobStr, *FindingJobName.ToString());
+
+		return;
+	}
 
 	//패시브 스킬
 	FString JobInfo = FingingRow->JobInfo1;
+
+	if (!RoleDescText)
+	{
+		UE_LOG(LogTemp, Log, TEXT("RoleDescText is NULLPTR"));
+		return;
+	}
 
 	RoleDescText->SetText(FText::FromString(JobInfo));
 
