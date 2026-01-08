@@ -20,7 +20,7 @@ struct FHBCharacterStat : public FTableRowBase
 public:
 	FHBCharacterStat()
 		: AttackDamage(1.f), AttackRange(40.f), AttackRadius(50.f),
-		  AttackSpeed(1.f), MovementSpeed(600.f)
+		  AttackSpeed(1.f), MovementSpeed(800.f)
 	{}
 
 	// 공격 데미지 (투표 시 데미지니까 일반적으로는 1)

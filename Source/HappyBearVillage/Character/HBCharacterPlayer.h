@@ -309,6 +309,7 @@ protected:
 	void ClientRPCPlayAnimation(AHBCharacterPlayer* CharacterToPlay);
 
 	float AttackTime = 2.2667f;
+	float AttackPlayRate = 1.5f;
 	float LastAttackStartTime = 0.f;
 	float AttackTimeDifference = 0.f;
 	float AcceptCheckDistance = 300.f;
