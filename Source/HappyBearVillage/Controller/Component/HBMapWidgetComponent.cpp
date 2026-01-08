@@ -47,7 +47,10 @@ void UHBMapWidgetComponent::CreateMapWidget(APlayerController* InPlayerControlle
 
 	AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(InPlayerController->GetPawn());
 	UHBPlayerStatComponent* Stat = Character->GetStat();
-	Stat->OnPlayerJobChanged.AddUObject(MapWidget, &UHBMapWidget::SetRoleDescText);
+	if (Stat)
+	{
+		Stat->OnPlayerJobChanged.AddUObject(MapWidget, &UHBMapWidget::SetRoleDescText);	
+	}
 }
 
 void UHBMapWidgetComponent::ShowMapWidget()

@@ -72,6 +72,10 @@ void AHBVillagePlayerController::SetupInputComponent()
 			EIC->BindAction(ObservePrevInputAction, ETriggerEvent::Started, this, &AHBVillagePlayerController::ObservePrev);
 		}
 	}
+
+	InGameHUDComponent->ActivateHUD(this);
+	MinimapWidgetComponent->CreateMinimapWidget(this);
+	MapWidgetComponent->CreateMapWidget(this);
 }
 
 void AHBVillagePlayerController::OnPossess(APawn* InPawn)
@@ -90,10 +94,6 @@ void AHBVillagePlayerController::OnPossess(APawn* InPawn)
 	{
 		ServerRPCPawnPossessed();
 	}
-
-	InGameHUDComponent->ActivateHUD(this);
-	MinimapWidgetComponent->CreateMinimapWidget(this);
-	MapWidgetComponent->CreateMapWidget(this);
 }
 
 void AHBVillagePlayerController::ServerRPCPawnPossessed_Implementation()
