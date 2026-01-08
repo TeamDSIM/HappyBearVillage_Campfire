@@ -19,7 +19,7 @@ void UHBCharacterRelocationComponent::RelocateCharactersToHouse(AHBMafiaGameStat
 	if (!InGameState) return;
 	
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
-	if (!VillageGenerationSystem) return;
+	if (!VillageGenerationSystem || !VillageGenerationSystem->IsGenerated()) return;
 
 	const TMap<FLinearColor, FVector>& HouseLocationsByColor = VillageGenerationSystem->GetMapData().HouseLocationsByColor;
 	

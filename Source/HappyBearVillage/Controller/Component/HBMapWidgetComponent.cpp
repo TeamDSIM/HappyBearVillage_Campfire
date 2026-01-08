@@ -145,6 +145,8 @@ void UHBMapWidgetComponent::SetPlayerPosition()
 	if (!Pawn) return;
 	
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
+	if (!VillageGenerationSystem || !VillageGenerationSystem->IsGenerated()) return;
+	
 	FIntVector2 Resolution = VillageGenerationSystem->GetMapData().Resolution;
 	int32 AreaScale = VillageGenerationSystem->GetMapData().AreaScale;
 	
