@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ProceduralGeneration/MapData/HBMapData.h"
 #include "HBVillage.generated.h"
 
 struct FHBMapData;
@@ -15,11 +16,18 @@ class HAPPYBEARVILLAGE_API AHBVillage : public AActor
 	
 public:
 	AHBVillage();
+
+	void SetMapData(const FHBMapData& InMapData);
 	void ApplyVillageLocation(const FHBMapData& InMapData);
 	void ApplyVillageSize(const FHBMapData& InMapData);
 	void SpawnBlockingVolumes(const FHBMapData& InMapData);
+
+	TArray<FVector> GetAvailableBlockLocations();
 	
 private:
+	UPROPERTY(VisibleAnywhere, Category = "MapData", meta = (AllowPrivateAccess = "true"))
+	FHBMapData MapData;
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UArrowComponent> Arrow;
 	

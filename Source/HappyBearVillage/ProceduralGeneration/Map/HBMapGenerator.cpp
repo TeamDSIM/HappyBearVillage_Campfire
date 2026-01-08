@@ -46,6 +46,8 @@ void UHBMapGenerator::GenerateVillage(FHBMapData InMapData, UWorld* InWorld)
 		PCGActor->SetPCGBounds();
 		PCGActor->Generate();
 	}
+
+	VillageActor->SetMapData(InMapData);
 }
 
 void UHBMapGenerator::GenerateField(FHBMapData InMapData, UWorld* InWorld)

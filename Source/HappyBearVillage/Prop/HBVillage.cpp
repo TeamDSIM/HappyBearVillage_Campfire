@@ -42,6 +42,11 @@ AHBVillage::AHBVillage()
 	}
 }
 
+void AHBVillage::SetMapData(const FHBMapData& InMapData)
+{
+	MapData = InMapData;
+}
+
 void AHBVillage::ApplyVillageLocation(const FHBMapData& InMapData)
 {
 	const FVector FirstCenter = FVector(0, 0, 0) * InMapData.AreaScale * 100;
@@ -94,4 +99,23 @@ void AHBVillage::SpawnBlockingVolumes(const FHBMapData& InMapData)
 			}
 		}
 	}
+}
+
+TArray<FVector> AHBVillage::GetAvailableBlockLocations()
+{
+	TArray<FVector> AvailableLocations;
+
+	for (int32 Row = 0; Row < MapData.Resolution.Y; ++Row)
+	{
+		for (int32 Col = 0; Col < MapData.Resolution.X; ++Col)
+		{
+			TCHAR TileType = MapData.Map[Row][Col];
+			if (TileType == 'A' || TileType == 'R')
+			{
+				AvailableLocations.Add(FVector(Col * MapData.AreaScale * 100.f, Row * MapData.AreaScale * 100.f, 0));
+			}
+		}
+	}
+
+	return AvailableLocations;
 }

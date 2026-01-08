@@ -20,6 +20,8 @@ class HAPPYBEARVILLAGE_API UHBMapGenerator : public UObject
 public:
 	UHBMapGenerator();
 
+	FORCEINLINE class AHBVillage* GetVillage() const { return VillageActor; }
+
 	void GenerateVillage(FHBMapData InMapData, UWorld* InWorld);
 	void GenerateField(FHBMapData InMapData, UWorld* InWorld);
 	void GenerateHouse(FHBMapData InMapData, UWorld* InWorld);
