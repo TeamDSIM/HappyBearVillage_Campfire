@@ -73,13 +73,6 @@ void AHBMafiaGameState::OnRep_TopDamagePlayers()
 void AHBMafiaGameState::OnRep_GamePhase()
 {
 	OnGamePhaseChanged.Broadcast(CurrentPhase);
-
-	const bool bIsNight = (CurrentPhase == EGamePhase::Night);
-	for (TActorIterator<AHBCharacterPlayer> It(GetWorld()); It; ++It)
-	{
-		It->ApplyNightColor(bIsNight);
-
-	}
 	
 	if (CurrentPhase == EGamePhase::VoteCheck)
 	{

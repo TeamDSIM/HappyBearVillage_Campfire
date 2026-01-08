@@ -307,21 +307,20 @@ void AHBVillageGameMode::CheckStartGame()
 // 나중에 각 페이즈별 시간도 데이터로 따로 빼서 변수로 넣어주기
 void AHBVillageGameMode::StartDay()
 {
-	SetPhase(EGamePhase::Day, 3.f);
-
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
-	if (HBGameState)
-	{
-		HBGameState->Date += 1;
-		HBGameState->OnRep_GamePhase();
-		HBGameState->OnRep_Date();
-		CharacterRelocationComponent->RelocateCharacterToCouncil(HBGameState);
-	}
-	else
+	if (!HBGameState)
 	{
 		return;
 	}
-
+	
+	SetPhase(EGamePhase::Day, 3.f);
+	HBGameState->OnRep_GamePhase();
+	
+	HBGameState->Date += 1;
+	HBGameState->OnRep_Date();
+	
+	CharacterRelocationComponent->RelocateCharacterToCouncil(HBGameState);
+	
 	// Day 시작 시 플레이어 Day 상태 초기화
 	for (APlayerState* PS : HBGameState->PlayerArray)
 	{
@@ -332,6 +331,9 @@ void AHBVillageGameMode::StartDay()
 			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
 			if (Character)
 			{
+				Character->RenderColor = Character->PlayerColor;
+				Character->OnRep_RenderColor();
+				
 				UHBJobBaseComponent* JobComponent = Character->GetJobComponent();
 				if (JobComponent)
 				{
@@ -453,6 +455,7 @@ void AHBVillageGameMode::StartNight()
 		return;
 	}
 	SetPhase(EGamePhase::Night, 180.f);
+	HBGameState->OnRep_GamePhase();
 	
 	//모든 플레이어 집에 스폰
 	CharacterRelocationComponent->RelocateCharactersToHouse(HBGameState);
@@ -466,10 +469,7 @@ void AHBVillageGameMode::StartNight()
 	{
 		VoteSubsystem->ClearCurrentVoteTarget();
 	}
-
-	//페이드인,아웃 및 밤 색상 설정
-	HBGameState->OnRep_GamePhase();
-
+	
 	// Night 시작 시 플레이어 Night 상태 초기화
 	for (APlayerState* PS : HBGameState->PlayerArray)
 	{
@@ -480,6 +480,9 @@ void AHBVillageGameMode::StartNight()
 			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
 			if (Character)
 			{
+				Character->RenderColor = FLinearColor::Black;
+				Character->OnRep_RenderColor();
+				
 				UHBJobBaseComponent* JobComponent = Character->GetJobComponent();
 				if (JobComponent)
 				{

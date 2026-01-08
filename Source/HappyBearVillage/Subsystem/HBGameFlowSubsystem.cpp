@@ -79,7 +79,7 @@ void UHBGameFlowSubsystem::StartGame()
 					}
 				}
 
-				Character->SetRandomBaseColor();
+				Character->SetFPSMeshColor();
 			}
 		}
 	}
