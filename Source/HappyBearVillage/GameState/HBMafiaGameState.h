@@ -22,6 +22,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnTargetVoteNumChanged, int32 /*TargetVoteN
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnTopDamagePlayersChanged, AHBPlayerState*, FDamageRankEntry, int32)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameEndChanged, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnMapMarksChanged, TArray<FHBMapMarkInfo>);
+DECLARE_MULTICAST_DELEGATE(FOnPlayerStateArrayChanged);
 
 // 페이드 인, 페이드 아웃 재생을 위한 델리게이트
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnFadeAnimationPlay, bool)
@@ -88,6 +89,7 @@ public:
 	FOnTargetVoteNumChanged OnTargetVoteNumChanged;
 	FOnGameEndChanged OnGameEndChanged;
 	FOnMapMarksChanged OnMapMarksChanged;
+	FOnPlayerStateArrayChanged OnPlayerStateArrayChanged;
 
 	// 페이드 인, 아웃 용도
 	FOnFadeAnimationPlay OnFadeAnimationPlay;

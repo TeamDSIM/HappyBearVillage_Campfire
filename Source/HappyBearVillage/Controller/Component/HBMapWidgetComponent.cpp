@@ -38,9 +38,9 @@ void UHBMapWidgetComponent::CreateMapWidget(APlayerController* InPlayerControlle
 
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
 	VillageGenerationSystem->OnVillageGenerated.AddUObject(this, &UHBMapWidgetComponent::SetMapTexture);
-	VillageGenerationSystem->OnVillageGenerated.AddUObject(MapWidget, &UHBMapWidget::RefreshPlayerColorList);
 
 	AHBMafiaGameState* HBGameState = Cast<AHBMafiaGameState>(GetWorld()->GetGameState());
+	HBGameState->OnPlayerStateArrayChanged.AddUObject(MapWidget, &UHBMapWidget::RefreshPlayerColorList);
 	HBGameState->OnGamePhaseChanged.AddUObject(this, &UHBMapWidgetComponent::SetSyncStateByPhase);
 }
 
