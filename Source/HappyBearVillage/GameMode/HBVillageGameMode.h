@@ -40,9 +40,7 @@ public:
 		return GameModePlayerControlComponent;
 	}
 
-
 private:
-	virtual void StartPlay() override;
 	virtual void HandleSeamlessTravelPlayer(AController*& C) override;
 
 	// PostLogin 호출 시 스팀 세션 접속 인원과

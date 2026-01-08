@@ -249,19 +249,6 @@ void AHBVillageGameMode::CheckGameEnd()
 	}
 }
 
-void AHBVillageGameMode::StartPlay()
-{
-	Super::StartPlay();
-
-	// PostLogin을 기다려야함
-	// GetWorldTimerManager().SetTimer(
-	// 	TempTimerHandle,
-	// 	this,
-	// 	&AHBVillageGameMode::StartGame, 5.f, false
-	// );
-	//StartGame();
-}
-
 void AHBVillageGameMode::HandleSeamlessTravelPlayer(AController*& C)
 {
 	Super::HandleSeamlessTravelPlayer(C);

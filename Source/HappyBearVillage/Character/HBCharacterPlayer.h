@@ -232,8 +232,6 @@ public:
 	void SetFPSMeshColor();
 	void ResetBaseColor();
 
-	void ApplyNightColor(bool bIsNight);
-
 	void ChangeCharacterMaterialColor(FLinearColor NewColor);
 
 	// 피격 시 색상 변경

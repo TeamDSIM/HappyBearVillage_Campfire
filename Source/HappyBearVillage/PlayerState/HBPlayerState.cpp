@@ -3,6 +3,7 @@
 
 #include "PlayerState/HBPlayerState.h"
 
+#include "Character/HBCharacterPlayer.h"
 #include "Net/UnrealNetwork.h"
 
 void AHBPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -29,6 +30,21 @@ void AHBPlayerState::SyncPlayerColorFromPlayerStat(FLinearColor NewColor)
 	if (HasAuthority())
 	{
 		PlayerColor = NewColor;
+		
+	}
+}
+
+void AHBPlayerState::OnRep_PlayerColor()
+{
+	APlayerController* PC = Cast<APlayerController>(GetOwner());
+	if (PC)
+	{
+		AHBCharacterPlayer* HBCharacterPlayer = Cast<AHBCharacterPlayer>(PC->GetPawn());
+		if (HBCharacterPlayer)
+		{
+			HBCharacterPlayer->PlayerColor = this->PlayerColor;
+			HBCharacterPlayer->OnRep_PlayerColor();
+		}
 	}
 }
 

@@ -25,9 +25,18 @@ public:
 	FORCEINLINE FLinearColor GetPlayerColor() const { return PlayerColor; }
 	FORCEINLINE FString GetUserID() const { return UserID; }
 
+	FORCEINLINE void SetPlayerColor(FLinearColor NewColor)
+	{
+		PlayerColor = NewColor;
+		OnRep_PlayerColor();
+	}
+	void SetUserID(FString NewID);
+
 	void SyncTotalTakenDamagedFromPlayerStat(float NewDamage);
 	void SyncPlayerColorFromPlayerStat(FLinearColor NewColor);
-	void SetUserID(FString NewID);
+
+	UFUNCTION()
+	void OnRep_PlayerColor();
 
 	FOnDamageChanged OnDamageChanged;
 
@@ -35,8 +44,8 @@ protected:
 	UPROPERTY(Replicated)
 	float TotalTakenDamaged = 0;
 
-	UPROPERTY(Replicated)
-	FLinearColor PlayerColor = FColor::White;
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerColor)
+	FLinearColor PlayerColor = FLinearColor::Gray;
 
 	UPROPERTY(Replicated)
 	FString UserID;

@@ -527,7 +527,12 @@ void AHBCharacterPlayer::ResetBaseColor()
 		// �����϶��� ���� ���� ���� ����
 		if (HasAuthority())
 		{
-			PlayerColor = FLinearColor::White;
+			AHBPlayerState* HBPlayerState = GetController()->GetPlayerState<AHBPlayerState>();
+			if (HBPlayerState)
+			{
+				HBPlayerState->SetPlayerColor(FLinearColor::Gray);
+			}
+			//PlayerColor = FLinearColor::White;
 		}
 
 		// CharacterBaseColor ������ RandomColor ���� �ο�
@@ -537,29 +542,6 @@ void AHBCharacterPlayer::ResetBaseColor()
 	if (HandMeshDynamicMaterial)
 	{
 		HandMeshDynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
-	}
-}
-
-void AHBCharacterPlayer::ApplyNightColor(bool bIsNight)
-{
-	// 자기 자신은 제외
-	if (IsLocallyControlled())
-	{
-		return;
-	}
-
-	if (!DynamicMaterial)
-	{
-		return;
-	}
-
-	if (bIsNight)
-	{
-		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), /*FLinearColor::Black*/ RenderColor);
-	}
-	else
-	{
-		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
 	}
 }
 
@@ -1153,24 +1135,6 @@ void AHBCharacterPlayer::ServerRPCStart_Implementation()
 				VillageGameMode->StartGame();
 			}
 		}
-		// UHBGameFlowSubsystem* GameFlowSubsystem = GameInstance->GetSubsystem<UHBGameFlowSubsystem>();
-		// if (GameFlowSubsystem)
-		// {
-		// 	// ������ �������̸�
-		// 	if (GameFlowSubsystem->GetIsGamePlaying())
-		// 	{
-		// 		// ���� ����
-		// 		GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StopGame();
-		// 	}
-		// 	// ������ ���������� ������
-		// 	else
-		// 	{
-		// 		// ���� ����
-		// 		GameInstance->GetSubsystem<UHBGameFlowSubsystem>()->StartGame();
-		// 	}
-		// }
-
-		//OnRep_PlayerColor();
 	}
 }
 
@@ -1187,9 +1151,6 @@ void AHBCharacterPlayer::ServerRPCAttack_Implementation(float AttackStartTime)
 {
 	// ���� �� ������ ���� ���� �÷��׸� false�� ����
 	bCanAttack = false;
-
-	// ���������� OnRep ȣ���� �ȵǴ� ����� ȣ��
-	// �ϴ� �ٲ�� ���� ������ Pass
 
 	// ���� ���� �ð��� ���� ���� �ð��� ���̸� ���� (���� ������ ������)
 	AttackTimeDifference = GetWorld()->GetTimeSeconds() - AttackStartTime;

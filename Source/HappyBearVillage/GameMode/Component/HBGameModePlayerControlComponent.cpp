@@ -55,13 +55,10 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 					PlayerStatComponent->ResetTotalTakenDamage();
 				}
 
-				Character->PlayerColor = PlayerColors[i];
-				Character->OnRep_PlayerColor();
-
 				AHBPlayerState* HBPlayerState = Cast<AHBPlayerState>(Players[i]);
 				if (HBPlayerState)
 				{
-					HBPlayerState->SyncPlayerColorFromPlayerStat(Character->PlayerColor);
+					HBPlayerState->SetPlayerColor(PlayerColors[i]);
 					HBPlayerState->SetUserID(HBPlayerState->GetPlayerName());
 				}
 
