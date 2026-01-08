@@ -11,6 +11,9 @@
 #include "Components/ListView.h"
 #include "GameFramework/GameStateBase.h"
 #include "PlayerState/HBPlayerState.h"
+#include "JobInfo/HBJobInfo.h"
+#include "Components/TextBlock.h"
+#include "Character/Stat/HBPlayerStatComponent.h"
 
 UHBMapWidget::UHBMapWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -72,6 +75,8 @@ void UHBMapWidget::NativeConstruct()
 	UMaterialInstance* MapMaterial = LoadObject<UMaterialInstance>(nullptr, TEXT("/Game/UI/Map/MI_MapMaterial.MI_MapMaterial"));
 	MapDynamicMaterial = UMaterialInstanceDynamic::Create(MapMaterial, this);
 	Map->SetBrushFromMaterial(MapDynamicMaterial);
+
+	SetRoleDescText();
 }
 
 FReply UHBMapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -130,4 +135,23 @@ void UHBMapWidget::SpawnMark(FLinearColor Color, const FVector2D& NormalizedPosi
 
 		MarkSlot->SetPosition(MarkLocalPosition);
 	}
+}
+
+void UHBMapWidget::SetRoleDescText()
+{
+
+	FName FindingJobName = TEXT("ASSASIN");//테스트용으로 하나 지정
+	
+	//FHBCharacterRole CharacterRole=
+
+	//FName FindingJobName=
+
+	//RowName(첫번째줄)이 JobName인 ROW 찾기, 뒤에 UI는 디버그용
+	FHBJobInfo* FingingRow = JobInfoTable->FindRow<FHBJobInfo>(FindingJobName, TEXT("UI"));
+
+	//패시브 스킬
+	FString JobInfo = FingingRow->JobInfo1;
+
+	RoleDescText->SetText(FText::FromString(JobInfo));
+
 }
