@@ -135,6 +135,7 @@ void AHBMafiaGameState::AddPlayerState(APlayerState* PlayerState)
 {
 	Super::AddPlayerState(PlayerState);
 	OnLobbyPlayersChanged.Broadcast();
+	OnPlayerStateArrayChanged.Broadcast();
 }
 
 void AHBMafiaGameState::RemovePlayerState(APlayerState* PlayerState)
