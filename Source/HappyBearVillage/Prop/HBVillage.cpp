@@ -87,7 +87,7 @@ void AHBVillage::SpawnBlockingVolumes(const FHBMapData& InMapData)
 			SpawnTransform.SetRotation(FQuat(FRotator::ZeroRotator));
 			SpawnTransform.SetScale3D(FVector::OneVector * InMapData.AreaScale);
 			
-			if (TileType == ' ')
+			if (TileType == ' ' || TileType == 'F')
 			{
 				AHBBlockingVolume* BlockingVolume = GetWorld()->SpawnActor<AHBBlockingVolume>(AHBBlockingVolume::StaticClass(), SpawnTransform);
 				BlockingVolumes.Add(BlockingVolume);
