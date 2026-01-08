@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "HBMapMarkInfo.h"
 #include "Blueprint/UserWidget.h"
+#include "Character/Stat/HBCharacterRole.h"
 #include "HBMapWidget.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnClickMap, FLinearColor /* Color */, FVector2D /* MarkPosition */);
@@ -39,7 +40,7 @@ protected:
 
 	void SpawnMark(FLinearColor Color, const FVector2D& NormalizedPosition);
 
-	void SetRoleDescText();
+	void SetRoleDescText(EJobType NewJob);
 
 
 protected:

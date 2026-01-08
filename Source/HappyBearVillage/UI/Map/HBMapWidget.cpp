@@ -77,7 +77,16 @@ void UHBMapWidget::NativeConstruct()
 	MapDynamicMaterial = UMaterialInstanceDynamic::Create(MapMaterial, this);
 	Map->SetBrushFromMaterial(MapDynamicMaterial);
 
-	SetRoleDescText();
+	    AHBCharacterPlayer* Player = Cast<AHBCharacterPlayer>(GetOwningPlayerPawn());
+    if (!Player) return;
+
+    UHBPlayerStatComponent* Stat = Player->FindComponentByClass<UHBPlayerStatComponent>();
+    if (!Stat) return;
+
+    // 예시: Job 변경 이벤트에 바인딩
+    Stat->OnPlayerJobChanged.AddUObject(this, &UHBMapWidget::SetRoleDescText);
+
+	//SetRoleDescText();
 }
 
 FReply UHBMapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -138,21 +147,22 @@ void UHBMapWidget::SpawnMark(FLinearColor Color, const FVector2D& NormalizedPosi
 	}
 }
 
-void UHBMapWidget::SetRoleDescText()
+void UHBMapWidget::SetRoleDescText(EJobType NewJob)
 {
+	UE_LOG(LogTemp, Log, TEXT("SetRoleDescText called"));
 
 	//FName FindingJobName = TEXT("ASSASIN");//테스트용으로 하나 지정
 	
-	AHBCharacterPlayer* HBCharacterPlayer = Cast<AHBCharacterPlayer>(GetOwningPlayerPawn());
+	//AHBCharacterPlayer* HBCharacterPlayer = Cast<AHBCharacterPlayer>(GetOwningPlayerPawn());
 
-	UHBPlayerStatComponent* StatComponent =
-		HBCharacterPlayer->FindComponentByClass<UHBPlayerStatComponent>();
+	//UHBPlayerStatComponent* StatComponent =
+	//	HBCharacterPlayer->FindComponentByClass<UHBPlayerStatComponent>();
 
-	FHBCharacterRole RoleData = StatComponent->GetCharacterRole();
+	//FHBCharacterRole RoleData = StatComponent->GetCharacterRole();
 
 
 	//EJobType::ASSASIN 같은 형식으로 받아오기 때문에 문자열 보정 해줘야함
-	const FString JobStr = UEnum::GetValueAsString(RoleData.Job);
+	const FString JobStr = UEnum::GetValueAsString(NewJob);
 	const int32 Pos = JobStr.Find(TEXT("::"));
 	const FName FindingJobName =
 		(Pos != INDEX_NONE) ? FName(*JobStr.Mid(Pos + 2)) : FName(*JobStr);

@@ -41,7 +41,7 @@ enum class EJobType : uint8
 	POLICE UMETA(DisplayName = "Police"),
 	INSIDER UMETA(DisplayName = "Insider"),
 	CELEBRITY UMETA(DisplayName = "Celebrity"),
-	POOH UMETA(DisplayName = "Pooh"),
+	HONEYBEAR UMETA(DisplayName = "Pooh"),
 	TREASUREHUNTER UMETA(DisplayName = "TreasureHunter"),
 
 	END UMETA(DisplayName = "End") // 총 개수
