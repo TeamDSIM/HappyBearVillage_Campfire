@@ -11,8 +11,8 @@ struct FHBJobInfo : public FTableRowBase
 
 public:
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="JobInfo")
-	FString JobName = TEXT("");
+	//UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="JobInfo")
+	//FString JobName = TEXT("");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JobInfo")
 	FString JobNameDisplay = TEXT("");
