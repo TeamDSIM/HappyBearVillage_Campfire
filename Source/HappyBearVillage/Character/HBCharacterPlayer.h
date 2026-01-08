@@ -211,10 +211,10 @@ public:
 	TObjectPtr<class UHBCharacterRagdollComponent> RagdollComponent;
 
 	// 플레이어 색상 섹션 ===================================
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = "Material")
 	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterial;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = "Material")
 	TObjectPtr<UMaterialInstanceDynamic> HandMeshDynamicMaterial;
 
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerColor)
@@ -229,10 +229,12 @@ public:
 	UFUNCTION()
 	void OnRep_RenderColor();
 
-	void SetRandomBaseColor();
+	void SetFPSMeshColor();
 	void ResetBaseColor();
 
 	void ApplyNightColor(bool bIsNight);
+
+	void ChangeCharacterMaterialColor(FLinearColor NewColor);
 
 	// 피격 시 색상 변경
 	void ApplyHitFlash();

@@ -4,6 +4,7 @@
 #include "Character/HBCharacterPlayer.h"
 
 #include "EngineUtils.h"
+#include "HappyBearVillage.h"
 #include "InputMappingContext.h"
 #include "Animation/HBPlayerCharacterAnimInstance.h"
 #include "Component/HBCharacterRagdollComponent.h"
@@ -170,7 +171,7 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	//���� Ż/����
 	MafiaAttackComp = CreateDefaultSubobject<UHBCharacterMafiaAttackComponent>(TEXT("MafiaAttackComp"));
 
-	RenderColor = FLinearColor::Black;
+	RenderColor = FLinearColor::Gray;
 }
 
 void AHBCharacterPlayer::BeginPlay()
@@ -273,6 +274,7 @@ void AHBCharacterPlayer::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AHBCharacterPlayer, PlayerColor)
+	DOREPLIFETIME(AHBCharacterPlayer, RenderColor)
 
 	// Night ���� ������Ƽ�� �����Ͽ� UI ����ȭ
 	DOREPLIFETIME(AHBCharacterPlayer, Stamina);
@@ -471,7 +473,7 @@ void AHBCharacterPlayer::DoJobAction()
 //Marker 색상 동기화
 void AHBCharacterPlayer::OnRep_PlayerColor()
 {
-	SetRandomBaseColor();
+	SetFPSMeshColor();
 
 	AHBVillagePlayerController* HBPlayerController = Cast<AHBVillagePlayerController>(GetController());
 	if (!HBPlayerController) return;
@@ -484,14 +486,13 @@ void AHBCharacterPlayer::OnRep_PlayerColor()
 
 void AHBCharacterPlayer::OnRep_RenderColor()
 {
-	//DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), RenderColor);
-	ApplyNightColor(true);
+	ChangeCharacterMaterialColor(RenderColor);
 }
 
 //랜덤 색깔이 아니라, 색깔 적용 함수
-void AHBCharacterPlayer::SetRandomBaseColor()
+void AHBCharacterPlayer::SetFPSMeshColor()
 {
-	// DynamicMaterial ����
+	// DynamicMaterial 없으면 생성
 	if (!DynamicMaterial && GetMesh())
 	{
 		DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
@@ -500,12 +501,6 @@ void AHBCharacterPlayer::SetRandomBaseColor()
 	if (!HandMeshDynamicMaterial && FPSMeshComponent)
 	{
 		HandMeshDynamicMaterial = FPSMeshComponent->CreateDynamicMaterialInstance(0);
-	}
-
-	if (DynamicMaterial)
-	{
-		// CharacterBaseColor ������ RandomColor ���� �ο�
-		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
 	}
 
 	if (HandMeshDynamicMaterial)
@@ -565,6 +560,14 @@ void AHBCharacterPlayer::ApplyNightColor(bool bIsNight)
 	else
 	{
 		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), PlayerColor);
+	}
+}
+
+void AHBCharacterPlayer::ChangeCharacterMaterialColor(FLinearColor NewColor)
+{
+	if (DynamicMaterial)
+	{
+		DynamicMaterial->SetVectorParameterValue(TEXT("CharacterBaseColor"), NewColor);
 	}
 }
 
