@@ -30,6 +30,8 @@ public:
 	void ClearMapMarks();
 
 	void RefreshPlayerColorList();
+	
+	void SetRoleDescText(EJobType NewJob);
 
 public:
 	FOnClickMap OnClickMap;
@@ -40,7 +42,7 @@ protected:
 
 	void SpawnMark(FLinearColor Color, const FVector2D& NormalizedPosition);
 
-	void SetRoleDescText(EJobType NewJob);
+	
 
 
 protected:

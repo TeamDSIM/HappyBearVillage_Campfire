@@ -19,6 +19,11 @@ public:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 
+	virtual void OnPossess(APawn* InPawn) override;
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPCPawnPossessed();
+
 	//관전 관련 코드
 	void EnterObserveMode();
 	void ExitObserveMode();

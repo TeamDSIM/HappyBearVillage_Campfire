@@ -34,6 +34,9 @@ public:
 	// 사람 수 변동 시 호출(승패 확인)
 	void CheckGameEnd();
 
+	void AddPossessedPlayerCounts();
+	void AddConnectedPlayerCounts();
+
 	FORCEINLINE bool GetIsGamePlaying() const { return bIsGamePlaying; }
 	FORCEINLINE UHBGameModePlayerControlComponent* GetHBGameModePlayerControlComponent() const
 	{
@@ -74,6 +77,7 @@ private:
 	uint8 bIsGamePlaying : 1;
 
 	int32 ConnectedPlayerCounts = 0;
+	int32 PossessedPlayerCounts = 0;
 
 	
 	uint8 bIsGameEnd : 1;

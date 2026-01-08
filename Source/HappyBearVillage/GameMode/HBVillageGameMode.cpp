@@ -283,11 +283,47 @@ void AHBVillageGameMode::CheckStartGame()
 
 				if (ConnectedPlayerCounts == CurrentPlayers)
 				{
+					//StartGame();
+				}
+			}
+		}
+	}
+}
+
+void AHBVillageGameMode::AddPossessedPlayerCounts()
+{
+	if (HasAuthority())
+	{
+		PossessedPlayerCounts += 1;
+		
+		IOnlineSessionPtr SessionInterface = Online::GetSubsystem(GetWorld())->GetSessionInterface();
+		if (SessionInterface.IsValid())
+		{
+			FNamedOnlineSession* Session =
+				SessionInterface->GetNamedSession(NAME_GameSession);
+
+			if (Session)
+			{
+				const int32 MaxPlayers =
+					Session->SessionSettings.NumPublicConnections;
+
+				const int32 CurrentPlayers =
+					MaxPlayers - Session->NumOpenPublicConnections;
+
+				HB_LOG(LogHY, Log, TEXT("Players: %d / %d"),
+					   CurrentPlayers, MaxPlayers);
+
+				if (PossessedPlayerCounts == CurrentPlayers)
+				{
 					StartGame();
 				}
 			}
 		}
 	}
+}
+
+void AHBVillageGameMode::AddConnectedPlayerCounts()
+{
 }
 
 // @PHYTODO : 각 페이즈별 함수

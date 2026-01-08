@@ -11,6 +11,7 @@
 #include "Component/HBInGameHUDComponent.h"
 #include "Component/HBMapWidgetComponent.h"
 #include "Component/HBMinimapWidgetComponent.h"
+#include "GameMode/HBVillageGameMode.h"
 
 AHBVillagePlayerController::AHBVillagePlayerController()
 {
@@ -74,6 +75,34 @@ void AHBVillagePlayerController::SetupInputComponent()
 		{
 			EIC->BindAction(ObservePrevInputAction, ETriggerEvent::Started, this, &AHBVillagePlayerController::ObservePrev);
 		}
+	}
+}
+
+void AHBVillagePlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	if (HasAuthority())
+	{
+		AHBVillageGameMode* GM = Cast<AHBVillageGameMode>(GetWorld()->GetAuthGameMode());
+		if (GM)
+		{
+			GM->AddPossessedPlayerCounts();			
+		}
+	}
+	
+	else
+	{
+		ServerRPCPawnPossessed();
+	}
+}
+
+void AHBVillagePlayerController::ServerRPCPawnPossessed_Implementation()
+{
+	AHBVillageGameMode* GM = Cast<AHBVillageGameMode>(GetWorld()->GetAuthGameMode());
+	if (GM)
+	{
+		GM->AddPossessedPlayerCounts();			
 	}
 }
 

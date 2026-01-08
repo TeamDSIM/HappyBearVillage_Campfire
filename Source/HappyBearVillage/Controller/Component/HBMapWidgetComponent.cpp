@@ -42,6 +42,8 @@ void UHBMapWidgetComponent::CreateMapWidget(APlayerController* InPlayerControlle
 	AHBMafiaGameState* HBGameState = Cast<AHBMafiaGameState>(GetWorld()->GetGameState());
 	HBGameState->OnPlayerStateArrayChanged.AddUObject(MapWidget, &UHBMapWidget::RefreshPlayerColorList);
 	HBGameState->OnGamePhaseChanged.AddUObject(this, &UHBMapWidgetComponent::SetSyncStateByPhase);
+
+	
 }
 
 void UHBMapWidgetComponent::ShowMapWidget()
