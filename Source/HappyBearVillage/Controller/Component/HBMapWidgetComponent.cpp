@@ -46,10 +46,13 @@ void UHBMapWidgetComponent::CreateMapWidget(APlayerController* InPlayerControlle
 	HBGameState->OnGamePhaseChanged.AddUObject(this, &UHBMapWidgetComponent::SetSyncStateByPhase);
 
 	AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(InPlayerController->GetPawn());
-	UHBPlayerStatComponent* Stat = Character->GetStat();
-	if (Stat)
+	if (Character)
 	{
-		Stat->OnPlayerJobChanged.AddUObject(MapWidget, &UHBMapWidget::SetRoleDescText);	
+		UHBPlayerStatComponent* Stat = Character->GetStat();
+		if (Stat)
+		{
+			Stat->OnPlayerJobChanged.AddUObject(MapWidget, &UHBMapWidget::SetRoleDescText);	
+		}
 	}
 }
 
