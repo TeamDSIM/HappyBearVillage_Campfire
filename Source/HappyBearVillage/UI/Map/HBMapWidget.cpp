@@ -151,25 +151,17 @@ void UHBMapWidget::SetRoleDescText(EJobType NewJob)
 {
 	UE_LOG(LogTemp, Log, TEXT("SetRoleDescText called"));
 
-	//FName FindingJobName = TEXT("ASSASIN");//테스트용으로 하나 지정
-	
-	//AHBCharacterPlayer* HBCharacterPlayer = Cast<AHBCharacterPlayer>(GetOwningPlayerPawn());
-
-	//UHBPlayerStatComponent* StatComponent =
-	//	HBCharacterPlayer->FindComponentByClass<UHBPlayerStatComponent>();
-
-	//FHBCharacterRole RoleData = StatComponent->GetCharacterRole();
-
-
 	//EJobType::ASSASIN 같은 형식으로 받아오기 때문에 문자열 보정 해줘야함
 	const FString JobStr = UEnum::GetValueAsString(NewJob);
 	const int32 Pos = JobStr.Find(TEXT("::"));
-	const FName FindingJobName =
-		(Pos != INDEX_NONE) ? FName(*JobStr.Mid(Pos + 2)) : FName(*JobStr);
+	const FString JobName = (Pos != INDEX_NONE) ? *JobStr.Mid(Pos + 2) : *JobStr;
+	const FName FindingJobName = FName(JobName);
+	//const FName FindingJobName = (Pos != INDEX_NONE) ? FName(*JobStr.Mid(Pos + 2)) : FName(*JobStr);
+
 
 	//RowName(첫번째줄)이 JobName인 ROW 찾기, 뒤에 UI는 디버그용
-	FHBJobInfo* FingingRow = JobInfoTable->FindRow<FHBJobInfo>(FindingJobName, TEXT("UI"));
-	if (!FingingRow)
+	FHBJobInfo* FindingRow = JobInfoTable->FindRow<FHBJobInfo>(FindingJobName, TEXT("UI"));
+	if (!FindingRow)
 	{
 		UE_LOG(LogTemp, Log, TEXT("FindingRow is NULLPTR"));
 		UE_LOG(LogTemp, Log,
@@ -179,14 +171,28 @@ void UHBMapWidget::SetRoleDescText(EJobType NewJob)
 	}
 
 	//패시브 스킬
-	FString JobInfo = FingingRow->JobInfo1;
+	FString Job = FindingRow->JobNameDisplay;
+	FString JobPassiveInfo = FindingRow->JobInfo1;
+	FString JobActiveInfo = FindingRow->JobInfo2;
 
-	if (!RoleDescText)
+	if (!RolePassiveDescText||!RoleActiveDescText)
 	{
 		UE_LOG(LogTemp, Log, TEXT("RoleDescText is NULLPTR"));
 		return;
 	}
 
-	RoleDescText->SetText(FText::FromString(JobInfo));
+	if (JobPassiveInfo == "")
+	{
+		JobPassiveInfo = TEXT("이 직업은 패시브 기술을 보유하고 있지 않습니다.");
+	}
+
+	if (JobActiveInfo == "")
+	{
+		JobActiveInfo = TEXT("이 직업은 액티브 기술을 보유하고 있지 않습니다.");
+	}
+
+	RoleText->SetText(FText::FromString(Job));
+	RolePassiveDescText->SetText(FText::FromString(JobPassiveInfo));
+	RoleActiveDescText->SetText(FText::FromString(JobActiveInfo));
 
 }

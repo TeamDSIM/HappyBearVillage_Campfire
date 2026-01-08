@@ -63,7 +63,13 @@ protected:
 	TObjectPtr<class UListView> PlayerColorInfoList;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> RoleDescText;
+	TObjectPtr<UTextBlock> RoleText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> RolePassiveDescText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> RoleActiveDescText;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "JobInfo")
 	UDataTable* JobInfoTable;
