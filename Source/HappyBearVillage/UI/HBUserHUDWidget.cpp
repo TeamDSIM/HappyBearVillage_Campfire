@@ -3,6 +3,7 @@
 
 #include "UI/HBUserHUDWidget.h"
 
+#include "HappyBearVillage.h"
 #include "HBFadeHUD.h"
 #include "HBFightHUD.h"
 #include "HBGameEndHUD.h"
@@ -122,7 +123,7 @@ void UHBUserHUDWidget::UpdateHealth(int32 NewHealth)
 {
 	if (HealthHUDWidget)
 	{
-		UE_LOG(LogTemp, Log, TEXT("HUDWidget Update Health %d"), NewHealth);
+		UE_LOG(LogHY, Log, TEXT("HUDWidget Update Health %d"), NewHealth);
 		HealthHUDWidget->UpdateHealth(NewHealth);
 	}
 }

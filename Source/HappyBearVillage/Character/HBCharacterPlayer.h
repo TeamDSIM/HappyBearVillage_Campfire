@@ -24,6 +24,7 @@ class UHBCharacterMafiaAttackComponent;
 
 /* ================= Night Flow ================= */
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnStaminaChanged, int32 /* Stamina */)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerHealthChanged, int32 /* Health */)
 
 UENUM(BlueprintType)
 enum class EPlayerNightState : uint8
@@ -46,6 +47,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void PostInitializeComponents() override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
@@ -92,6 +94,7 @@ protected:
 public:
 	FOnStaminaChanged OnStaminaChanged;
 	FOnPoliceEffectChanged OnPoliceEffectChanged;
+	FOnPlayerHealthChanged OnPlayerHealthChanged;
 
 protected:
 	// 남은 외출 가능 횟수 (RepNotify로 HUD 갱신)

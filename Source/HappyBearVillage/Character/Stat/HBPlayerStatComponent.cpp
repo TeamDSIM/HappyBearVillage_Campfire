@@ -75,15 +75,20 @@ int32 UHBPlayerStatComponent::ApplyNightDamage()
 	{
 		return 0;
 	}
-	
+	int TempHealth = Health;
 	Health -= 1;
 	
 	if (Health <= 0)
 	{
 		Health = 0;
-		OnHealthChanged.Broadcast(Health);
 
 		SetIsAlive(false);
+	}
+
+	// 체력이 닳았을 경우만 OnRep 실행
+	if (TempHealth != Health)
+	{
+		OnRep_Health();
 	}
 
 	return Health;
@@ -239,8 +244,8 @@ void UHBPlayerStatComponent::OnRep_VoteNum()
 
 void UHBPlayerStatComponent::OnRep_Health()
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnRep_Health"));
-	OnPlayerHealthChanged.Broadcast(Health);
+	UE_LOG(LogHY, Warning, TEXT("OnRep_Health"));
+	OnHealthChanged.Broadcast(Health);
 }
 
 void UHBPlayerStatComponent::OnRep_IsAlive()

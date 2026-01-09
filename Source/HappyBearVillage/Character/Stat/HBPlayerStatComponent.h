@@ -14,7 +14,6 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, int32 /* NightDamage */)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerRoleChanged, ERoleType)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerJobChanged, EJobType)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerVoteNumChanged, int32)
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerHealthChanged, int32)
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class HAPPYBEARVILLAGE_API UHBPlayerStatComponent : public UActorComponent
@@ -36,7 +35,6 @@ public:
 	FOnPlayerRoleChanged OnPlayerRoleChanged;
 	FOnPlayerJobChanged OnPlayerJobChanged;
 	FOnPlayerVoteNumChanged OnPlayerVoteNumChanged;
-	FOnPlayerHealthChanged OnPlayerHealthChanged;
 
 public:
 	// 스탯 관련 섹션 =====================================================================
@@ -50,14 +48,20 @@ public:
 	FORCEINLINE void SetIsVoteTarget(bool InIsVoteTarget) { bIsVoteTarget = InIsVoteTarget; }
 	FORCEINLINE void SetIsAlive(bool InIsAlive)
 	{
-		bIsAlive = InIsAlive;
-		OnRep_IsAlive();
+		if (GetOwner()->HasAuthority())
+		{
+			bIsAlive = InIsAlive;
+			OnRep_IsAlive();
+		}
 	}
 
 	FORCEINLINE void SetHealth(int32 InHealth)
 	{
-		Health = InHealth;
-		OnRep_Health();
+		if (GetOwner()->HasAuthority())
+		{
+			Health = InHealth;
+			OnRep_Health();
+		}
 	}
 
 	float ApplyDamage(float InDamageAmount);
