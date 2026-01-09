@@ -283,8 +283,8 @@ void AHBVillageGameMode::CheckStartGame()
 {
 	if (HasAuthority())
 	{
-		HB_LOG(LogHY, Log, TEXT("CheckStartGame Call"));
-		ReadyPlayerCount += 1;
+		//HB_LOG(LogHY, Log, TEXT("CheckStartGame Call"));
+		//ReadyPlayerCount += 1;
 
 		IOnlineSessionPtr SessionInterface = Online::GetSubsystem(GetWorld())->GetSessionInterface();
 		if (SessionInterface.IsValid())
@@ -300,8 +300,8 @@ void AHBVillageGameMode::CheckStartGame()
 				const int32 CurrentPlayers =
 					MaxPlayers - Session->NumOpenPublicConnections;
 
-				HB_LOG(LogHY, Log, TEXT("Players: %d / %d"),
-				       CurrentPlayers, MaxPlayers);
+				//HB_LOG(LogHY, Log, TEXT("Players: %d / %d"),
+				//       CurrentPlayers, MaxPlayers);
 
 				if (ReadyPlayerCount == CurrentPlayers)
 				{
