@@ -21,6 +21,12 @@ class HAPPYBEARVILLAGE_API AHBVillageGameMode : public AGameModeBase
 
 public:
 	AHBVillageGameMode();
+	
+	FORCEINLINE bool GetIsGamePlaying() const { return bIsGamePlaying; }
+	FORCEINLINE UHBGameModePlayerControlComponent* GetHBGameModePlayerControlComponent() const
+	{
+		return GameModePlayerControlComponent;
+	}
 
 	void ApplyClientReady();
 
@@ -30,25 +36,13 @@ public:
 	// 게임 종료 시 호출
 	void StopGame();
 	
+	// 사람 수 변동 시 호출(승패 확인)
+	void CheckGameEnd();
+	
 	// 치트용 함수
 	void CheatPhaseChange();
 
-	// 사람 수 변동 시 호출(승패 확인)
-	void CheckGameEnd();
-
-	FORCEINLINE bool GetIsGamePlaying() const { return bIsGamePlaying; }
-	FORCEINLINE UHBGameModePlayerControlComponent* GetHBGameModePlayerControlComponent() const
-	{
-		return GameModePlayerControlComponent;
-	}
-
-private:
-	virtual void HandleSeamlessTravelPlayer(AController*& C) override;
-
-	// PostLogin 호출 시 스팀 세션 접속 인원과
-	// 현재 PostLogin 횟수 비교
-	void CheckStartGame();
-
+protected:
 	// 각 페이즈 별 시작 함수
 	void StartDay(); // 낮 (토론 전 잠시 대기)
 	void StartDiscussion(); // 토론
@@ -66,24 +60,23 @@ private:
 
 	bool IsServer(UWorld* World);
 
+protected:
 	// 각 페이즈 별 시간 관리할 타이머
 	FTimerHandle PhaseTimerHandle;
 	FTimerHandle CountdownTimerHandle;
 
 	FTimerHandle EndTimerHandle;
 
+	UPROPERTY(VisibleAnywhere, Category = "GameState")
+	int32 ReadyPlayerCount = 0;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameState", meta = (AllowPrivateAccess = "true"))
 	uint8 bIsGamePlaying : 1;
-
-	int32 ReadyPlayerCount = 0;
-
-	
 	uint8 bIsGameEnd : 1;
 	uint8 bIsCivilWin : 1;
 	uint8 bIsMafiaWin : 1;
 
 	// 컴포넌트 부착
-private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UHBGameModePlayerControlComponent> GameModePlayerControlComponent;
 	
