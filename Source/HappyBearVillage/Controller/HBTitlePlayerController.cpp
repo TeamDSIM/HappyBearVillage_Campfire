@@ -4,6 +4,7 @@
 #include "HBTitlePlayerController.h"
 
 #include "UI/HBTitleWidget.h"
+#include "UI/HBCreditWidget.h"
 
 AHBTitlePlayerController::AHBTitlePlayerController() { }
 
@@ -43,6 +44,7 @@ void AHBTitlePlayerController::SetupUI()
 	}
 
 	CreateTitleUI();
+	CreateCreditUI();
 	FInputModeUIOnly InputMode;
 	SetInputMode(InputMode);
 	SetShowMouseCursor(true);
@@ -81,3 +83,36 @@ void AHBTitlePlayerController::CreateTitleUI()
 
 	SpawnedWidgets.Add(RawWidget);
 }
+
+void AHBTitlePlayerController::CreateCreditUI()
+{
+	if (!IsLocalController() || CreditWidget)
+	{
+		return;
+	}
+
+	//약타입으로 생성
+	UUserWidget* RawWidget = CreateWidget<UUserWidget>(this, CreditWidgetClass);
+
+	//강타입으로 캐스팅
+	CreditWidget = Cast<UHBCreditWidget>(RawWidget);
+
+	CreditWidget->AddToViewport();
+
+	SpawnedWidgets.Add(RawWidget);
+
+}
+
+void AHBTitlePlayerController::SetCreditUIVisible()
+{
+	UE_LOG(LogTemp, Log, TEXT("SetCreditUIVisible"));
+	CreditWidget->SetVisibility(ESlateVisibility::Visible);
+	CreditWidget->PlayCredits();
+}
+
+//이 함수는 BP의 UI Animation에서 호출
+void AHBTitlePlayerController::SetCreditUICollapsed()
+{
+	CreditWidget->SetVisibility(ESlateVisibility::Collapsed);
+}
+

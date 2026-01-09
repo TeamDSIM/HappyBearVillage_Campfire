@@ -24,6 +24,9 @@ public:
 	void RemoveUI();
 
 	void CreateTitleUI();
+	void CreateCreditUI();
+	void SetCreditUIVisible();
+	void SetCreditUICollapsed();
 
 protected:
 	//강타입의 경우는 지정한 위젯만 들어올 수 있고 (로비 UI, 인게임 HUD)
@@ -34,6 +37,8 @@ protected:
 	//강 타입 참조
 	UPROPERTY()
 	class UHBTitleWidget* TitleWidget;
+	UPROPERTY()
+	class UHBCreditWidget* CreditWidget;
 
 	//약타입의 경우 다음과 같이 선언함 (userwidget을 상속한 어느 위젯이든 가리킬 수 있음)
 	//UPROPERTY()
@@ -42,6 +47,8 @@ protected:
 	//약 타입 참조
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> TitleWidgetClass;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> CreditWidgetClass;
 
 	//강타입의 경우 다음과 같이 선언함 (HBTitleWidget만 들어올 수 있음)
 	//UPROPERTY(EditDefaultsOnly)

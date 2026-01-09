@@ -17,7 +17,7 @@ UCLASS()
 class HAPPYBEARVILLAGE_API UHBTitleWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
+	
 protected:
 	virtual void NativeConstruct() override;
 

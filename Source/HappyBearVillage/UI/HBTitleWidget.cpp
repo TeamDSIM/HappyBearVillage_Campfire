@@ -7,6 +7,7 @@
 #include "MultiplayerSessionsSubsystem.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Controller/HBTitlePlayerController.h"
 
 //화면에 나타날 준비가 모두 끝난 경우
 void UHBTitleWidget::NativeConstruct()
@@ -67,6 +68,10 @@ void UHBTitleWidget::HostButtonClicked()
 
 void UHBTitleWidget::CreditButtonClicked()
 {
+	UE_LOG(LogTemp, Log, TEXT("CreditButtonClicked"));
+	UWorld* World = GetWorld();
+	AHBTitlePlayerController* PC = Cast<AHBTitlePlayerController>(GetWorld()->GetFirstPlayerController());
+	PC->SetCreditUIVisible();
 
 }
 
