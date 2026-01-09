@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Character/Stat/HBCharacterRole.h"
 #include "GameFramework/PlayerState.h"
 #include "HBPlayerState.generated.h"
 
@@ -24,6 +25,7 @@ public:
 	FORCEINLINE float GetTotalTakenDamaged() const { return TotalTakenDamaged; }
 	FORCEINLINE FLinearColor GetPlayerColor() const { return PlayerColor; }
 	FORCEINLINE FString GetUserID() const { return UserID; }
+	FORCEINLINE FHBCharacterRole GetCharacterRole() const { return CharacterRole; }
 
 	FORCEINLINE void SetPlayerColor(FLinearColor NewColor)
 	{
@@ -31,12 +33,24 @@ public:
 		OnRep_PlayerColor();
 	}
 	void SetUserID(FString NewID);
+	FORCEINLINE void SetCharacterRole(EJobType InJob)
+	{
+		CharacterRole.InitRole(InJob);
+		OnRep_CharacterRole();
+	}
 
 	void SyncTotalTakenDamagedFromPlayerStat(float NewDamage);
 	void SyncPlayerColorFromPlayerStat(FLinearColor NewColor);
 
+	void ResetCharacterRole();
+	void ResetTotalTakenDamage();
+	void ResetPlayerColor();
+
 	UFUNCTION()
 	void OnRep_PlayerColor();
+
+	UFUNCTION()
+	void OnRep_CharacterRole();
 
 	FOnDamageChanged OnDamageChanged;
 
@@ -49,4 +63,7 @@ protected:
 
 	UPROPERTY(Replicated)
 	FString UserID;
+
+	UPROPERTY(ReplicatedUsing = OnRep_CharacterRole)
+	FHBCharacterRole CharacterRole;
 };

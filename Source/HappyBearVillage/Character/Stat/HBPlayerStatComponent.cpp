@@ -108,8 +108,14 @@ void UHBPlayerStatComponent::InitCharacterRole()
 void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 {
 	// 랜덤 직업 설정
-	CharacterRole.InitRole(InJob);
+	//CharacterRole.InitRole(InJob);
 
+	// 서버에서만 생성해서 Replicated 로 넘겨줌
+	if (!GetOwner()->HasAuthority())
+	{
+		return;
+	}
+	
 	AHBCharacterPlayer* HBCharacterPlayer = Cast<AHBCharacterPlayer>(GetOwner());
 	if (HBCharacterPlayer)
 	{
@@ -160,9 +166,6 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 			break;
 		}
 	}
-
-	// 바뀐 직업 서버 반영
-	OnRep_CharacterRole();
 }
 
 void UHBPlayerStatComponent::ResetCharacterRole()
@@ -215,6 +218,8 @@ void UHBPlayerStatComponent::OnRep_CharacterRole()
 	// UI 갱신 시켜야 함
 	OnPlayerRoleChanged.Broadcast(CharacterRole.Role);
 	OnPlayerJobChanged.Broadcast(CharacterRole.Job);
+
+	InitCharacterRole(CharacterRole.Job);
 }
 
 void UHBPlayerStatComponent::OnRep_VoteNum()

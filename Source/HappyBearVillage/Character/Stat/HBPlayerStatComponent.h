@@ -51,6 +51,7 @@ public:
 		bIsAlive = InIsAlive;
 		OnRep_IsAlive();
 	}
+
 	FORCEINLINE void SetHealth(int32 InHealth)
 	{
 		Health = InHealth;
@@ -64,6 +65,11 @@ public:
 
 	// 직업 관련 섹션 =====================================================================
 	FORCEINLINE const FHBCharacterRole& GetCharacterRole() const { return CharacterRole; }
+	FORCEINLINE void SetCharacterRole(FHBCharacterRole NewRole)
+	{
+		CharacterRole = NewRole;
+		OnRep_CharacterRole();
+	}
 
 	// 캐릭터 직업 부여
 	void InitCharacterRole();
@@ -109,6 +115,7 @@ protected:
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
+public:
 	UFUNCTION()
 	void OnRep_TotalTakenDamage();
 
