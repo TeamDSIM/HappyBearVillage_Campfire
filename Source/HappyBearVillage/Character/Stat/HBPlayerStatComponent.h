@@ -68,7 +68,6 @@ public:
 	FORCEINLINE void SetCharacterRole(FHBCharacterRole NewRole)
 	{
 		CharacterRole = NewRole;
-		OnRep_CharacterRole();
 	}
 
 	// 캐릭터 직업 부여
