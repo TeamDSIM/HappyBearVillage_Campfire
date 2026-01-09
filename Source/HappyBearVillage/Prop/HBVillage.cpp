@@ -4,6 +4,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Materials/MaterialInstanceConstant.h"
 #include "ProceduralGeneration/MapData/HBMapData.h"
 
 AHBVillage::AHBVillage()
@@ -19,6 +20,12 @@ AHBVillage::AHBVillage()
 	{
 		FieldMesh->SetStaticMesh(CubeMesh.Object);
 		FieldMesh->SetRelativeLocation(FVector(0.f, 0.f, -50.f));
+	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> GroundMaterialRef(TEXT("/Game/Assets/Fab/Ground/Materials/MI_xdhhdgq.MI_xdhhdgq"));
+	if (GroundMaterialRef.Succeeded())
+	{
+		FieldMesh->SetMaterial(0, GroundMaterialRef.Object);
 	}
 
 	int32 DX[4] = {0, 0, -1, 1};
