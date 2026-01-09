@@ -6,11 +6,13 @@
 #include "EngineUtils.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "HappyBearVillage.h"
 #include "Character/HBCharacterPlayer.h"
 #include "Character/Stat/HBPlayerStatComponent.h"
 #include "Component/HBInGameHUDComponent.h"
 #include "Component/HBMapWidgetComponent.h"
 #include "Component/HBMinimapWidgetComponent.h"
+#include "GameMode/HBVillageGameMode.h"
 
 AHBVillagePlayerController::AHBVillagePlayerController()
 {
@@ -28,37 +30,33 @@ AHBVillagePlayerController::AHBVillagePlayerController()
 void AHBVillagePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!IsLocalController()) return;
 	
-	UE_LOG(LogTemp, Log, TEXT("PlayerController BeginPlay"));
-
-	if (!IsLocalController())
-	{
-		UE_LOG(LogTemp, Log, TEXT("No LocalController >> PlayerController"));
-		return;
-	}
-
-	if (ULocalPlayer* LP = GetLocalPlayer())
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
-		{
-			if (PlayerIMC)
-				Subsystem->AddMappingContext(PlayerIMC, 0);
-		}
-	}
-
-	InGameHUDComponent->ActivateHUD(this);
-	MinimapWidgetComponent->CreateMinimapWidget(this);
-	MapWidgetComponent->CreateMapWidget(this);
-		
-	FInputModeGameOnly InputMode;
-	SetInputMode(InputMode);
-	SetShowMouseCursor(false);
+	HB_LOG(LogTemp, Log, TEXT("PlayerController BeginPlay Call"));
+	CheckClientReady();
 }
 
 void AHBVillagePlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
+	if (!IsLocalController())
+	{
+		return;
+	}
+	
+	if (ULocalPlayer* LP = GetLocalPlayer())
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (PlayerIMC)
+			{
+				Subsystem->AddMappingContext(PlayerIMC, 0);
+			}
+		}
+	}
+	
 	// Enhanced Input 바인딩
 	if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(InputComponent))
 	{
@@ -75,6 +73,50 @@ void AHBVillagePlayerController::SetupInputComponent()
 			EIC->BindAction(ObservePrevInputAction, ETriggerEvent::Started, this, &AHBVillagePlayerController::ObservePrev);
 		}
 	}
+
+	FInputModeGameOnly InputMode;
+	SetInputMode(InputMode);
+	SetShowMouseCursor(false);
+}
+
+
+
+void AHBVillagePlayerController::CheckClientReady()
+{
+	HB_LOG(LogTemp, Log, TEXT("CheckClientReady Call"));
+	
+	bool IsGameStateReady = (Cast<AHBMafiaGameState>(GetWorld()->GetGameState()) != nullptr);
+	bool IsPlayerStateReady = (PlayerState != nullptr);
+	bool IsPawnReady = (Cast<AHBCharacterPlayer>(GetPawn()) != nullptr);
+
+	if (IsGameStateReady && IsPlayerStateReady && IsPawnReady)
+	{
+		StartGameWidget();
+		NotifyClientReady();
+		HB_LOG(LogTemp, Log, TEXT("NotifyClientReady Call"));
+	}
+	else
+	{
+		FTimerHandle CheckReadyTimer;
+		GetWorldTimerManager().SetTimer(CheckReadyTimer, this, &AHBVillagePlayerController::CheckClientReady, 0.3f, false);
+	}
+}
+
+void AHBVillagePlayerController::NotifyClientReady_Implementation()
+{
+	HB_LOG(LogTemp, Log, TEXT("NotifyClientReady_Implementation Call"));
+	
+	AHBVillageGameMode* VillageGameMode = Cast<AHBVillageGameMode>(GetWorld()->GetAuthGameMode());
+	if (!VillageGameMode) return;
+	
+	VillageGameMode->ApplyClientReady();
+}
+
+void AHBVillagePlayerController::StartGameWidget()
+{
+	InGameHUDComponent->ActivateHUD(this);
+	MinimapWidgetComponent->CreateMinimapWidget(this);
+	MapWidgetComponent->CreateMapWidget(this);
 }
 
 void AHBVillagePlayerController::EnterObserveMode()

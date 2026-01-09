@@ -4,6 +4,7 @@
 #include "PlayerState/HBPlayerState.h"
 
 #include "Character/HBCharacterPlayer.h"
+#include "Character/Stat/HBPlayerStatComponent.h"
 #include "Net/UnrealNetwork.h"
 
 void AHBPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -11,8 +12,8 @@ void AHBPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AHBPlayerState, TotalTakenDamaged);
-	DOREPLIFETIME(AHBPlayerState, PlayerColor);
 	DOREPLIFETIME(AHBPlayerState, UserID);
+	DOREPLIFETIME(AHBPlayerState, InGameCharacterData);
 }
 
 void AHBPlayerState::SyncTotalTakenDamagedFromPlayerStat(float NewDamage)
@@ -29,12 +30,34 @@ void AHBPlayerState::SyncPlayerColorFromPlayerStat(FLinearColor NewColor)
 {
 	if (HasAuthority())
 	{
-		PlayerColor = NewColor;
 		
 	}
 }
 
-void AHBPlayerState::OnRep_PlayerColor()
+void AHBPlayerState::ResetCharacterRole()
+{
+	if (HasAuthority())
+	{
+		InGameCharacterData.CharacterRole.Job = EJobType::CITIZEN;
+		InGameCharacterData.CharacterRole.Role = ERoleType::CITIZEN;
+		OnRep_PlayerInGameData();
+	}
+}
+
+void AHBPlayerState::ResetTotalTakenDamage()
+{
+}
+
+void AHBPlayerState::ResetPlayerColor()
+{
+	if (HasAuthority())
+	{
+		InGameCharacterData.PlayerColor = FLinearColor::Gray;
+		OnRep_PlayerInGameData();
+	}
+}
+
+void AHBPlayerState::OnRep_PlayerInGameData()
 {
 	APlayerController* PC = Cast<APlayerController>(GetOwner());
 	if (PC)
@@ -42,8 +65,11 @@ void AHBPlayerState::OnRep_PlayerColor()
 		AHBCharacterPlayer* HBCharacterPlayer = Cast<AHBCharacterPlayer>(PC->GetPawn());
 		if (HBCharacterPlayer)
 		{
-			HBCharacterPlayer->PlayerColor = this->PlayerColor;
+			HBCharacterPlayer->PlayerColor = InGameCharacterData.PlayerColor;
 			HBCharacterPlayer->OnRep_PlayerColor();
+
+			HBCharacterPlayer->GetStat()->SetCharacterRole(InGameCharacterData.CharacterRole);
+			HBCharacterPlayer->GetStat()->OnRep_CharacterRole();
 		}
 	}
 }

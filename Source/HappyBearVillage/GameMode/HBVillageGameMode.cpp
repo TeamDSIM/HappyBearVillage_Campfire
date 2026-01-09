@@ -19,13 +19,6 @@
 #include "PlayerState/HBPlayerState.h"
 #include "Subsystem/HBGameVoteSubsystem.h"
 
-// HasAuthority 는 액터에서만 사용 가능
-// 서버 판별을 위한 구문을 함수로 선언
-bool AHBVillageGameMode::IsServer(UWorld* World)
-{
-	return World && (World->GetNetMode() != NM_Client);
-}
-
 AHBVillageGameMode::AHBVillageGameMode()
 {
 	GameModePlayerControlComponent = CreateDefaultSubobject<UHBGameModePlayerControlComponent>(
@@ -55,7 +48,7 @@ AHBVillageGameMode::AHBVillageGameMode()
 	GameStateClass = AHBMafiaGameState::StaticClass();
 	PlayerStateClass = AHBPlayerState::StaticClass();
 
-	ConnectedPlayerCounts = 0;
+	ReadyPlayerCount = 0;
 
 	bIsGameEnd = false;
 	bIsCivilWin = false;
@@ -64,9 +57,29 @@ AHBVillageGameMode::AHBVillageGameMode()
 	bUseSeamlessTravel = true;
 }
 
+void AHBVillageGameMode::ApplyClientReady()
+{
+	++ReadyPlayerCount;
+
+	HB_LOG(LogTemp, Log, TEXT("ApplyClientReady Call : ReadyPlayerCount : %d"), ReadyPlayerCount);
+
+	IOnlineSessionPtr SessionInterface = Online::GetSubsystem(GetWorld())->GetSessionInterface();
+	if (!SessionInterface.IsValid()) return;
+
+	FNamedOnlineSession* Session = SessionInterface->GetNamedSession(NAME_GameSession);
+	if (!Session) return;
+	
+	const int32 MaxPlayerCount = Session->SessionSettings.NumPublicConnections;
+	const int32 ExpectedPlayerCount = MaxPlayerCount - Session->NumOpenPublicConnections;
+
+	HB_LOG(LogTemp, Log, TEXT("ApplyClientReady State : ReadyPlayerCount : %d, ExpectedPlayerCount : %d"), ReadyPlayerCount, ExpectedPlayerCount);
+
+	if (ReadyPlayerCount == ExpectedPlayerCount) StartGame();
+}
+
 void AHBVillageGameMode::StartGame()
 {
-	UE_LOG(LogTemp, Log, TEXT("StartGame Call"));
+	HB_LOG(LogTemp, Log, TEXT("StartGame Call"));
 	UWorld* World = GetWorld();
 
 	// 서버가 아니라면 반환
@@ -91,6 +104,8 @@ void AHBVillageGameMode::StartGame()
 		return;
 	}
 
+	HBGameState->GameProgress = EGameProgress::Playing;
+	HBGameState->OnRep_GameProgress();
 
 	// 플레이어 초기 세팅
 	GameModePlayerControlComponent->InitPlayers(HBGameState);
@@ -169,24 +184,6 @@ void AHBVillageGameMode::StopGame()
 
 }
 
-void AHBVillageGameMode::CheatPhaseChange()
-{
-	// 서버에서 처리하도록 예외처리
-	UWorld* World = GetWorld();
-	if (!IsServer(World))
-	{
-		return;
-	}
-
-	// 페이즈 관리를 위해 HBMafiaGameState 불러오기
-	AHBMafiaGameState* HBGameState = World->GetGameState<AHBMafiaGameState>();
-	if (!HBGameState)
-	{
-		return;
-	}
-	SetPhase(HBGameState->CurrentPhase, 1);
-}
-
 void AHBVillageGameMode::CheckGameEnd()
 {
 	UE_LOG(LogTemp, Log, TEXT("CheckGameEnd Call"));
@@ -249,45 +246,22 @@ void AHBVillageGameMode::CheckGameEnd()
 	}
 }
 
-void AHBVillageGameMode::HandleSeamlessTravelPlayer(AController*& C)
+void AHBVillageGameMode::CheatPhaseChange()
 {
-	Super::HandleSeamlessTravelPlayer(C);
-
-	HB_LOG(LogHY, Log, TEXT("HandleSeamlessTravelPlayer Call"));
-	CheckStartGame();
-}
-
-void AHBVillageGameMode::CheckStartGame()
-{
-	if (HasAuthority())
+	// 서버에서 처리하도록 예외처리
+	UWorld* World = GetWorld();
+	if (!IsServer(World))
 	{
-		HB_LOG(LogHY, Log, TEXT("CheckStartGame Call"));
-		ConnectedPlayerCounts += 1;
-
-		IOnlineSessionPtr SessionInterface = Online::GetSubsystem(GetWorld())->GetSessionInterface();
-		if (SessionInterface.IsValid())
-		{
-			FNamedOnlineSession* Session =
-				SessionInterface->GetNamedSession(NAME_GameSession);
-
-			if (Session)
-			{
-				const int32 MaxPlayers =
-					Session->SessionSettings.NumPublicConnections;
-
-				const int32 CurrentPlayers =
-					MaxPlayers - Session->NumOpenPublicConnections;
-
-				HB_LOG(LogHY, Log, TEXT("Players: %d / %d"),
-				       CurrentPlayers, MaxPlayers);
-
-				if (ConnectedPlayerCounts == CurrentPlayers)
-				{
-					StartGame();
-				}
-			}
-		}
+		return;
 	}
+
+	// 페이즈 관리를 위해 HBMafiaGameState 불러오기
+	AHBMafiaGameState* HBGameState = World->GetGameState<AHBMafiaGameState>();
+	if (!HBGameState)
+	{
+		return;
+	}
+	SetPhase(HBGameState->CurrentPhase, 1);
 }
 
 // @PHYTODO : 각 페이즈별 함수
@@ -637,4 +611,11 @@ void AHBVillageGameMode::TickCountdown()
 
 		HBGameState->OnRep_RemainingTime();
 	}
+}
+
+// HasAuthority 는 액터에서만 사용 가능
+// 서버 판별을 위한 구문을 함수로 선언
+bool AHBVillageGameMode::IsServer(UWorld* World)
+{
+	return World && (World->GetNetMode() != NM_Client);
 }

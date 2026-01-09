@@ -78,17 +78,6 @@ void UHBMapWidget::NativeConstruct()
 	UMaterialInstance* MapMaterial = LoadObject<UMaterialInstance>(nullptr, TEXT("/Game/UI/Map/MI_MapMaterial.MI_MapMaterial"));
 	MapDynamicMaterial = UMaterialInstanceDynamic::Create(MapMaterial, this);
 	Map->SetBrushFromMaterial(MapDynamicMaterial);
-
-	    AHBCharacterPlayer* Player = Cast<AHBCharacterPlayer>(GetOwningPlayerPawn());
-    if (!Player) return;
-
-    UHBPlayerStatComponent* Stat = Player->FindComponentByClass<UHBPlayerStatComponent>();
-    if (!Stat) return;
-
-    // 예시: Job 변경 이벤트에 바인딩
-    Stat->OnPlayerJobChanged.AddUObject(this, &UHBMapWidget::SetRoleDescText);
-
-	//SetRoleDescText();
 }
 
 FReply UHBMapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -149,7 +138,7 @@ void UHBMapWidget::SpawnMark(FLinearColor Color, const FVector2D& NormalizedPosi
 	}
 }
 
-void UHBMapWidget::SetRoleDescText(EJobType NewJob)
+void UHBMapWidget::SetJobDescText(EJobType NewJob)
 {
 	UE_LOG(LogTemp, Log, TEXT("SetRoleDescText called"));
 
