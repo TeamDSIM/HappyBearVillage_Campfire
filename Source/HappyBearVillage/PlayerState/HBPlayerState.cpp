@@ -12,9 +12,8 @@ void AHBPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AHBPlayerState, TotalTakenDamaged);
-	DOREPLIFETIME(AHBPlayerState, PlayerColor);
 	DOREPLIFETIME(AHBPlayerState, UserID);
-	DOREPLIFETIME(AHBPlayerState, CharacterRole);
+	DOREPLIFETIME(AHBPlayerState, InGameCharacterData);
 }
 
 void AHBPlayerState::SyncTotalTakenDamagedFromPlayerStat(float NewDamage)
@@ -31,7 +30,6 @@ void AHBPlayerState::SyncPlayerColorFromPlayerStat(FLinearColor NewColor)
 {
 	if (HasAuthority())
 	{
-		PlayerColor = NewColor;
 		
 	}
 }
@@ -40,10 +38,9 @@ void AHBPlayerState::ResetCharacterRole()
 {
 	if (HasAuthority())
 	{
-		CharacterRole.Job = EJobType::CITIZEN;
-		CharacterRole.Role = ERoleType::CITIZEN;
-
-		OnRep_CharacterRole();
+		InGameCharacterData.CharacterRole.Job = EJobType::CITIZEN;
+		InGameCharacterData.CharacterRole.Role = ERoleType::CITIZEN;
+		OnRep_PlayerInGameData();
 	}
 }
 
@@ -55,13 +52,12 @@ void AHBPlayerState::ResetPlayerColor()
 {
 	if (HasAuthority())
 	{
-		PlayerColor = FLinearColor::Gray;
-
-		OnRep_PlayerColor();
+		InGameCharacterData.PlayerColor = FLinearColor::Gray;
+		OnRep_PlayerInGameData();
 	}
 }
 
-void AHBPlayerState::OnRep_PlayerColor()
+void AHBPlayerState::OnRep_PlayerInGameData()
 {
 	APlayerController* PC = Cast<APlayerController>(GetOwner());
 	if (PC)
@@ -69,21 +65,10 @@ void AHBPlayerState::OnRep_PlayerColor()
 		AHBCharacterPlayer* HBCharacterPlayer = Cast<AHBCharacterPlayer>(PC->GetPawn());
 		if (HBCharacterPlayer)
 		{
-			HBCharacterPlayer->PlayerColor = this->PlayerColor;
+			HBCharacterPlayer->PlayerColor = InGameCharacterData.PlayerColor;
 			HBCharacterPlayer->OnRep_PlayerColor();
-		}
-	}
-}
 
-void AHBPlayerState::OnRep_CharacterRole()
-{
-	APlayerController* PC = Cast<APlayerController>(GetOwner());
-	if (PC)
-	{
-		AHBCharacterPlayer* HBCharacterPlayer = Cast<AHBCharacterPlayer>(PC->GetPawn());
-		if (HBCharacterPlayer)
-		{
-			HBCharacterPlayer->GetStat()->SetCharacterRole(CharacterRole);
+			HBCharacterPlayer->GetStat()->SetCharacterRole(InGameCharacterData.CharacterRole);
 			HBCharacterPlayer->GetStat()->OnRep_CharacterRole();
 		}
 	}
