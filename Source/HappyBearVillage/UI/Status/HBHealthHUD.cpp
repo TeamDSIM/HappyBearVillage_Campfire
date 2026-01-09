@@ -28,10 +28,10 @@ void UHBHealthHUD::UpdateHealth(int32 NewHealth)
 			continue;
 		}
 
-		UHorizontalBoxSlot* Slot = HeartSlots->AddChildToHorizontalBox(HBHealthSlot);
-		if (Slot)
+		UHorizontalBoxSlot* BoxSlot = HeartSlots->AddChildToHorizontalBox(HBHealthSlot);
+		if (BoxSlot)
 		{
-			Slot->SetPadding(FMargin(8.f, 0.f));
+			BoxSlot->SetPadding(FMargin(8.f, 0.f));
 		}
 	}
 }

@@ -33,6 +33,7 @@ public:
 	void UpdateGameEnd(int32 NewMafiaWin);
 	void UpdateStamina(int32 NewStamina);
 	void UpdatePoliceNotice(bool bIsPoliceNotice);
+	void UpdateHealth(int32 NewHealth);
 
 	void PlayFadeAnimation(bool bIsFadeIn);
 
@@ -59,4 +60,7 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UHBPoliceNoticeHUD> PoliceNoticeHUDWidget;
+
+	UPROPERTY()
+	TObjectPtr<class UHBHealthHUD> HealthHUDWidget;
 };

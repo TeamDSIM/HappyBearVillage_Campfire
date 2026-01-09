@@ -10,6 +10,7 @@
 #include "HBPoliceNoticeHUD.h"
 #include "HBVoteHUD.h"
 #include "Interface/HBCharacterHUDInterface.h"
+#include "Status/HBHealthHUD.h"
 #include "UI/HBNightStaminaWidget.h"
 
 void UHBUserHUDWidget::NativeConstruct()
@@ -27,6 +28,8 @@ void UHBUserHUDWidget::NativeConstruct()
 	FadeHUDWidget = Cast<UHBFadeHUD>(GetWidgetFromName(TEXT("FadeHUD")));
 
 	PoliceNoticeHUDWidget = Cast<UHBPoliceNoticeHUD>(GetWidgetFromName(TEXT("PoliceNoticeHUD")));
+
+	HealthHUDWidget = Cast<UHBHealthHUD>(GetWidgetFromName(TEXT("HealthHUD")));
 
 	IHBCharacterHUDInterface* HUDPawn = Cast<IHBCharacterHUDInterface>(GetOwningPlayerPawn());
 	if (HUDPawn)
@@ -112,6 +115,15 @@ void UHBUserHUDWidget::UpdatePoliceNotice(bool bIsPoliceNotice)
 	else
 	{
 		PoliceNoticeHUDWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void UHBUserHUDWidget::UpdateHealth(int32 NewHealth)
+{
+	if (HealthHUDWidget)
+	{
+		UE_LOG(LogTemp, Log, TEXT("HUDWidget Update Health %d"), NewHealth);
+		HealthHUDWidget->UpdateHealth(NewHealth);
 	}
 }
 

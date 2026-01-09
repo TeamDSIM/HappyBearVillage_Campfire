@@ -239,6 +239,8 @@ void UHBPlayerStatComponent::OnRep_VoteNum()
 
 void UHBPlayerStatComponent::OnRep_Health()
 {
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_Health"));
+	OnPlayerHealthChanged.Broadcast(Health);
 }
 
 void UHBPlayerStatComponent::OnRep_IsAlive()
