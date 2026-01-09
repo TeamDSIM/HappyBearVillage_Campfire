@@ -6,9 +6,12 @@
 #include "GameFramework/PlayerController.h"
 #include "HBVillagePlayerController.generated.h"
 
+enum class EGameProgress : uint8;
+
 /**
  * 
  */
+
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBVillagePlayerController : public APlayerController
 {
@@ -18,6 +21,11 @@ public:
 	AHBVillagePlayerController();
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+
+	void CheckClientReady();
+	UFUNCTION(Server, Reliable)
+	void NotifyClientReady();
+	void StartGameWidget();
 
 	//관전 관련 코드
 	void EnterObserveMode();

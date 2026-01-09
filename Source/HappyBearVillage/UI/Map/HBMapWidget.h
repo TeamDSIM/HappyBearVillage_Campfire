@@ -30,6 +30,7 @@ public:
 	void ClearMapMarks();
 
 	void RefreshPlayerColorList();
+	void SetJobDescText(EJobType NewJob);
 
 public:
 	FOnClickMap OnClickMap;
@@ -39,9 +40,6 @@ protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	void SpawnMark(FLinearColor Color, const FVector2D& NormalizedPosition);
-
-	void SetRoleDescText(EJobType NewJob);
-
 
 protected:
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Map")
