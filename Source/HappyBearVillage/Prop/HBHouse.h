@@ -45,6 +45,8 @@ protected:
 	TObjectPtr<class UStaticMeshComponent> HouseMesh;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UBoxComponent> EnterTrigger;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UBoxComponent> GateCollision;
 
 	// 집 색깔
 	UPROPERTY(VisibleAnywhere, Category = "House Info")

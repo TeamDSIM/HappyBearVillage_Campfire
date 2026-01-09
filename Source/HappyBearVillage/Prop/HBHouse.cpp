@@ -20,12 +20,13 @@ AHBHouse::AHBHouse()
 
 	EnterTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("EnterTrigger"));
 	EnterTrigger->SetupAttachment(RootComponent);
-
 	EnterTrigger->SetBoxExtent(FVector(1000.f));
-	EnterTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	EnterTrigger->SetCollisionObjectType(ECC_WorldStatic);
-	EnterTrigger->SetCollisionResponseToAllChannels(ECR_Ignore);
-	EnterTrigger->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	EnterTrigger->SetCollisionProfileName(TEXT("HouseEnterTrigger"));
+
+	GateCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("GateCollision"));
+	GateCollision->SetupAttachment(RootComponent);
+	GateCollision->SetBoxExtent(FVector(1000.f));
+	GateCollision->SetCollisionProfileName(TEXT("HouseGateCollision"));
 }
 
 void AHBHouse::BeginPlay()
@@ -39,9 +40,7 @@ void AHBHouse::BeginPlay()
 	}
 }
 
-void AHBHouse::OnEnterOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                              UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-                              const FHitResult& SweepResult)
+void AHBHouse::OnEnterOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AHBCharacterPlayer* Player = Cast<AHBCharacterPlayer>(OtherActor);
 	if (!Player)
@@ -65,13 +64,11 @@ void AHBHouse::OnEnterOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	{
 		OverlapCharacters.Add(Player);
 	}
-
-	// 플레이어 입장 시 바인딩 된 함수 실행
+	
 	OnCharacterEnter.Broadcast(OtherActor);
 }
 
-void AHBHouse::OnExitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                             UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void AHBHouse::OnExitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	AHBCharacterPlayer* Player = Cast<AHBCharacterPlayer>(OtherActor);
 	if (!Player)
@@ -95,7 +92,6 @@ void AHBHouse::OnExitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 	{
 		OverlapCharacters.Remove(Player);
 	}
-
-	// 플레이어 퇴장 시 바인딩 된 함수 실행
+	
 	OnCharacterExit.Broadcast(OtherActor);
 }
