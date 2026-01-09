@@ -19,6 +19,7 @@ AHBPCGVillageActor::AHBPCGVillageActor()
 	PCG = CreateDefaultSubobject<UPCGComponent>(TEXT("PCGComponent"));
 	Bounds = CreateDefaultSubobject<UBoxComponent>(TEXT("PCGBounds"));
 	Bounds->SetupAttachment(Mesh);
+	Bounds->SetCollisionProfileName(TEXT("NoCollision"));
 	
 	static ConstructorHelpers::FObjectFinder<UPCGGraph> GraphAsset(TEXT("/Game/Personal/JANG_H_W/Tools/PCG/PCG_Village.PCG_Village"));
 	if (GraphAsset.Succeeded())

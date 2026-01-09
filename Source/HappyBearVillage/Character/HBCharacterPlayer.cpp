@@ -151,6 +151,7 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 
 
 	// ĳ���� �޽� ����
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 	GetMesh()->SetRelativeScale3D(FVector(0.2f, 0.2f, 0.2f));
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -86.0f));
 	GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
