@@ -48,9 +48,6 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 				UHBPlayerStatComponent* PlayerStatComponent = Character->GetStat();
 				if (PlayerStatComponent)
 				{
-					// 플레이어의 직업 설정
-					//PlayerStatComponent->InitCharacterRole(PlayerJobs[i]);
-
 					// 누적 데미지 초기화
 					PlayerStatComponent->ResetTotalTakenDamage();
 				}
@@ -59,8 +56,11 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 				if (HBPlayerState)
 				{
 					// PlayerState 에 직업 부여
-					HBPlayerState->SetCharacterRole(PlayerJobs[i]);
-					HBPlayerState->SetPlayerColor(PlayerColors[i]);
+					FHBInGameCharacterData CharacterData;
+					CharacterData.SetCharacterRole(PlayerJobs[i]);
+					CharacterData.PlayerColor = PlayerColors[i];
+					
+					HBPlayerState->SetHBInGameCharacterData(CharacterData);
 					HBPlayerState->SetUserID(HBPlayerState->GetPlayerName());
 				}
 

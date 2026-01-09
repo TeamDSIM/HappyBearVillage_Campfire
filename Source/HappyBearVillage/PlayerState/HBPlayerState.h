@@ -33,15 +33,24 @@ public:
 		if (HasAuthority())
 		{
 			InGameCharacterData.SetPlayerColor(NewColor);
-			OnRep_PlayerInGameData();
 		}
 	}
+	
 	void SetUserID(FString NewID);
+	
 	FORCEINLINE void SetCharacterRole(EJobType InJob)
 	{
 		if (HasAuthority())
 		{
 			InGameCharacterData.SetCharacterRole(InJob);
+		}
+	}
+
+	FORCEINLINE void SetHBInGameCharacterData(FHBInGameCharacterData NewData)
+	{
+		if (HasAuthority())
+		{
+			InGameCharacterData = NewData;
 			OnRep_PlayerInGameData();
 		}
 	}

@@ -38,33 +38,33 @@ AHBCharacterBase::AHBCharacterBase()
 
 	// @PHYTodo: 디버깅용
 	
-	// TotalDamage 위젯 컴포넌트
-	TotalDamageWidget = CreateDefaultSubobject<UHBWidgetComponent>(TEXT("TotalDamageWidget"));
-	TotalDamageWidget->SetupAttachment(GetMesh());
-	TotalDamageWidget->SetRelativeLocation(FVector(0.f, 0.f, 180.f));
-	static ConstructorHelpers::FClassFinder<UUserWidget> TotalDamageWidgetRef(
-		TEXT("/Game/Personal/PARK_H_Y/UI/WBP_TotalDamage.WBP_TotalDamage_C"));
-	if (TotalDamageWidgetRef.Class)
-	{
-		TotalDamageWidget->SetWidgetClass(TotalDamageWidgetRef.Class);
-		TotalDamageWidget->SetWidgetSpace(EWidgetSpace::Screen);
-		TotalDamageWidget->SetDrawSize(FVector2D(150.f, 15.f));
-		TotalDamageWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
-	
-	// TotalDamage 위젯 컴포넌트
-	PlayerRoleWidget = CreateDefaultSubobject<UHBWidgetComponent>(TEXT("PlayerRoleWidget"));
-	PlayerRoleWidget->SetupAttachment(GetMesh());
-	PlayerRoleWidget->SetRelativeLocation(FVector(0.f, 0.f, 240.f));
-	static ConstructorHelpers::FClassFinder<UUserWidget> PlayerRoleWidgetRef(
-		TEXT("/Game/Personal/PARK_H_Y/UI/WBP_PlayerRole.WBP_PlayerRole_C"));
-	if (PlayerRoleWidgetRef.Class)
-	{
-		PlayerRoleWidget->SetWidgetClass(PlayerRoleWidgetRef.Class);
-		PlayerRoleWidget->SetWidgetSpace(EWidgetSpace::Screen);
-		PlayerRoleWidget->SetDrawSize(FVector2D(150.f, 30.f));
-		PlayerRoleWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
+	// // TotalDamage 위젯 컴포넌트
+	// TotalDamageWidget = CreateDefaultSubobject<UHBWidgetComponent>(TEXT("TotalDamageWidget"));
+	// TotalDamageWidget->SetupAttachment(GetMesh());
+	// TotalDamageWidget->SetRelativeLocation(FVector(0.f, 0.f, 180.f));
+	// static ConstructorHelpers::FClassFinder<UUserWidget> TotalDamageWidgetRef(
+	// 	TEXT("/Game/Personal/PARK_H_Y/UI/WBP_TotalDamage.WBP_TotalDamage_C"));
+	// if (TotalDamageWidgetRef.Class)
+	// {
+	// 	TotalDamageWidget->SetWidgetClass(TotalDamageWidgetRef.Class);
+	// 	TotalDamageWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	// 	TotalDamageWidget->SetDrawSize(FVector2D(150.f, 15.f));
+	// 	TotalDamageWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// }
+	//
+	// // TotalDamage 위젯 컴포넌트
+	// PlayerRoleWidget = CreateDefaultSubobject<UHBWidgetComponent>(TEXT("PlayerRoleWidget"));
+	// PlayerRoleWidget->SetupAttachment(GetMesh());
+	// PlayerRoleWidget->SetRelativeLocation(FVector(0.f, 0.f, 240.f));
+	// static ConstructorHelpers::FClassFinder<UUserWidget> PlayerRoleWidgetRef(
+	// 	TEXT("/Game/Personal/PARK_H_Y/UI/WBP_PlayerRole.WBP_PlayerRole_C"));
+	// if (PlayerRoleWidgetRef.Class)
+	// {
+	// 	PlayerRoleWidget->SetWidgetClass(PlayerRoleWidgetRef.Class);
+	// 	PlayerRoleWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	// 	PlayerRoleWidget->SetDrawSize(FVector2D(150.f, 30.f));
+	// 	PlayerRoleWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// }
 }
 
 void AHBCharacterBase::PostInitializeComponents()
@@ -92,21 +92,21 @@ void AHBCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void AHBCharacterBase::SetUpCharacterWidget(class UHBUserWidget* InUserWidget)
 {
-	UHBTotalDamageWidget* Widget = Cast<UHBTotalDamageWidget>(InUserWidget);
-	if (Widget)
-	{
-		Widget->UpdateTotalDamage(Stat->GetTotalTakenDamage());
-		Stat->OnTotalTakenDamageChanged.AddUObject(Widget, &UHBTotalDamageWidget::UpdateTotalDamage);
-	}
-	
-	UHBPlayerRoleWidget* RoleWidget = Cast<UHBPlayerRoleWidget>(InUserWidget);
-	if (RoleWidget)
-	{
-		RoleWidget->UpdatePlayerRole(Stat->GetCharacterRole().Role);
-		RoleWidget->UpdatePlayerJob(Stat->GetCharacterRole().Job);
-		Stat->OnPlayerRoleChanged.AddUObject(RoleWidget, &UHBPlayerRoleWidget::UpdatePlayerRole);
-		Stat->OnPlayerJobChanged.AddUObject(RoleWidget, &UHBPlayerRoleWidget::UpdatePlayerJob);
-	}
+	// UHBTotalDamageWidget* Widget = Cast<UHBTotalDamageWidget>(InUserWidget);
+	// if (Widget)
+	// {
+	// 	Widget->UpdateTotalDamage(Stat->GetTotalTakenDamage());
+	// 	Stat->OnTotalTakenDamageChanged.AddUObject(Widget, &UHBTotalDamageWidget::UpdateTotalDamage);
+	// }
+	//
+	// UHBPlayerRoleWidget* RoleWidget = Cast<UHBPlayerRoleWidget>(InUserWidget);
+	// if (RoleWidget)
+	// {
+	// 	RoleWidget->UpdatePlayerRole(Stat->GetCharacterRole().Role);
+	// 	RoleWidget->UpdatePlayerJob(Stat->GetCharacterRole().Job);
+	// 	Stat->OnPlayerRoleChanged.AddUObject(RoleWidget, &UHBPlayerRoleWidget::UpdatePlayerRole);
+	// 	Stat->OnPlayerJobChanged.AddUObject(RoleWidget, &UHBPlayerRoleWidget::UpdatePlayerJob);
+	// }
 }
 
 void AHBCharacterBase::ServerRPCSetEquipped_Implementation(bool bEquipped)

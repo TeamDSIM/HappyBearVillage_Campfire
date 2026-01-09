@@ -45,11 +45,11 @@ protected:
 	// 스탯, 애니메이션, 공격, 기절, 무기 장착
 
 	// UI 섹션 ==============================================================
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widget, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UWidgetComponent> TotalDamageWidget;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widget, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UWidgetComponent> PlayerRoleWidget;
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widget, meta = (AllowPrivateAccess = "true"))
+	// TObjectPtr<UWidgetComponent> TotalDamageWidget;
+	//
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widget, meta = (AllowPrivateAccess = "true"))
+	// TObjectPtr<UWidgetComponent> PlayerRoleWidget;
 
 	virtual void SetUpCharacterWidget(class UHBUserWidget* InUserWidget) override;
 
