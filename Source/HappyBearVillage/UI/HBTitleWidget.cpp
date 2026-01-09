@@ -5,6 +5,9 @@
 #include "Components/Button.h"
 #include "Engine/GameInstance.h"
 #include "MultiplayerSessionsSubsystem.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Controller/HBTitlePlayerController.h"
 
 //화면에 나타날 준비가 모두 끝난 경우
 void UHBTitleWidget::NativeConstruct()
@@ -33,6 +36,17 @@ void UHBTitleWidget::NativeConstruct()
 		HostButton->OnClicked.AddDynamic(this, &ThisClass::HostButtonClicked);
 	}
 
+	if (CreditButton)
+	{
+		CreditButton->OnClicked.AddDynamic(this, &ThisClass::CreditButtonClicked);
+	}
+
+
+	if (ExitButton)
+	{
+		ExitButton->OnClicked.AddDynamic(this, &ThisClass::ExitButtonClicked);
+	}
+
 	//if (JoinButton)
 	//{
  //       JoinButton->IsFocusable = false;
@@ -48,8 +62,25 @@ void UHBTitleWidget::HostButtonClicked()
 	if (MultiplayerSessionsSubsystem)
 	{
         // @todo : 최대 인원 설정
-		MultiplayerSessionsSubsystem->CreateSession(4, TEXT("FreeForAll"));
+		MultiplayerSessionsSubsystem->CreateSession(8, TEXT("FreeForAll"));
 	}
+}
+
+void UHBTitleWidget::CreditButtonClicked()
+{
+	UE_LOG(LogTemp, Log, TEXT("CreditButtonClicked"));
+	UWorld* World = GetWorld();
+	AHBTitlePlayerController* PC = Cast<AHBTitlePlayerController>(GetWorld()->GetFirstPlayerController());
+	PC->SetCreditUIVisible();
+
+}
+
+void UHBTitleWidget::ExitButtonClicked()
+{
+	UWorld* World = GetWorld();
+	APlayerController* PC = UGameplayStatics::GetPlayerController(World, 0);
+
+	UKismetSystemLibrary::QuitGame(World, PC, EQuitPreference::Quit, true);
 }
 
 //void UHBTitleWidget::JoinButtonClicked()

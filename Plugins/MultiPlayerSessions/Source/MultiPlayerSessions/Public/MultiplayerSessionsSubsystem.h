@@ -102,8 +102,8 @@ private:
 
 
 	//Create 호출 파라미터
-	//@Todo : 최대 인원 설정
-	int32 LastNumPublicConnections = 12;
+	//@Todo : 최대 인원 설정(이거는 기본값이고, CreateSession에서 받을 예정)
+	int32 LastNumPublicConnections = 8;
 	FString LastMatchType = TEXT("FreeForAll");
 
 	bool bCreateSessionOnDestroy = false;

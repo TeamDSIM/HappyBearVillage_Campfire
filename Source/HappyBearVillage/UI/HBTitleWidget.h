@@ -17,7 +17,7 @@ UCLASS()
 class HAPPYBEARVILLAGE_API UHBTitleWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
+	
 protected:
 	virtual void NativeConstruct() override;
 
@@ -29,11 +29,23 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UButton* HostButton;
 
+	UPROPERTY(meta = (BindWidget))
+	UButton* CreditButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* ExitButton;
+
 	//UPROPERTY(meta = (BindWidget))
 	//UButton* JoinButton;
 
 	UFUNCTION()
 	void HostButtonClicked();
+
+	UFUNCTION()
+	void CreditButtonClicked();
+
+	UFUNCTION()
+	void ExitButtonClicked();
 
 	UFUNCTION()
 	//void JoinButtonClicked();
