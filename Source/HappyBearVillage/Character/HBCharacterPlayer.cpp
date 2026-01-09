@@ -217,6 +217,20 @@ void AHBCharacterPlayer::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 }
 
+void AHBCharacterPlayer::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	if (Stat)
+	{
+		Stat->OnHealthChanged.AddLambda([this](int32 NewHealth)
+		{
+			OnPlayerHealthChanged.Broadcast(NewHealth);
+		});
+	}
+
+}
+
 void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -1059,10 +1073,17 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 			GameState->OnTopDamagePlayersChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateCurrentFightInfo);
 			GameState->OnTargetVoteNumChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateVoteNum);
 			GameState->OnGameEndChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateGameEnd);
-
+			
 			GameState->OnFadeAnimationPlay.AddUObject(InHUDWidget, &UHBUserHUDWidget::PlayFadeAnimation);
+
 			OnStaminaChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateStamina);
 			OnPoliceEffectChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdatePoliceNotice);
+
+			OnPlayerHealthChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateHealth);
+			if (Stat)
+			{
+				InHUDWidget->UpdateHealth(Stat->GetHealth());
+			}
 		}
 
 		// HUD�� Stamina ����: �ʱⰪ ���� �� ĳ�� (���� Ŭ���̾�Ʈ������)

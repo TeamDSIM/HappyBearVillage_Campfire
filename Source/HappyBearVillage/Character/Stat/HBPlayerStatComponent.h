@@ -48,14 +48,20 @@ public:
 	FORCEINLINE void SetIsVoteTarget(bool InIsVoteTarget) { bIsVoteTarget = InIsVoteTarget; }
 	FORCEINLINE void SetIsAlive(bool InIsAlive)
 	{
-		bIsAlive = InIsAlive;
-		OnRep_IsAlive();
+		if (GetOwner()->HasAuthority())
+		{
+			bIsAlive = InIsAlive;
+			OnRep_IsAlive();
+		}
 	}
 
 	FORCEINLINE void SetHealth(int32 InHealth)
 	{
-		Health = InHealth;
-		OnRep_Health();
+		if (GetOwner()->HasAuthority())
+		{
+			Health = InHealth;
+			OnRep_Health();
+		}
 	}
 
 	float ApplyDamage(float InDamageAmount);

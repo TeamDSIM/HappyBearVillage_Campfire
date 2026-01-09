@@ -48,6 +48,11 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 				UHBPlayerStatComponent* PlayerStatComponent = Character->GetStat();
 				if (PlayerStatComponent)
 				{
+					// 플레이어의 직업 설정
+					//PlayerStatComponent->InitCharacterRole(PlayerJobs[i]);
+
+					PlayerStatComponent->SetHealth(2);
+					
 					// 누적 데미지 초기화
 					PlayerStatComponent->ResetTotalTakenDamage();
 				}
