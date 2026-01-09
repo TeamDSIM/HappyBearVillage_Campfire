@@ -26,6 +26,7 @@ public:
 	void CreateTitleUI();
 	void CreateCreditUI();
 	void SetCreditUIVisible();
+	UFUNCTION(BlueprintCallable)
 	void SetCreditUICollapsed();
 
 protected:
