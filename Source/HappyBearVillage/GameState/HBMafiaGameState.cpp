@@ -2,19 +2,11 @@
 
 
 #include "GameState/HBMafiaGameState.h"
-
-#include "EngineUtils.h"
-#include "HappyBearVillage.h"
 #include "Character/HBCharacterPlayer.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
-#include "PlayerState/HBPlayerState.h"
-#include "ProceduralGeneration/Map/HBMapGenerator.h"
-#include "ProceduralGeneration/MapData/HBMapDataGenerator.h"
-#include "ProceduralGeneration/Noise/HBPerlinNoise.h"
 #include "Subsystem/HBVillageGenerationWorldSubsystem.h"
-#include "Utils/HBUtils.h"
-#include "Character/Stat/HBPlayerStatComponent.h"
+
 
 AHBMafiaGameState::AHBMafiaGameState()
 {
@@ -25,6 +17,7 @@ void AHBMafiaGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(AHBMafiaGameState, GameProgress);
 	DOREPLIFETIME(AHBMafiaGameState, CurrentPhase);
 	DOREPLIFETIME(AHBMafiaGameState, RemainingTime);
 	DOREPLIFETIME(AHBMafiaGameState, Date);
@@ -68,6 +61,11 @@ void AHBMafiaGameState::OnRep_TopDamagePlayers()
 	{
 		OnTopDamagePlayersChanged.Broadcast(TopDamagePlayers[i].PlayerState, TopDamagePlayers[i], i);
 	}
+}
+
+void AHBMafiaGameState::OnRep_GameProgress()
+{
+	OnGameProgressChanged.Broadcast(GameProgress);
 }
 
 void AHBMafiaGameState::OnRep_GamePhase()

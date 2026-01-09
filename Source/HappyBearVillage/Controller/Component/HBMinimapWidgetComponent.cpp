@@ -20,10 +20,12 @@ UHBMinimapWidgetComponent::UHBMinimapWidgetComponent()
 
 void UHBMinimapWidgetComponent::CreateMinimapWidget(APlayerController* InPlayerController)
 {
+	if (MinimapWidget) return;
+	
 	MinimapWidget = CreateWidget<UHBMinimapWidget>(InPlayerController, MinimapWidgetClass);
 	MinimapWidget->AddToViewport();
 	HideMinimapWidget();
-
+	
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
 	VillageGenerationSystem->OnVillageGenerated.AddUObject(this, &UHBMinimapWidgetComponent::ShowMinimapWidget);
 	VillageGenerationSystem->OnVillageGenerated.AddUObject(this, &UHBMinimapWidgetComponent::SetMinimapTexture);

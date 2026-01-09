@@ -15,6 +15,7 @@
 class AHBCharacterPlayer;
 class AHBPlayerState;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameProgressChanged, EGameProgress)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGamePhaseChanged, EGamePhase)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnRemainingTimeChanged, float /*RemainingTime*/)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnDateChanged, int32 /*Date*/)
@@ -31,6 +32,16 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnFadeAnimationPlay, bool)
 
 //LobbyWidget 관련 코드입니다.
 DECLARE_MULTICAST_DELEGATE(FOnLobbyPlayersChanged);
+
+UENUM(BlueprintType)
+enum class EGameProgress : uint8
+{
+	WaitingForReady UMETA(DisplayName = "WaitingForReady"),
+	Playing UMETA(DisplayName = "Playing"),
+	GameOver UMETA(DisplayName = "GameOver"),
+
+	End UMETA(DisplayName = "End")
+};
 
 // 각 페이즈를 나타내는 enum 클래스
 UENUM(BlueprintType)
@@ -82,6 +93,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
+	FOnGameProgressChanged OnGameProgressChanged;
 	FOnGamePhaseChanged OnGamePhaseChanged;
 	FOnRemainingTimeChanged OnRemainingTimeChanged;
 	FOnDateChanged OnDateChanged;
@@ -101,6 +113,9 @@ public:
 	AHBCharacterPlayer* GetPlayerByColor(FLinearColor InColor);
 	
 public:
+	UPROPERTY(ReplicatedUsing = OnRep_GameProgress, BlueprintReadOnly)
+	EGameProgress GameProgress = EGameProgress::WaitingForReady;
+	
 	// @PHYTODO : 나중에 다 컴포넌트로 생성해서 옮겨주기
 	UPROPERTY(ReplicatedUsing = OnRep_GamePhase, BlueprintReadOnly)
 	EGamePhase CurrentPhase = EGamePhase::Lobby;
@@ -128,6 +143,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_TopDamagePlayers();
+
+	UFUNCTION()
+	void OnRep_GameProgress();
 
 	UFUNCTION()
 	void OnRep_GamePhase();

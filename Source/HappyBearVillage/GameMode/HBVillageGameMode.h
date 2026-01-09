@@ -22,12 +22,14 @@ class HAPPYBEARVILLAGE_API AHBVillageGameMode : public AGameModeBase
 public:
 	AHBVillageGameMode();
 
+	void ApplyClientReady();
+
 	// 게임 시작 시 호출될 함수
 	void StartGame();
 
 	// 게임 종료 시 호출
 	void StopGame();
-
+	
 	// 치트용 함수
 	void CheatPhaseChange();
 
@@ -73,7 +75,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameState", meta = (AllowPrivateAccess = "true"))
 	uint8 bIsGamePlaying : 1;
 
-	int32 ConnectedPlayerCounts = 0;
+	int32 ReadyPlayerCount = 0;
 
 	
 	uint8 bIsGameEnd : 1;

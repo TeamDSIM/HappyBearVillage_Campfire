@@ -4,6 +4,8 @@
 #include "HBMapWidgetComponent.h"
 
 #include "HappyBearVillage.h"
+#include "Character/HBCharacterPlayer.h"
+#include "Character/Stat/HBPlayerStatComponent.h"
 #include "GameState/HBMafiaGameState.h"
 #include "Subsystem/HBVillageGenerationWorldSubsystem.h"
 #include "UI/Map/HBMapWidget.h"
@@ -32,16 +34,21 @@ bool UHBMapWidgetComponent::IsMapValid() const
 
 void UHBMapWidgetComponent::CreateMapWidget(APlayerController* InPlayerController)
 {
+	if (MapWidget) return;
+	
 	MapWidget = CreateWidget<UHBMapWidget>(InPlayerController, MapWidgetClass);
 	MapWidget->AddToViewport();
 	HideMapWidget();
-
+	
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
 	VillageGenerationSystem->OnVillageGenerated.AddUObject(this, &UHBMapWidgetComponent::SetMapTexture);
 
 	AHBMafiaGameState* HBGameState = Cast<AHBMafiaGameState>(GetWorld()->GetGameState());
 	HBGameState->OnPlayerStateArrayChanged.AddUObject(MapWidget, &UHBMapWidget::RefreshPlayerColorList);
 	HBGameState->OnGamePhaseChanged.AddUObject(this, &UHBMapWidgetComponent::SetSyncStateByPhase);
+
+	AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(InPlayerController->GetPawn());
+	Character->GetStat()->OnPlayerJobChanged.AddUObject(MapWidget, &UHBMapWidget::SetJobDescText);
 }
 
 void UHBMapWidgetComponent::ShowMapWidget()

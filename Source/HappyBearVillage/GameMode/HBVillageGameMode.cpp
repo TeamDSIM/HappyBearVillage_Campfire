@@ -55,7 +55,7 @@ AHBVillageGameMode::AHBVillageGameMode()
 	GameStateClass = AHBMafiaGameState::StaticClass();
 	PlayerStateClass = AHBPlayerState::StaticClass();
 
-	ConnectedPlayerCounts = 0;
+	ReadyPlayerCount = 0;
 
 	bIsGameEnd = false;
 	bIsCivilWin = false;
@@ -64,9 +64,29 @@ AHBVillageGameMode::AHBVillageGameMode()
 	bUseSeamlessTravel = true;
 }
 
+void AHBVillageGameMode::ApplyClientReady()
+{
+	++ReadyPlayerCount;
+
+	HB_LOG(LogTemp, Log, TEXT("ApplyClientReady Call : ReadyPlayerCount : %d"), ReadyPlayerCount);
+
+	IOnlineSessionPtr SessionInterface = Online::GetSubsystem(GetWorld())->GetSessionInterface();
+	if (!SessionInterface.IsValid()) return;
+
+	FNamedOnlineSession* Session = SessionInterface->GetNamedSession(NAME_GameSession);
+	if (!Session) return;
+	
+	const int32 MaxPlayerCount = Session->SessionSettings.NumPublicConnections;
+	const int32 ExpectedPlayerCount = MaxPlayerCount - Session->NumOpenPublicConnections;
+
+	HB_LOG(LogTemp, Log, TEXT("ApplyClientReady State : ReadyPlayerCount : %d, ExpectedPlayerCount : %d"), ReadyPlayerCount, ExpectedPlayerCount);
+
+	if (ReadyPlayerCount == ExpectedPlayerCount) StartGame();
+}
+
 void AHBVillageGameMode::StartGame()
 {
-	UE_LOG(LogTemp, Log, TEXT("StartGame Call"));
+	HB_LOG(LogTemp, Log, TEXT("StartGame Call"));
 	UWorld* World = GetWorld();
 
 	// 서버가 아니라면 반환
@@ -91,6 +111,8 @@ void AHBVillageGameMode::StartGame()
 		return;
 	}
 
+	HBGameState->GameProgress = EGameProgress::Playing;
+	HBGameState->OnRep_GameProgress();
 
 	// 플레이어 초기 세팅
 	GameModePlayerControlComponent->InitPlayers(HBGameState);
@@ -262,7 +284,7 @@ void AHBVillageGameMode::CheckStartGame()
 	if (HasAuthority())
 	{
 		HB_LOG(LogHY, Log, TEXT("CheckStartGame Call"));
-		ConnectedPlayerCounts += 1;
+		ReadyPlayerCount += 1;
 
 		IOnlineSessionPtr SessionInterface = Online::GetSubsystem(GetWorld())->GetSessionInterface();
 		if (SessionInterface.IsValid())
@@ -281,9 +303,9 @@ void AHBVillageGameMode::CheckStartGame()
 				HB_LOG(LogHY, Log, TEXT("Players: %d / %d"),
 				       CurrentPlayers, MaxPlayers);
 
-				if (ConnectedPlayerCounts == CurrentPlayers)
+				if (ReadyPlayerCount == CurrentPlayers)
 				{
-					StartGame();
+					// StartGame();
 				}
 			}
 		}
