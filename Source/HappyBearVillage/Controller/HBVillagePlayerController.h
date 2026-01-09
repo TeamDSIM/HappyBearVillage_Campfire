@@ -25,7 +25,7 @@ public:
 	void CheckClientReady();
 	UFUNCTION(Server, Reliable)
 	void NotifyClientReady();
-	void StartGameWidget(EGameProgress GameProgress);
+	void StartGameWidget();
 
 	//관전 관련 코드
 	void EnterObserveMode();

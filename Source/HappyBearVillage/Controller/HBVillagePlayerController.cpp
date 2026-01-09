@@ -91,8 +91,7 @@ void AHBVillagePlayerController::CheckClientReady()
 
 	if (IsGameStateReady && IsPlayerStateReady && IsPawnReady)
 	{
-		AHBMafiaGameState* HBGameState = Cast<AHBMafiaGameState>(GetWorld()->GetGameState());
-		HBGameState->OnGameProgressChanged.AddUObject(this, &AHBVillagePlayerController::StartGameWidget);
+		StartGameWidget();
 		NotifyClientReady();
 		HB_LOG(LogTemp, Log, TEXT("NotifyClientReady Call"));
 	}
@@ -113,14 +112,11 @@ void AHBVillagePlayerController::NotifyClientReady_Implementation()
 	VillageGameMode->ApplyClientReady();
 }
 
-void AHBVillagePlayerController::StartGameWidget(EGameProgress GameProgress)
+void AHBVillagePlayerController::StartGameWidget()
 {
-	if (GameProgress == EGameProgress::Playing)
-	{
-		InGameHUDComponent->ActivateHUD(this);
-		MinimapWidgetComponent->CreateMinimapWidget(this);
-		MapWidgetComponent->CreateMapWidget(this);
-	}
+	InGameHUDComponent->ActivateHUD(this);
+	MinimapWidgetComponent->CreateMinimapWidget(this);
+	MapWidgetComponent->CreateMapWidget(this);
 }
 
 void AHBVillagePlayerController::EnterObserveMode()
