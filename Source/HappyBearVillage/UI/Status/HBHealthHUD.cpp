@@ -8,6 +8,7 @@
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
 
+
 void UHBHealthHUD::UpdateHealth(int32 NewHealth)
 {
 	UE_LOG(LogHY, Log, TEXT("UpdateHealth %d"), NewHealth);
@@ -32,6 +33,8 @@ void UHBHealthHUD::UpdateHealth(int32 NewHealth)
 		{
 			continue;
 		}
+
+		HBHealthSlot->SetImage(HeartTexture);
 
 		UHorizontalBoxSlot* BoxSlot = HeartSlots->AddChildToHorizontalBox(HBHealthSlot);
 		if (BoxSlot)

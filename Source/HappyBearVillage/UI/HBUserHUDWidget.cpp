@@ -31,6 +31,8 @@ void UHBUserHUDWidget::NativeConstruct()
 	PoliceNoticeHUDWidget = Cast<UHBPoliceNoticeHUD>(GetWidgetFromName(TEXT("PoliceNoticeHUD")));
 
 	HealthHUDWidget = Cast<UHBHealthHUD>(GetWidgetFromName(TEXT("HealthHUD")));
+	
+	StaminaHUDWidget = Cast<UHBHealthHUD>(GetWidgetFromName(TEXT("StaminaHUD")));
 
 	IHBCharacterHUDInterface* HUDPawn = Cast<IHBCharacterHUDInterface>(GetOwningPlayerPawn());
 	if (HUDPawn)
@@ -41,7 +43,6 @@ void UHBUserHUDWidget::NativeConstruct()
 
 void UHBUserHUDWidget::UpdatePhase(EGamePhase NewGamePhase)
 {
-	
 	if (NewGamePhase == EGamePhase::Fight)
 	{
 		FightHUDWidget->SetVisibility(ESlateVisibility::Visible);
@@ -101,9 +102,9 @@ void UHBUserHUDWidget::UpdateGameEnd(int32 NewMafiaWin)
 
 void UHBUserHUDWidget::UpdateStamina(int32 NewStamina)
 {
-	if (NightStaminaWidget)
+	if (StaminaHUDWidget)
 	{
-		NightStaminaWidget->SetStamina(NewStamina);
+		StaminaHUDWidget->UpdateHealth(NewStamina);
 	}
 }
 

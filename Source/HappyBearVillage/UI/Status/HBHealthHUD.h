@@ -25,5 +25,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UHBHealthSlot> HealthSlotClass;
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TObjectPtr<UTexture2D> HeartTexture;
 };

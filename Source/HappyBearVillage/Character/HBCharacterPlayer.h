@@ -23,15 +23,8 @@ class UHBUserHUDWidget;
 class UHBCharacterMafiaAttackComponent;
 
 /* ================= Night Flow ================= */
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnStaminaChanged, int32 /* Stamina */)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnCurrentStaminaChanged, int32 /* Stamina */)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerHealthChanged, int32 /* Health */)
-
-UENUM(BlueprintType)
-enum class EPlayerNightState : uint8
-{
-	InHouse UMETA(DisplayName = "In House"),
-	Outside UMETA(DisplayName = "Outside")
-};
 
 /* ================================================= */
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPoliceEffectChanged, bool /* bHasPoliceEffect */)
@@ -92,30 +85,30 @@ protected:
 
 	/* ========== Night Flow : State ========== */
 public:
-	FOnStaminaChanged OnStaminaChanged;
+	FOnCurrentStaminaChanged OnCurrentStaminaChanged;
 	FOnPoliceEffectChanged OnPoliceEffectChanged;
 	FOnPlayerHealthChanged OnPlayerHealthChanged;
 
 protected:
-	// 남은 외출 가능 횟수 (RepNotify로 HUD 갱신)
-	UPROPERTY(ReplicatedUsing = OnRep_Stamina, EditAnywhere, BlueprintReadOnly, Category = "Night")
-	int32 Stamina = 3;
+	// 현재 밤에 적용되는 스태미너
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentStamina, EditAnywhere, BlueprintReadOnly, Category = "Night")
+	int32 CurrentStamina = 2;
+
+	// 밤에 넘어왔을 때 기준 스태미너 (Current 와 다르면 이번엔 나갔다는 기준)
+	UPROPERTY(ReplicatedUsing = OnRep_NightStamina, EditAnywhere, BlueprintReadOnly, Category = "Night")
+	int32 NightStamina = 2;
 
 	// 최대 외출 가능 횟수
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night")
-	int32 MaxStamina = 3;
-
-	// 집 안 / 밖 상태
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Night")
-	EPlayerNightState NightState = EPlayerNightState::InHouse;
-
+	int32 MaxStamina = 2;
+	
 	// 이번 밤에 집 밖으로 나간 적 있는지
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Night")
+	UPROPERTY(ReplicatedUsing = OnRep_ExitedHouseThisNight, VisibleAnywhere, BlueprintReadOnly, Category = "Night")
 	bool bExitedHouseThisNight = false;
 
 	// 이전 밤(전날)에 집 밖으로 나갔는지 여부 (회복 규칙 처리용)
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Night")
-	bool bExitedPreviousNight = false;
+	bool bExitedPreviousNight = true;
 
 	// 캐시된 HUD 위젯 (로컬 클라이언트만 사용)
 	UPROPERTY(Transient)
@@ -123,28 +116,18 @@ protected:
 
 	// Stamina RepNotify
 	UFUNCTION()
-	void OnRep_Stamina();
+	void OnRep_CurrentStamina();
+
+	UFUNCTION()
+	void OnRep_NightStamina();
+
+	UFUNCTION()
+	void OnRep_ExitedHouseThisNight();
 
 
 	/* ========== Night Flow : Stamina Recovery (Timer) ========== */
 protected:
-	// 집 안에 있을 때 스태미나 회복
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night|Stamina")
-	int32 StaminaRecoverAmount = 1;
-
-	// 스태미나가 회복되기까지 걸리는 시간 (초)
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night|Stamina")
-	float StaminaRecoverInterval = 10.f;
-
-	// 스태미나 회복 타이머
-	FTimerHandle StaminaRecoverTimerHandle;
-
-
-	void StartStaminaRecovery();
-	void StopStaminaRecovery();
-
-	UFUNCTION()
-	void RecoverStaminaTick();
+	void StaminaRecovery();
 
 public:
 	/* ========== Night Flow : House Interaction ========== */
@@ -158,7 +141,7 @@ public:
 	UFUNCTION()
 	void ResetNightState();
 
-	// 밤이 끝나고 낮으로 넘어갈 때 호출하여 회복 규칙을 처리
+	// 밤이 끝나고 낮으로 넘어갈 때
 	void ProcessNightEnd();
 
 	/* ========== Movement / Action ========== */

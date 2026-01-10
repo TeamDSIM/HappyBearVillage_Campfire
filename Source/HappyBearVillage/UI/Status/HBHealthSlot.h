@@ -13,6 +13,9 @@ UCLASS()
 class HAPPYBEARVILLAGE_API UHBHealthSlot : public UHBUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	void SetImage(UTexture2D* Texture);
 	
 public:
 	UPROPERTY(meta = (BindWidget))

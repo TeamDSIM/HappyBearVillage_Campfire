@@ -55,12 +55,12 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class UHBFadeHUD> FadeHUDWidget;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UHBNightStaminaWidget> NightStaminaWidget;
-
 	UPROPERTY()
 	TObjectPtr<class UHBPoliceNoticeHUD> PoliceNoticeHUDWidget;
 
 	UPROPERTY()
 	TObjectPtr<class UHBHealthHUD> HealthHUDWidget;
+	
+	UPROPERTY()
+	TObjectPtr<class UHBHealthHUD> StaminaHUDWidget;
 };

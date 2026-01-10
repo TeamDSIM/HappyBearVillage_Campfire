@@ -7,6 +7,7 @@
 #include "HappyBearVillage.h"
 #include "InputMappingContext.h"
 #include "Animation/HBPlayerCharacterAnimInstance.h"
+#include "AnimNodes/AnimNode_RandomPlayer.h"
 #include "Component/HBCharacterRagdollComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
@@ -149,7 +150,6 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 		DanceAction = DanceActionRef.Object;
 	}
 
-
 	// ĳ���� �޽� ����
 	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 	GetMesh()->SetRelativeScale3D(FVector(0.2f, 0.2f, 0.2f));
@@ -173,6 +173,12 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	MafiaAttackComp = CreateDefaultSubobject<UHBCharacterMafiaAttackComponent>(TEXT("MafiaAttackComp"));
 
 	RenderColor = FLinearColor::Gray;
+
+	MaxStamina = 2;
+	CurrentStamina = 2;
+	NightStamina = 2;
+	bExitedHouseThisNight = false;
+	bExitedPreviousNight = false;
 }
 
 void AHBCharacterPlayer::BeginPlay()
@@ -180,13 +186,6 @@ void AHBCharacterPlayer::BeginPlay()
 	Super::BeginPlay();
 
 	/* ================= Night Flow : Game Start Init ================= */
-	if (HasAuthority())
-	{
-		// ���� ���� �ÿ��� ���(�����) �ʱ�ȭ
-		Stamina = MaxStamina;
-		bExitedHouseThisNight = false;
-		NightState = EPlayerNightState::InHouse;
-	}
 	/* ================================================================ */
 
 	DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0);
@@ -229,7 +228,6 @@ void AHBCharacterPlayer::PostInitializeComponents()
 			OnPlayerHealthChanged.Broadcast(NewHealth);
 		});
 	}
-
 }
 
 void AHBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -291,9 +289,9 @@ void AHBCharacterPlayer::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	DOREPLIFETIME(AHBCharacterPlayer, PlayerColor)
 	DOREPLIFETIME(AHBCharacterPlayer, RenderColor)
 
-	// Night ���� ������Ƽ�� �����Ͽ� UI ����ȭ
-	DOREPLIFETIME(AHBCharacterPlayer, Stamina);
-	DOREPLIFETIME(AHBCharacterPlayer, NightState);
+	// 밤
+	DOREPLIFETIME(AHBCharacterPlayer, CurrentStamina);
+	DOREPLIFETIME(AHBCharacterPlayer, NightStamina);
 	DOREPLIFETIME(AHBCharacterPlayer, bExitedHouseThisNight);
 	DOREPLIFETIME(AHBCharacterPlayer, bExitedPreviousNight);
 }
@@ -311,21 +309,28 @@ float AHBCharacterPlayer::TakeDamage(float DamageAmount, struct FDamageEvent con
 	return ActualDamage;
 }
 
-void AHBCharacterPlayer::OnRep_Stamina()
+void AHBCharacterPlayer::OnRep_CurrentStamina()
 {
-	// RepNotify: Stamina�� �ٲ�� ���� �÷��̾� HUD�� �ݿ�
-	if (!IsLocallyControlled())
-	{
-		return;
-	}
+	OnCurrentStaminaChanged.Broadcast(CurrentStamina);
+}
 
-	if (CachedHUDWidget)
+void AHBCharacterPlayer::OnRep_NightStamina()
+{
+	if (NightStamina == 0)
 	{
+		GetCapsuleComponent()->SetCollisionProfileName(TEXT("TiredBearCollision"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Verbose, TEXT("[NightFlow] OnRep_Stamina called but CachedHUDWidget is null. Stamina=%d"),
-		       Stamina);
+		GetCapsuleComponent()->SetCollisionProfileName(TEXT("InsideBearCollision"));
+	}
+}
+
+void AHBCharacterPlayer::OnRep_ExitedHouseThisNight()
+{
+	if (bExitedHouseThisNight)
+	{
+		GetCapsuleComponent()->SetCollisionProfileName(TEXT("OutsideBearCollision"));
 	}
 }
 
@@ -592,15 +597,15 @@ void AHBCharacterPlayer::ApplyHitFlash()
 void AHBCharacterPlayer::UpdateHitFlash()
 {
 	HitFlashElapsed += 0.016f;
-	
+
 	float Alpha = HitFlashElapsed / HitFlashDuration;
 	float FlashValue = FMath::Lerp(1.f, 0.f, Alpha);
-	
+
 	if (DynamicMaterial)
 	{
 		DynamicMaterial->SetScalarParameterValue(TEXT("HitFlash"), FlashValue);
 	}
-	
+
 	if (Alpha >= 1.f)
 	{
 		GetWorldTimerManager().ClearTimer(HitFlashTimerHandle);
@@ -1068,23 +1073,28 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 			InHUDWidget->UpdateRemainingTime(GameState->RemainingTime);
 			InHUDWidget->UpdateDate(GameState->Date);
 
+			InHUDWidget->UpdateStamina(CurrentStamina);
+			
+			if (Stat)
+			{
+				InHUDWidget->UpdateHealth(Stat->GetHealth());
+			}
+			
+
 			GameState->OnGamePhaseChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdatePhase);
 			GameState->OnRemainingTimeChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateRemainingTime);
 			GameState->OnDateChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateDate);
 			GameState->OnTopDamagePlayersChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateCurrentFightInfo);
 			GameState->OnTargetVoteNumChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateVoteNum);
 			GameState->OnGameEndChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateGameEnd);
-			
+
 			GameState->OnFadeAnimationPlay.AddUObject(InHUDWidget, &UHBUserHUDWidget::PlayFadeAnimation);
 
-			OnStaminaChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateStamina);
+			OnCurrentStaminaChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateStamina);
 			OnPoliceEffectChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdatePoliceNotice);
 
 			OnPlayerHealthChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateHealth);
-			if (Stat)
-			{
-				InHUDWidget->UpdateHealth(Stat->GetHealth());
-			}
+			
 		}
 
 		// HUD�� Stamina ����: �ʱⰪ ���� �� ĳ�� (���� Ŭ���̾�Ʈ������)
@@ -1238,19 +1248,15 @@ void AHBCharacterPlayer::EnterHouse()
 {
 	if (!HasAuthority()) return;
 
-	// �� ���¿����� �ǹ� ����
 	AHBMafiaGameState* GS = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (!GS || !GS->IsNight())
 	{
 		return;
 	}
 
-	NightState = EPlayerNightState::InHouse;
 
-	// �̹� �㿡 �� ���� ���� �� ���� ���� ȸ�� ����
 	if (!bExitedHouseThisNight)
 	{
-		StartStaminaRecovery();
 	}
 }
 
@@ -1260,138 +1266,76 @@ void AHBCharacterPlayer::ExitHouse()
 
 	if (!HasAuthority()) return;
 
-	// �̹� ���̸� �ߺ� ó�� ����
-	if (NightState == EPlayerNightState::Outside)
-	{
-		return;
-	}
-
 	AHBMafiaGameState* GS = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (!GS || !GS->IsNight())
 	{
-		// ������ Night Flow ���¸� �ǵ帮�� ����
 		return;
 	}
 
-	NightState = EPlayerNightState::Outside;
+	if (NightStamina <= 0)
+	{
+		return;
+	}
 
-	// �̹� �㿡 ���� ���
-	bExitedHouseThisNight = true;
+	// 현재 스테미너와 밤 진입 시 스테미너가 같으면 스테미너 감소
+	if (CurrentStamina == NightStamina && NightStamina > 0)
+	{
+		CurrentStamina -= 1;
+		OnRep_CurrentStamina();
 
-	// ���¹̳�(���) 1�� �Ҹ� ? ��� �Ҹ� ��Ģ
-	Stamina = FMath::Max(Stamina - 1, 0);
-	OnStaminaChanged.Broadcast(Stamina);
-
-	// �� ���̶� �������� �̹� �� ȸ���� ������ �ߴ�
-	StopStaminaRecovery();
-
-	UE_LOG(LogTemp, Warning,
-	       TEXT("[NightFlow] ExitHouse | Stamina: %d | ExitedThisNight: true"),
-	       Stamina);
+		bExitedHouseThisNight = true;
+		OnRep_ExitedHouseThisNight();
+	}
 }
 
-void AHBCharacterPlayer::StartStaminaRecovery()
+void AHBCharacterPlayer::StaminaRecovery()
 {
 	if (!HasAuthority()) return;
 
-	// �̹� ȸ�� ���̸� �ߺ� ���� ����
-	if (GetWorldTimerManager().IsTimerActive(StaminaRecoverTimerHandle))
-	{
-		return;
-	}
+	CurrentStamina = MaxStamina;
+	OnRep_CurrentStamina();
 
-	GetWorldTimerManager().SetTimer(
-		StaminaRecoverTimerHandle,
-		this,
-		&AHBCharacterPlayer::RecoverStaminaTick,
-		StaminaRecoverInterval,
-		true
-	);
+	UE_LOG(LogTemp, Log, TEXT("StaminaRecovery called"));
 }
 
-void AHBCharacterPlayer::StopStaminaRecovery()
-{
-	if (!HasAuthority()) return;
-
-	GetWorldTimerManager().ClearTimer(StaminaRecoverTimerHandle);
-}
-
-void AHBCharacterPlayer::RecoverStaminaTick()
-{
-	if (!HasAuthority()) return;
-
-	// �̹� �㿡 ������ �� ������ ȸ�� ����
-	if (bExitedHouseThisNight)
-	{
-		StopStaminaRecovery();
-		return;
-	}
-
-	AHBMafiaGameState* GS = GetWorld()->GetGameState<AHBMafiaGameState>();
-	if (!GS || !GS->IsNight())
-	{
-		StopStaminaRecovery();
-		return;
-	}
-
-	// �� �ȿ� ���� ���� ȸ��
-	if (NightState != EPlayerNightState::InHouse)
-	{
-		StopStaminaRecovery();
-		return;
-	}
-
-	const int32 OldStamina = Stamina;
-	Stamina = FMath::Min(Stamina + StaminaRecoverAmount, MaxStamina);
-
-	UE_LOG(LogTemp, Log,
-	       TEXT("[NightFlow] Recover %d -> %d"),
-	       OldStamina, Stamina);
-
-	// �ִ�ġ�� ȸ�� ����
-	if (Stamina >= MaxStamina)
-	{
-		StopStaminaRecovery();
-	}
-}
 
 void AHBCharacterPlayer::ResetNightState()
 {
 	if (!HasAuthority()) return;
 
-	// ���� ���� ���� ���θ� ���(���� ���� ����)
-	bExitedPreviousNight = bExitedHouseThisNight;
+	// 전날 안나갔으면 스테미너 회복
+	if (!bExitedPreviousNight)
+	{
+		UE_LOG(LogTemp, Log, TEXT("ResetNightState StaminaRecovery called"));
+		StaminaRecovery();
+	}
 
-	// �� ���� �� �⺻ ���� �ʱ�ȭ (�̹� ���� ���� ���� ����)
+	// NightStamina > 밤 시작 시 호출
+	// 현재 스테미너 상황에 맞춰서 콜리젼 프리셋을 RepNotify 에서 변경
+	NightStamina = CurrentStamina;
+	OnRep_NightStamina();
+
 	bExitedHouseThisNight = false;
-	NightState = EPlayerNightState::InHouse;
-
-	// Ȥ�� ���������� �𸣴� Ÿ�̸� ����
-	StopStaminaRecovery();
-
-	UE_LOG(LogTemp, Log,
-	       TEXT("[NightFlow] ResetNightState | Stamina: %d | PrevExited: %s"),
-	       Stamina, bExitedPreviousNight ? TEXT("true") : TEXT("false"));
+	OnRep_ExitedHouseThisNight();
 }
 
 void AHBCharacterPlayer::ProcessNightEnd()
 {
 	if (!HasAuthority()) return;
 
-	// ��Ģ: "����(�ٷ� ���� ��)�� ����������, �� ���� ��(���� ��) ���� �������� ���� ��� ���¹̳� +1 ȸ��"
-	// ���⼭�� '���� ���� ��'(-> �� ���� ��) ȣ��Ǿ�, bExitedPreviousNight �� �ٷ� ������ ��ϵ� ��,
-	// bExitedHouseThisNight �� ���� ���� ��(�� ��)�� �����ߴ��� ����.
-	if (bExitedPreviousNight && !bExitedHouseThisNight)
-	{
-		const int32 Old = Stamina;
-		Stamina = FMath::Min(Stamina + 1, MaxStamina);
-		UE_LOG(LogTemp, Log,
-		       TEXT("[NightFlow] ProcessNightEnd: Recovered %d -> %d (PrevExited true, ThisNight no exit)"),
-		       Old, Stamina);
-	}
-
-	// ���� ����Ŭ�� ���� ���� �� �÷��� ���� (���� bExitedPreviousNight�� ��� ���� ���� ���� ���η� ����)
+	// 오늘 나감 여부에 따른 전날 나간 여부를 처리
+	// if (CurrentStamina != NightStamina)
+	// {
+	// 	bExitedPreviousNight = true;
+	// }
+	// else
+	// {
+	// 	bExitedPreviousNight = false;
+	// }
 	bExitedPreviousNight = bExitedHouseThisNight;
+	
+	bExitedHouseThisNight = false;
+	OnRep_ExitedHouseThisNight();
 }
 
 void AHBCharacterPlayer::Dance()

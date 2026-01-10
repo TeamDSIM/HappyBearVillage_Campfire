@@ -294,6 +294,8 @@ void AHBVillageGameMode::StartDay()
 			{
 				Character->RenderColor = Character->PlayerColor;
 				Character->OnRep_RenderColor();
+
+				Character->ProcessNightEnd();
 				
 				UHBJobBaseComponent* JobComponent = Character->GetJobComponent();
 				if (JobComponent)
@@ -444,6 +446,8 @@ void AHBVillageGameMode::StartNight()
 				Character->RenderColor = FLinearColor::Black;
 				Character->OnRep_RenderColor();
 				
+				Character->ResetNightState();
+				
 				UHBJobBaseComponent* JobComponent = Character->GetJobComponent();
 				if (JobComponent)
 				{
@@ -451,18 +455,7 @@ void AHBVillageGameMode::StartNight()
 				}
 			}
 		}
-		
-		if (!PS) continue;
-
-		AController* Controller = PS->GetPlayerController();
-		if (!Controller) continue;
-
-		AHBCharacterPlayer* Player = Cast<AHBCharacterPlayer>(Controller->GetPawn());
-		if (!Player) continue;
-
-		Player->ResetNightState();
 	}
-
 }
 
 
@@ -482,6 +475,7 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 		return;
 	}
 
+	UE_LOG(LogTemp, Log, TEXT("SetPhase Call"));
 	// GameState 의 현재 페이즈와 남은 시간을 페이즈에 맞게 설정
 	HBGameState->CurrentPhase = NewPhase;
 	HBGameState->RemainingTime = Duration;
