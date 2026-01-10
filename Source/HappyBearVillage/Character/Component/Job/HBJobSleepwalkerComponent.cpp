@@ -32,11 +32,11 @@ void UHBJobSleepwalkerComponent::NightPhaseBegin()
 
 	UE_LOG(LogTemp, Log, TEXT("SleepWalkerTry"));
 	AHBCharacterPlayer* HBCharacterPlayer = GetOwner<AHBCharacterPlayer>();
-
 	if (HBCharacterPlayer)
 	{
 		UE_LOG(LogTemp, Log, TEXT("SleepWalkerTry TestLocate"));
 		HBCharacterPlayer->SetActorLocation(RandomAvailableLocation);
+		HBCharacterPlayer->SetCurrentStamina(HBCharacterPlayer->GetMaxStamina());
 	}
 
 

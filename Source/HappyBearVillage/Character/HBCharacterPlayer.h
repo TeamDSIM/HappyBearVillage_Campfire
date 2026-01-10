@@ -101,6 +101,10 @@ protected:
 	// 최대 외출 가능 횟수
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Night")
 	int32 MaxStamina = 2;
+
+	// 아침 초기화 시 콜리젼 변경 여부
+	UPROPERTY(ReplicatedUsing = OnRep_InitNightCollision, VisibleAnywhere, BlueprintReadOnly, Category = "Night")
+	bool bInitNightCollision = false;
 	
 	// 이번 밤에 집 밖으로 나간 적 있는지
 	UPROPERTY(ReplicatedUsing = OnRep_ExitedHouseThisNight, VisibleAnywhere, BlueprintReadOnly, Category = "Night")
@@ -120,6 +124,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_NightStamina();
+	
+	UFUNCTION()
+	void OnRep_InitNightCollision();
 
 	UFUNCTION()
 	void OnRep_ExitedHouseThisNight();
@@ -143,6 +150,19 @@ public:
 
 	// 밤이 끝나고 낮으로 넘어갈 때
 	void ProcessNightEnd();
+
+	FORCEINLINE void SetCurrentStamina(int32 NewStamina)
+	{
+		if (HasAuthority())
+		{
+			CurrentStamina = NewStamina;
+			OnRep_CurrentStamina();
+
+			UE_LOG(LogTemp, Log, TEXT("SetCurrentStamina called %d"), CurrentStamina);
+		}
+	}
+
+	FORCEINLINE int32 GetMaxStamina() const { return MaxStamina; }
 
 	/* ========== Movement / Action ========== */
 public:

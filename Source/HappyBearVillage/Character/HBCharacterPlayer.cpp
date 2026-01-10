@@ -177,6 +177,7 @@ AHBCharacterPlayer::AHBCharacterPlayer()
 	MaxStamina = 2;
 	CurrentStamina = 2;
 	NightStamina = 2;
+	bInitNightCollision = false;
 	bExitedHouseThisNight = false;
 	bExitedPreviousNight = false;
 }
@@ -292,6 +293,7 @@ void AHBCharacterPlayer::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	// 밤
 	DOREPLIFETIME(AHBCharacterPlayer, CurrentStamina);
 	DOREPLIFETIME(AHBCharacterPlayer, NightStamina);
+	DOREPLIFETIME(AHBCharacterPlayer, bInitNightCollision);
 	DOREPLIFETIME(AHBCharacterPlayer, bExitedHouseThisNight);
 	DOREPLIFETIME(AHBCharacterPlayer, bExitedPreviousNight);
 }
@@ -316,9 +318,21 @@ void AHBCharacterPlayer::OnRep_CurrentStamina()
 
 void AHBCharacterPlayer::OnRep_NightStamina()
 {
-	if (NightStamina == 0)
+	
+}
+
+void AHBCharacterPlayer::OnRep_InitNightCollision()
+{
+	if (bInitNightCollision)
 	{
-		GetCapsuleComponent()->SetCollisionProfileName(TEXT("TiredBearCollision"));
+		if (NightStamina == 0)
+		{
+			GetCapsuleComponent()->SetCollisionProfileName(TEXT("TiredBearCollision"));
+		}
+		else
+		{
+			GetCapsuleComponent()->SetCollisionProfileName(TEXT("InsideBearCollision"));
+		}
 	}
 	else
 	{
@@ -1276,16 +1290,17 @@ void AHBCharacterPlayer::ExitHouse()
 	{
 		return;
 	}
-
+	
 	// 현재 스테미너와 밤 진입 시 스테미너가 같으면 스테미너 감소
 	if (CurrentStamina == NightStamina && NightStamina > 0)
 	{
 		CurrentStamina -= 1;
+		CurrentStamina = FMath::Clamp(CurrentStamina, 0.f, MaxStamina);
 		OnRep_CurrentStamina();
-
-		bExitedHouseThisNight = true;
-		OnRep_ExitedHouseThisNight();
 	}
+
+	bExitedHouseThisNight = true;
+	OnRep_ExitedHouseThisNight();
 }
 
 void AHBCharacterPlayer::StaminaRecovery()
@@ -1315,24 +1330,23 @@ void AHBCharacterPlayer::ResetNightState()
 	NightStamina = CurrentStamina;
 	OnRep_NightStamina();
 
+	bInitNightCollision = true;
+	OnRep_InitNightCollision();
+	
 	bExitedHouseThisNight = false;
 	OnRep_ExitedHouseThisNight();
+
+	
 }
 
 void AHBCharacterPlayer::ProcessNightEnd()
 {
 	if (!HasAuthority()) return;
 
-	// 오늘 나감 여부에 따른 전날 나간 여부를 처리
-	// if (CurrentStamina != NightStamina)
-	// {
-	// 	bExitedPreviousNight = true;
-	// }
-	// else
-	// {
-	// 	bExitedPreviousNight = false;
-	// }
 	bExitedPreviousNight = bExitedHouseThisNight;
+	
+	bInitNightCollision = false;
+	OnRep_InitNightCollision();
 	
 	bExitedHouseThisNight = false;
 	OnRep_ExitedHouseThisNight();
