@@ -122,6 +122,10 @@ void AHBVillageGameMode::StopGame()
 {
 	// 서버에서 처리하도록 예외처리
 	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
 	if (!IsServer(World))
 	{
 		return;
@@ -233,13 +237,18 @@ void AHBVillageGameMode::CheckGameEnd()
 			HBGameState->OnRep_GameEnd();
 		}
 
+		TWeakObjectPtr<AHBVillageGameMode> WeakThis(this);
+
 		// 타이머로 일정 시간 뒤 StopGame();
 		GetWorld()->GetTimerManager().SetTimer(
 			EndTimerHandle,
 			FTimerDelegate::CreateLambda(
-				[this]()
+				[WeakThis]()
 				{
-					StopGame();
+					if (WeakThis.IsValid())
+					{
+						WeakThis->StopGame();
+					}
 				}
 			), 5.f, false
 		);

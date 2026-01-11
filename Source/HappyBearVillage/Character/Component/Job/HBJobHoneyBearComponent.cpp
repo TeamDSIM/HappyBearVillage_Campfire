@@ -111,6 +111,11 @@ void UHBJobHoneyBearComponent::StealStaminaFromTarget()
 	FLinearColor HouseOwnerColor = TargetHouse->GetHouseColor();
 	AHBCharacterPlayer* HBTargetCharacter = HBGameState->GetPlayerByColor(HouseOwnerColor);
 
+	if (HBTargetCharacter == OwnerCharacter)
+	{
+		return;
+	}
+	
 	if (HBTargetCharacter->GetCurrentStamina() > 0)
 	{
 		OwnerCharacter->SetCurrentStamina(OwnerCharacter->GetCurrentStamina() + 1);

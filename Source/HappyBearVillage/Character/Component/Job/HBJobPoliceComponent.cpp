@@ -39,7 +39,15 @@ void UHBJobPoliceComponent::BindSealEvent()
 	UE_LOG(LogTemp, Warning, TEXT("Police BindSealEvent"));
 	// 집 알아오기
 	HBHouse = DetectHouse();
-		
+
+	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
+	FLinearColor HouseOwnerColor = HBHouse->GetHouseColor();
+	AHBCharacterPlayer* TargetCharacter = HBGameState->GetPlayerByColor(HouseOwnerColor);
+	if (GetOwner<AHBCharacterPlayer>() == TargetCharacter)
+	{
+		return;
+	}
+	
 	// 바인딩
 	// 이미 집에있는사람 받아서 Seal 처리
 	if (HBHouse)
