@@ -25,7 +25,7 @@ void UHBJobPoliceComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 
 void UHBJobPoliceComponent::OnRep_IsRemainAction()
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnRep_IsRemainAction"));
+	UE_LOG(LogTemp, Warning, TEXT("POLICE : OnRep_IsRemainAction"));
 }
 
 void UHBJobPoliceComponent::ServerRPCAction_Implementation()
