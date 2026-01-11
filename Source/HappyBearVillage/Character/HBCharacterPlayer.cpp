@@ -308,7 +308,7 @@ float AHBCharacterPlayer::TakeDamage(float DamageAmount, struct FDamageEvent con
 		MulticastRPCApplyHitFlash(0.12f);
 
 		const float Intensity =
-			FMath::Clamp(ActualDamage / 10.f, 0.25f, 1.f);
+			FMath::Clamp(ActualDamage / 10.f, 0.5f, 1.f);
 
 		ClientRPCPlayHitVignette(Intensity);
 	}
