@@ -17,7 +17,7 @@ AHBPresent::AHBPresent()
 		Mesh->SetStaticMesh(CubeMesh.Object);
 	}
 
-	Mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5));
+	Mesh->SetRelativeScale3D(FVector(0.3f, 0.3f, 0.3));
 	Mesh->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
