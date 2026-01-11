@@ -10,6 +10,7 @@
 #include "Character/Component/Job/HBJobPoliceComponent.h"
 #include "Character/Component/Job/HBJobCelebrityComponent.h"
 #include "Character/Component/Job/HBJobInsiderComponent.h"
+#include "Character/Component/Job/HBJobHoneyBearComponent.h"
 #include "Character/Component/Job/HBJobSleepwalkerComponent.h"
 
 #include "Components/CapsuleComponent.h"
@@ -78,7 +79,7 @@ int32 UHBPlayerStatComponent::ApplyNightDamage()
 	}
 	int TempHealth = Health;
 	Health -= 1;
-	
+
 	if (Health <= 0)
 	{
 		Health = 0;
@@ -121,7 +122,7 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 	{
 		return;
 	}
-	
+
 	AHBCharacterPlayer* HBCharacterPlayer = Cast<AHBCharacterPlayer>(GetOwner());
 	if (HBCharacterPlayer)
 	{
@@ -129,46 +130,59 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 		{
 		case EJobType::MAFIA:
 			break;
+			
 		case EJobType::ASSASSIN:
 			{
 				HBCharacterPlayer->AssignJob(UHBJobAssassinComponent::StaticClass());
 			}
-				break;
+			break;
+			
 		case EJobType::FIREBUG:
 		case EJobType::BOMBER:
 		case EJobType::CITIZEN:
 			break;
+			
 		case EJobType::ARMY:
-		{
-			HBCharacterPlayer->AssignJob(UHBJobArmyComponent::StaticClass());
-		}
+			{
+				HBCharacterPlayer->AssignJob(UHBJobArmyComponent::StaticClass());
+			}
 			break;
+			
 		case EJobType::SLEEPWALKER:
-		{
-			HBCharacterPlayer->AssignJob(UHBJobSleepwalkerComponent::StaticClass());
-		}
+			{
+				HBCharacterPlayer->AssignJob(UHBJobSleepwalkerComponent::StaticClass());
+			}
 			break;
 
 		case EJobType::DETECTOR:
 		case EJobType::SANTA:
 			break;
+			
 		case EJobType::POLICE:
 			{
 				HBCharacterPlayer->AssignJob(UHBJobPoliceComponent::StaticClass());
 			}
 			break;
+			
 		case EJobType::INSIDER:
 			HBCharacterPlayer->AssignJob(UHBJobInsiderComponent::StaticClass());
 			break;
+			
 		case EJobType::CELEBRITY:
-		{
-			HBCharacterPlayer->AssignJob(UHBJobCelebrityComponent::StaticClass());
-		}
+			{
+				HBCharacterPlayer->AssignJob(UHBJobCelebrityComponent::StaticClass());
+			}
 			break;
-	
+
 		case EJobType::HONEYBEAR:
+			{
+				HBCharacterPlayer->AssignJob(UHBJobHoneyBearComponent::StaticClass());
+			}
+			break;
+			
 		case EJobType::TREASUREHUNTER:
 			break;
+			
 		default:
 			break;
 		}

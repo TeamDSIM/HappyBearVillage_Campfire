@@ -49,7 +49,7 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 				if (PlayerStatComponent)
 				{
 					// 플레이어의 직업 설정
-					//PlayerStatComponent->InitCharacterRole(PlayerJobs[i]);
+					//PlayerStatComponent->InitCharacterPlayerJobs.Add(EJobType::ASSASSIN);Role(PlayerJobs[i]);
 
 					PlayerStatComponent->SetHealth(2);
 					
@@ -264,10 +264,19 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 		if (i < MafiaNum)
 		{
 			PlayerJobs.Add(MafiaPool.Pop());
+			//PlayerJobs.Add(EJobType::HONEYBEAR);
 		}
 		else
 		{
-			PlayerJobs.Add(CitizenPool.Pop());
+			if (i % 2 == 0)
+			{
+				PlayerJobs.Add(EJobType::HONEYBEAR);
+			}
+			else
+			{
+				PlayerJobs.Add(EJobType::POLICE);
+			}
+			//PlayerJobs.Add(CitizenPool.Pop());
 		}
 	}
 

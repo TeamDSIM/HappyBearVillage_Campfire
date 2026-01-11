@@ -48,6 +48,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UBoxComponent> GateCollision;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UChildActorComponent> HoneyPot;
+
 	// 집 색깔
 	UPROPERTY(VisibleAnywhere, Category = "House Info")
 	FLinearColor HouseColor;

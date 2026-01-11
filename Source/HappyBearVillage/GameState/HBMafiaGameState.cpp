@@ -40,12 +40,12 @@ AHBCharacterPlayer* AHBMafiaGameState::GetPlayerByColor(FLinearColor InColor)
 {
 	for (APlayerState* PS : PlayerArray)
 	{
-		AController* PlayerController = PS->GetPlayerController();
-		if (PlayerController)
+		if (PS)
 		{
-			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PlayerController->GetPawn());
+			AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(PS->GetPawn());
 			if (Character && Character->PlayerColor == InColor)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("Player Color : %s"), *Character->PlayerColor.ToString());
 				return Character;
 			}
 		}

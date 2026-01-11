@@ -118,6 +118,7 @@ protected:
 	UPROPERTY(Transient)
 	TObjectPtr<UHBUserHUDWidget> CachedHUDWidget;
 
+public:
 	// Stamina RepNotify
 	UFUNCTION()
 	void OnRep_CurrentStamina();
@@ -151,6 +152,7 @@ public:
 	// 밤이 끝나고 낮으로 넘어갈 때
 	void ProcessNightEnd();
 
+	FORCEINLINE int32 GetCurrentStamina() const { return CurrentStamina; }
 	FORCEINLINE void SetCurrentStamina(int32 NewStamina)
 	{
 		if (HasAuthority())
