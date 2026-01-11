@@ -4,10 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "UI/HBUserWidget.h"
+#include "Character/Stat/HBCharacterRole.h"
 #include "HBPlayerRoleWidget.generated.h"
 
-enum class EJobType : uint8;
-enum class ERoleType : uint8;
 /**
  * 
  */

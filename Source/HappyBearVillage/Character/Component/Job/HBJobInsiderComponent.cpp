@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "HBJobInsiderComponent.h"
+#include "Character/Component/Job/HBJobInsiderComponent.h"
 #include "Character/HBCharacterPlayer.h"
 #include "PlayerState/HBPlayerState.h"
 #include "Engine/World.h"

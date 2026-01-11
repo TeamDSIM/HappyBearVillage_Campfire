@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "HBCharacterRole.h"
+#include "Character/Stat/HBCharacterRole.h"
 #include "HBCharacterColor.generated.h"
 
 /**
