@@ -1,12 +1,21 @@
 ﻿#include "HBInvitation.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "UObject/ConstructorHelpers.h"
 
 AHBInvitation::AHBInvitation()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
-	Mesh->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube"));
+	if (CubeMesh.Succeeded())
+	{
+		Mesh->SetStaticMesh(CubeMesh.Object);
+	}
+
+	Mesh->SetRelativeScale3D(FVector(0.1f, 0.2f, 0.01f));
+	Mesh->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->InitialSpeed = 400.f;
