@@ -1,10 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "HBJobDetectorComponent.h"
-
-#include <HBPlayerRoleWidget.generated.h>
-
+#include "Character/Component/Job/HBJobDetectorComponent.h"
 #include "Character/HBCharacterPlayer.h"
 #include "Controller/HBVillagePlayerController.h"
 #include "GameFramework/PlayerState.h"
