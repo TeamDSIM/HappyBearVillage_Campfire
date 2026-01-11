@@ -9,6 +9,7 @@
 #include "Character/Component/Job/HBJobAssassinComponent.h"
 #include "Character/Component/Job/HBJobPoliceComponent.h"
 #include "Character/Component/Job/HBJobCelebrityComponent.h"
+#include "Character/Component/Job/HBJobInsiderComponent.h"
 #include "Character/Component/Job/HBJobSleepwalkerComponent.h"
 
 #include "Components/CapsuleComponent.h"
@@ -157,6 +158,7 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 			}
 			break;
 		case EJobType::INSIDER:
+			HBCharacterPlayer->AssignJob(UHBJobInsiderComponent::StaticClass());
 			break;
 		case EJobType::CELEBRITY:
 		{
