@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "HBVillagePlayerController.generated.h"
 
+class AHBPlayerState;
 enum class EGameProgress : uint8;
 
 /**
@@ -26,6 +27,8 @@ public:
 	UFUNCTION(Server, Reliable)
 	void NotifyClientReady();
 	void StartGameWidget();
+
+	void ShowPlayerJobInfo(AHBPlayerState* TargetPlayer);
 
 	//관전 관련 코드
 	void EnterObserveMode();
@@ -67,6 +70,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 	TObjectPtr<class UHBMapWidgetComponent> MapWidgetComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+	TObjectPtr<class UHBJobInfoWidgetComponent> JobInfoWidgetComponent;
 
 	//관전 가능 플레이어 목록
 	//Weak로 선언하는 이유: 플레이어가 죽으면 자동으로 무효화
