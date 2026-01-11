@@ -1291,8 +1291,8 @@ void AHBCharacterPlayer::ExitHouse()
 		return;
 	}
 	
-	// 현재 스테미너와 밤 진입 시 스테미너가 같으면 스테미너 감소
-	if (CurrentStamina == NightStamina && NightStamina > 0)
+	// 현재 스테미너와 밤 진입 시 스테미너가 같으면 스테미너 감소, 이번 밤에 나가지 않았으면
+	if (NightStamina > 0 && !bExitedHouseThisNight)
 	{
 		CurrentStamina -= 1;
 		CurrentStamina = FMath::Clamp(CurrentStamina, 0.f, MaxStamina);
