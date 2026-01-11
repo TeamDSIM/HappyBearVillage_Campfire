@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Character/HBCharacterPlayer.h"
 #include "Components/ArrowComponent.h"
+#include "InteractObject/HBHoneyPot.h"
 #include "Net/UnrealNetwork.h"
 
 AHBHouse::AHBHouse()
@@ -27,6 +28,10 @@ AHBHouse::AHBHouse()
 	GateCollision->SetupAttachment(RootComponent);
 	GateCollision->SetBoxExtent(FVector(1000.f));
 	GateCollision->SetCollisionProfileName(TEXT("HouseGateCollision"));
+
+	HoneyPot = CreateDefaultSubobject<UChildActorComponent>(TEXT("HoneyPotChild"));
+	HoneyPot->SetupAttachment(RootComponent);
+	HoneyPot->SetChildActorClass(AHBHoneyPot::StaticClass());
 }
 
 void AHBHouse::BeginPlay()

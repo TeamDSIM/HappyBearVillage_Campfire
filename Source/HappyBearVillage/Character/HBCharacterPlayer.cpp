@@ -432,22 +432,26 @@ void AHBCharacterPlayer::Interaction()
 	UWorld* World = Cast<UWorld>(GetWorld());
 	if (!World)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Interaction World is null"));
 		return;
 	}
 
 	AHBMafiaGameState* GameState = World->GetGameState<AHBMafiaGameState>();
 	if (!GameState)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Interaction GameState is null"));
 		return;
 	}
 
 	// ���� Phase �� ���� Phase �� �ƴϸ� ��ȣ�ۿ� ���� ���ϵ��� ����
-	if (GameState->CurrentPhase != EGamePhase::Fight && GameState->CurrentPhase != EGamePhase::Lobby)
+	if (GameState->CurrentPhase == EGamePhase::Discussion || GameState->CurrentPhase == EGamePhase::VoteCheck || GameState->CurrentPhase == EGamePhase::Day)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Interaction is not allowed in this phase"));
 		return;
 	}
 	if (Stat->GetIsVoteTarget())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Interaction is not allowed in this phase"));
 		return;
 	}
 
@@ -458,6 +462,7 @@ void AHBCharacterPlayer::Interaction()
 			IHBInteractableInterface* InteractionActor = Cast<IHBInteractableInterface>(InteractionTarget);
 			if (InteractionActor)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("Interaction Target : %s"), *InteractionTarget->GetName());
 				InteractionActor->Interact(this);
 			}
 		}
@@ -646,7 +651,7 @@ void AHBCharacterPlayer::InteractionTraceTick()
 	}
 
 	// ���� Phase �� ���� Phase �� �ƴϸ� ��ȣ�ۿ����� �����Ƿ� �Ǻ� ���� X
-	if (GameState->CurrentPhase != EGamePhase::Fight && GameState->CurrentPhase != EGamePhase::Lobby)
+	if (GameState->CurrentPhase == EGamePhase::Day || GameState->CurrentPhase == EGamePhase::Discussion)
 	{
 		return;
 	}

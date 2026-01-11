@@ -64,15 +64,18 @@ void UHBJobHoneyBearComponent::Action()
 		return;
 	}
 
-	if (OwnerCharacter->HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("HoneyBear Action - HasAuthority"));
-		StealStaminaFromTarget();
-	}
-	else
-	{
-		ServerRPCAction();
-	}
+	UE_LOG(LogTemp, Warning, TEXT("HoneyBear Action - Action"));
+	OwnerCharacter->Interaction();
+
+	// if (OwnerCharacter->HasAuthority())
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("HoneyBear Action - HasAuthority"));
+	// 	StealStaminaFromTarget();
+	// }
+	// else
+	// {
+	// 	ServerRPCAction();
+	// }
 }
 
 void UHBJobHoneyBearComponent::OnRep_IsRemainAction()
@@ -80,13 +83,33 @@ void UHBJobHoneyBearComponent::OnRep_IsRemainAction()
 	UE_LOG(LogTemp, Warning, TEXT("HONEYBEAR : OnRep_IsRemainAction"));
 }
 
-void UHBJobHoneyBearComponent::ServerRPCAction_Implementation()
+void UHBJobHoneyBearComponent::StealStamina(AActor* Target)
 {
-	UE_LOG(LogTemp, Warning, TEXT("HoneyBear Action - ServerRPCAction"));
-	StealStaminaFromTarget();
+	AHBCharacterPlayer* OwnerCharacter = GetOwner<AHBCharacterPlayer>();
+	if (!OwnerCharacter)
+	{
+		return;
+	}
+	
+	if (OwnerCharacter->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HoneyBear Action - HasAuthority"));
+		StealStaminaFromTarget(Target);
+	}
+	else
+	{
+		ServerRPCAction(Target);
+	}
 }
 
-void UHBJobHoneyBearComponent::StealStaminaFromTarget()
+
+void UHBJobHoneyBearComponent::ServerRPCAction_Implementation(AActor* Target)
+{
+	UE_LOG(LogTemp, Warning, TEXT("HoneyBear Action - ServerRPCAction"));
+	StealStaminaFromTarget(Target);
+}
+
+void UHBJobHoneyBearComponent::StealStaminaFromTarget(AActor* Target)
 {
 	// @PHYTODO : 임시로 집 안에 있을 때 사용하면 집주인 스테미너 훔치기
 	UE_LOG(LogTemp, Warning, TEXT("HoneyBear StealStaminaFromTarget"));
@@ -101,17 +124,8 @@ void UHBJobHoneyBearComponent::StealStaminaFromTarget()
 	{
 		return;
 	}
-
-	AHBHouse* TargetHouse = DetectHouse();
-	if (!TargetHouse)
-	{
-		return;
-	}
-	
-	FLinearColor HouseOwnerColor = TargetHouse->GetHouseColor();
-	AHBCharacterPlayer* HBTargetCharacter = HBGameState->GetPlayerByColor(HouseOwnerColor);
-
-	if (HBTargetCharacter == OwnerCharacter)
+	AHBCharacterPlayer* HBTargetCharacter = Cast<AHBCharacterPlayer>(Target);
+	if (!HBTargetCharacter || HBTargetCharacter == OwnerCharacter)
 	{
 		return;
 	}

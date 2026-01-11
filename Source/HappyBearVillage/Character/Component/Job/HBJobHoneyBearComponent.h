@@ -29,12 +29,15 @@ public:
 	UFUNCTION()
 	void OnRep_IsRemainAction();
 
+	UFUNCTION()
+	void StealStamina(AActor* Target);
+
 protected:
 	UFUNCTION(Server, Reliable)
-	void ServerRPCAction();
-
+	void ServerRPCAction(AActor* Target);
+	
 	UFUNCTION()
-	void StealStaminaFromTarget();
+	void StealStaminaFromTarget(AActor* Target);
 
 private:
 	UPROPERTY(ReplicatedUsing = OnRep_IsRemainAction)
