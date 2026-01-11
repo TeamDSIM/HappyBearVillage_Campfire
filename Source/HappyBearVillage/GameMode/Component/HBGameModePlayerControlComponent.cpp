@@ -264,19 +264,10 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 		if (i < MafiaNum)
 		{
 			PlayerJobs.Add(MafiaPool.Pop());
-			//PlayerJobs.Add(EJobType::HONEYBEAR);
 		}
 		else
 		{
-			if (i % 2 == 0)
-			{
-				PlayerJobs.Add(EJobType::HONEYBEAR);
-			}
-			else
-			{
-				PlayerJobs.Add(EJobType::POLICE);
-			}
-			//PlayerJobs.Add(CitizenPool.Pop());
+			PlayerJobs.Add(CitizenPool.Pop());
 		}
 	}
 
