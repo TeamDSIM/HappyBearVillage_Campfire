@@ -17,13 +17,12 @@ void UHBJobInsiderComponent::NightPhaseBegin()
 {
 	Super::NightPhaseBegin();
 	GatherInvitees();
-	ClearInvitations();
 }
 
 void UHBJobInsiderComponent::NightPhaseEnd()
 {
 	Super::NightPhaseEnd();
-	Invitations.Empty();
+	DestroyInvitations();
 }
 
 void UHBJobInsiderComponent::Action()
@@ -77,14 +76,16 @@ void UHBJobInsiderComponent::GatherInvitees()
 			UE_LOG(LogTemp, Log, TEXT("Gather Invitee"));
 		}
 	}
+
+	InviteeColors.Empty();
 }
 
-void UHBJobInsiderComponent::ClearInvitations()
+void UHBJobInsiderComponent::DestroyInvitations()
 {
 	for (AHBInvitation* Invitation : Invitations)
 	{
 		Invitation->Destroy();
 	}
 
-	InviteeColors.Empty();
+	Invitations.Empty();
 }

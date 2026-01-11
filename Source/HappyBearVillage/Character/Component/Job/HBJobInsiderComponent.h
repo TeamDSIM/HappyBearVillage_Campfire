@@ -23,7 +23,7 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void SpawnInvitation();
 	void GatherInvitees();
-	void ClearInvitations();
+	void DestroyInvitations();
 	
 protected:
 	UPROPERTY()
