@@ -7,7 +7,7 @@
 
 UHBJobInfoWidgetComponent::UHBJobInfoWidgetComponent()
 {
-	static ConstructorHelpers::FClassFinder<UHBJobInfoWidget> JobInfoWidgetClassRef(TEXT("/Game/UI/Jobs/WBP_JobInfoWidget.WBP_JobInfoWidget"));
+	static ConstructorHelpers::FClassFinder<UHBJobInfoWidget> JobInfoWidgetClassRef(TEXT("/Game/UI/Jobs/WBP_JobInfoWidget.WBP_JobInfoWidget_C"));
 	if (JobInfoWidgetClassRef.Class)
 	{
 		JobInfoWidgetClass = JobInfoWidgetClassRef.Class;
