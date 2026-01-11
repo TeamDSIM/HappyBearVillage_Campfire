@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "HBCharacterRole.h"
+#include "Character/Stat/HBCharacterRole.h"
 #include "HBCharacterStat.h"
 #include "Components/ActorComponent.h"
 #include "HBPlayerStatComponent.generated.h"

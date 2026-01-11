@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "HBJobBaseComponent.h"
+#include "Character/Component/Job/HBJobBaseComponent.h"
 #include "HBJobInsiderComponent.generated.h"
 
 
