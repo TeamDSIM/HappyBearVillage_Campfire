@@ -10,6 +10,7 @@
 #include "Character/HBCharacterPlayer.h"
 #include "Character/Stat/HBPlayerStatComponent.h"
 #include "Component/HBInGameHUDComponent.h"
+#include "Component/HBJobInfoWidgetComponent.h"
 #include "Component/HBMapWidgetComponent.h"
 #include "Component/HBMinimapWidgetComponent.h"
 #include "GameMode/HBVillageGameMode.h"
@@ -19,6 +20,7 @@ AHBVillagePlayerController::AHBVillagePlayerController()
 	InGameHUDComponent = CreateDefaultSubobject<UHBInGameHUDComponent>(TEXT("InGameHUD"));
 	MinimapWidgetComponent = CreateDefaultSubobject<UHBMinimapWidgetComponent>(TEXT("Minimap"));
 	MapWidgetComponent = CreateDefaultSubobject<UHBMapWidgetComponent>(TEXT("Map"));
+	JobInfoWidgetComponent = CreateDefaultSubobject<UHBJobInfoWidgetComponent>(TEXT("JobInfo"));
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleMapActionRef(TEXT("/Game/Character/Input/Action/IA_ToggleMap.IA_ToggleMap"));
 	if (ToggleMapActionRef.Succeeded())
@@ -117,6 +119,11 @@ void AHBVillagePlayerController::StartGameWidget()
 	InGameHUDComponent->ActivateHUD(this);
 	MinimapWidgetComponent->CreateMinimapWidget(this);
 	MapWidgetComponent->CreateMapWidget(this);
+}
+
+void AHBVillagePlayerController::ShowPlayerJobInfo(AHBPlayerState* TargetPlayer)
+{
+	JobInfoWidgetComponent->ShowJobInfoWidget(this);
 }
 
 void AHBVillagePlayerController::EnterObserveMode()
