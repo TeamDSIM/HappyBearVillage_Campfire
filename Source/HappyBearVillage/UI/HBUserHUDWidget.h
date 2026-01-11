@@ -11,6 +11,7 @@ class UHBUserWidget;
 class AHBCharacterPlayer;
 // Forward declaration for the C++ night stamina widget
 class UHBNightStaminaWidget;
+class UHBHitVignetteHUD;
 
 /**
  * 
@@ -39,6 +40,9 @@ public:
 
 	void SetHUDVisibility(bool IsVisible, UHBUserWidget* InHUD);
 
+	UFUNCTION(BlueprintCallable)
+	void PlayHitVignette(float Intensity);
+
 protected:
 	UPROPERTY()
 	TObjectPtr<class UHBPhaseHUD> PhaseHUDWidget;
@@ -63,4 +67,8 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<class UHBHealthHUD> StaminaHUDWidget;
+
+	UPROPERTY()
+	TObjectPtr<UHBHitVignetteHUD> HitVignetteHUDWidget;
+
 };

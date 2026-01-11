@@ -316,6 +316,9 @@ protected:
 	UFUNCTION(Client, Unreliable)
 	void ClientRPCPlayAnimation(AHBCharacterPlayer* CharacterToPlay);
 
+	UFUNCTION(Client, Unreliable)
+	void ClientRPCPlayHitVignette(float Intensity);
+
 	float AttackTime = 2.2667f;
 	float AttackPlayRate = 1.5f;
 	float LastAttackStartTime = 0.f;

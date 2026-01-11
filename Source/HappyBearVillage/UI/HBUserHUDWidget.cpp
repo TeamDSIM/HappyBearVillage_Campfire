@@ -13,6 +13,7 @@
 #include "Interface/HBCharacterHUDInterface.h"
 #include "Status/HBHealthHUD.h"
 #include "UI/HBNightStaminaWidget.h"
+#include "HBHitVignetteHUD.h"
 
 void UHBUserHUDWidget::NativeConstruct()
 {
@@ -33,6 +34,8 @@ void UHBUserHUDWidget::NativeConstruct()
 	HealthHUDWidget = Cast<UHBHealthHUD>(GetWidgetFromName(TEXT("HealthHUD")));
 	
 	StaminaHUDWidget = Cast<UHBHealthHUD>(GetWidgetFromName(TEXT("StaminaHUD")));
+
+	HitVignetteHUDWidget = Cast<UHBHitVignetteHUD>(GetWidgetFromName(TEXT("HitVignetteHUD")));
 
 	IHBCharacterHUDInterface* HUDPawn = Cast<IHBCharacterHUDInterface>(GetOwningPlayerPawn());
 	if (HUDPawn)
@@ -155,4 +158,13 @@ void UHBUserHUDWidget::SetHUDVisibility(bool IsVisible, UHBUserWidget* InHUD)
 	{
 		InHUD->RemoveFromParent();
 	}
+}
+
+void UHBUserHUDWidget::PlayHitVignette(float Intensity)
+{
+	if (HitVignetteHUDWidget)
+	{
+		HitVignetteHUDWidget->PlayHit(Intensity);
+	}
+
 }

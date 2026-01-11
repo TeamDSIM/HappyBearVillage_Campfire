@@ -306,6 +306,11 @@ float AHBCharacterPlayer::TakeDamage(float DamageAmount, struct FDamageEvent con
 	if (HasAuthority() && ActualDamage > 0.f)
 	{
 		MulticastRPCApplyHitFlash(0.12f);
+
+		const float Intensity =
+			FMath::Clamp(ActualDamage / 10.f, 0.25f, 1.f);
+
+		ClientRPCPlayHitVignette(Intensity);
 	}
 
 	return ActualDamage;
@@ -1009,6 +1014,19 @@ void AHBCharacterPlayer::ServerRPCDance_Implementation(int32 MontageIndex, float
 				}
 			}
 		}
+	}
+}
+
+void AHBCharacterPlayer::ClientRPCPlayHitVignette_Implementation(float Intensity)
+{
+	/**
+	 * Client RPC는 "소유 클라이언트"에서 실행됨
+	 * 그래도 안전하게 IsLocallyControlled 체크
+	 */
+	if (IsLocallyControlled() && CachedHUDWidget)
+	{
+		// 캐릭터가 캐싱해둔 HUD에게 비네트 재생 요청
+		CachedHUDWidget->PlayHitVignette(Intensity);
 	}
 }
 
