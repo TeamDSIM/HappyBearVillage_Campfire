@@ -134,7 +134,7 @@ public:
 
 
 	/* ========== Night Flow : Stamina Recovery (Timer) ========== */
-protected:
+public:
 	void StaminaRecovery();
 
 public:
