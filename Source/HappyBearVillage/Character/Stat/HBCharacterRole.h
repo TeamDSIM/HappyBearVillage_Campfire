@@ -28,21 +28,21 @@ enum class EJobType : uint8
 	MAFIA UMETA(DisplayName = "Mafia"),
 	// 
 	ASSASSIN UMETA(DisplayName = "Assassin"),	// 완
-	FIREBUG UMETA(DisplayName = "FireBug"),
-	BOMBER UMETA(DisplayName = "Bomber"),
+	//FIREBUG UMETA(DisplayName = "FireBug"),
+	//BOMBER UMETA(DisplayName = "Bomber"),
 	
 	// 시민 직업군 =========
 	CITIZEN UMETA(DisplayName = "Citizen"),
 	
 	ARMY UMETA(DisplayName = "Army"),	// 완
 	SLEEPWALKER UMETA(DisplayName = "Sleepwalker"),
-	DETECTOR UMETA(DisplayName = "Detector"),
+	//DETECTOR UMETA(DisplayName = "Detector"),
 	SANTA UMETA(DisplayName = "Santa"),
 	POLICE UMETA(DisplayName = "Police"),
 	INSIDER UMETA(DisplayName = "Insider"),
 	CELEBRITY UMETA(DisplayName = "Celebrity"),
-	HONEYBEAR UMETA(DisplayName = "Pooh"),
-	TREASUREHUNTER UMETA(DisplayName = "TreasureHunter"),
+	HONEYBEAR UMETA(DisplayName = "HoneyBear"),
+	//TREASUREHUNTER UMETA(DisplayName = "TreasureHunter"),
 
 	END UMETA(DisplayName = "End") // 총 개수
 };

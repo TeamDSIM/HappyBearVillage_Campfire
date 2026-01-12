@@ -19,7 +19,7 @@ struct FHBCharacterStat : public FTableRowBase
 
 public:
 	FHBCharacterStat()
-		: AttackDamage(1.f), AttackRange(40.f), AttackRadius(50.f),
+		: AttackDamage(1.f), AttackRange(60.f), AttackRadius(65.f),
 		  AttackSpeed(1.f), MovementSpeed(800.f)
 	{}
 

@@ -394,10 +394,10 @@ void AHBCharacterPlayer::Move(const FInputActionValue& Value)
 	}
 }
 
-// ���� ����
+// 공격 구현
 void AHBCharacterPlayer::Attack()
 {
-	// ���⸦ �������� ������ ��ȯ
+	// 무기를 끼고있지 않으면 반환
 	if (!bWeaponEquipped)
 	{
 		return;
@@ -412,10 +412,10 @@ void AHBCharacterPlayer::Attack()
 	{
 		if (!HasAuthority())
 		{
-			// ���� �� ���� ���ϰ� ����
+			// 공격 중 공격 못하게 막음
 			bCanAttack = false;
 
-			// ���� �ִϸ��̼� ���� �� ����� ��������Ʈ �Լ� ���ε�
+			// 공격 애니메이션 종료 시 실행될 델리게이트 함수 바인딩
 			FTimerHandle Handle;
 
 			GetWorldTimerManager().SetTimer(
@@ -428,11 +428,11 @@ void AHBCharacterPlayer::Attack()
 				), AttackTime / AttackPlayRate, false, -1.f
 			);
 
-			// Ŭ���̾�Ʈ�� �ִϸ��̼� ���
+			// 클라이언트의 애니메이션 재생
 			PlayAttackAnimation();
 		}
 
-		// ServerRPC ���� ����
+		// ServerRPC 공격 실행
 		ServerRPCAttack(GetWorld()->GetGameState()->GetServerWorldTimeSeconds());
 	}
 }
@@ -453,7 +453,7 @@ void AHBCharacterPlayer::Interaction()
 		return;
 	}
 
-	// ���� Phase �� ���� Phase �� �ƴϸ� ��ȣ�ۿ� ���� ���ϵ��� ����
+	// 현재 Phase 가 난투 Phase 가 아니면 상호작용 하지 못하도록 방지
 	if (GameState->CurrentPhase == EGamePhase::Discussion || GameState->CurrentPhase == EGamePhase::VoteCheck || GameState->CurrentPhase == EGamePhase::Day)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Interaction is not allowed in this phase"));
@@ -912,7 +912,7 @@ bool AHBCharacterPlayer::ServerRPCNotifyMiss_Validate(FVector_NetQuantize TraceS
 
 void AHBCharacterPlayer::PlayAttackAnimation()
 {
-	// ĳ���� �޽� ���� ��Ÿ�� ���
+	// 캐릭터 메시 공격 몽타주 재생
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance)
 	{
@@ -920,7 +920,7 @@ void AHBCharacterPlayer::PlayAttackAnimation()
 		AnimInstance->Montage_Play(AttackMontage, AttackPlayRate);
 	}
 
-	// @Todo: 1��Ī ���� ��Ÿ�� ���
+	// @Todo: 1인칭 공격 몽타주 재생
 	UAnimInstance* FPSAnimInstance = FPSMeshComponent->GetAnimInstance();
 	if (FPSAnimInstance)
 	{
