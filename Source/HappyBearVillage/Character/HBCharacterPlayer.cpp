@@ -978,7 +978,7 @@ void AHBCharacterPlayer::ServerRPCDance_Implementation(int32 MontageIndex, float
 
 	// 무기 숨기기(서버 측 로컬 처리가 필요하면 실행)
 	// 서버의 Pawn(호스트 클라이언트인 경우)은 직접 처리
-	SetWeaponVisibleForDance(false);
+	// SetWeaponVisibleForDance(false);
 
 	// 모든 플레이어에게 춤 재생을 지시
 	UWorld* World = GetWorld();
@@ -1055,7 +1055,7 @@ void AHBCharacterPlayer::PlayDanceAnimation(int32 MontageIndex)
 	}
 
 	// 춤 재생 중에는 무기 숨기기
-	SetWeaponVisibleForDance(false);
+	// SetWeaponVisibleForDance(false);
 
 	// 몽타주 길이만큼 대기 후 무기 복구
 	float MontageLength = DanceMontages[MontageIndex]->GetPlayLength();
@@ -1065,6 +1065,7 @@ void AHBCharacterPlayer::PlayDanceAnimation(int32 MontageIndex)
 		MontageLength = 1.0f;
 	}
 
+	/*
 	FTimerHandle RestoreHandle;
 	GetWorldTimerManager().SetTimer(
 		RestoreHandle,
@@ -1075,6 +1076,7 @@ void AHBCharacterPlayer::PlayDanceAnimation(int32 MontageIndex)
 		MontageLength,
 		false
 	);
+	*/
 }
 
 void AHBCharacterPlayer::SetWeaponVisibleForDance(bool bVisible)
