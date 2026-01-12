@@ -139,8 +139,8 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 			}
 			break;
 			
-		case EJobType::FIREBUG:
-		case EJobType::BOMBER:
+		//case EJobType::FIREBUG:
+		//case EJobType::BOMBER:
 		case EJobType::CITIZEN:
 			break;
 			
@@ -156,9 +156,9 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 			}
 			break;
 
-		case EJobType::DETECTOR:
-			HBCharacterPlayer->AssignJob(UHBJobDetectorComponent::StaticClass());
-			break;
+		//case EJobType::DETECTOR:
+			//HBCharacterPlayer->AssignJob(UHBJobDetectorComponent::StaticClass());
+			//break;
 		case EJobType::SANTA:
 			HBCharacterPlayer->AssignJob(UHBJobSantaComponent::StaticClass());
 			break;
@@ -185,8 +185,8 @@ void UHBPlayerStatComponent::InitCharacterRole(EJobType InJob)
 			}
 			break;
 			
-		case EJobType::TREASUREHUNTER:
-			break;
+		//case EJobType::TREASUREHUNTER:
+			//break;
 			
 		default:
 			break;
