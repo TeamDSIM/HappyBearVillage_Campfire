@@ -506,6 +506,8 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 		FTimerDelegate::CreateLambda(
 			[this, NewPhase]()
 			{
+				if (this == nullptr) return;
+
 				AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 				if (!HBGameState)
 				{
