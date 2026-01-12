@@ -788,9 +788,11 @@ void AHBCharacterPlayer::AttackHitCheck()
 		// �������
 		else
 		{
+#if WITH_EDITOR
 			// ���� ���� ����� ǥ��
 			FColor DebugColor = HitDetected ? FColor::Green : FColor::Red;
 			DrawDebugAttackRange(DebugColor, Start, End, Forward);
+#endif
 
 			// �浹 �ߴٸ�
 			if (HitDetected)

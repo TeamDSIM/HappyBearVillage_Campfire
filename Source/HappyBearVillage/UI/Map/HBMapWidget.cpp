@@ -64,8 +64,14 @@ void UHBMapWidget::ClearMapMarks()
 void UHBMapWidget::RefreshPlayerColorList()
 {
 	PlayerColorInfoList->ClearListItems();
+
+	UWorld* World = GetWorld();
+	if (!World) return;
+
+	AHBMafiaGameState* GameState = World->GetGameState<AHBMafiaGameState>();
+	if (!GameState) return;
 	
-	for (APlayerState* HBPlayerState : GetWorld()->GetGameState()->PlayerArray)
+	for (APlayerState* HBPlayerState : GameState->PlayerArray)
 	{
 		PlayerColorInfoList->AddItem(HBPlayerState);
 	}
