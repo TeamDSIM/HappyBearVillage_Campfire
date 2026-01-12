@@ -7,6 +7,8 @@
 #include "GameState/HBMafiaGameState.h"
 #include "HBUserHUDWidget.generated.h"
 
+enum class EJobType : uint8;
+class UHBJobHUD;
 class UHBUserWidget;
 class AHBCharacterPlayer;
 // Forward declaration for the C++ night stamina widget
@@ -35,6 +37,7 @@ public:
 	void UpdateStamina(int32 NewStamina);
 	void UpdatePoliceNotice(bool bIsPoliceNotice);
 	void UpdateHealth(int32 NewHealth);
+	void UpdateJob(EJobType NewJob);
 
 	void PlayFadeAnimation(bool bIsFadeIn);
 
@@ -70,5 +73,8 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UHBHitVignetteHUD> HitVignetteHUDWidget;
+
+	UPROPERTY()
+	TObjectPtr<UHBJobHUD> JobHUDWidget;
 
 };

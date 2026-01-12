@@ -25,13 +25,13 @@ protected:
 	virtual void NativeConstruct() override;
 
 	UPROPERTY(EditAnywhere)
-	TArray<TObjectPtr<UTexture2D>> JobIconArray;
+	TArray<TObjectPtr<class UTexture2D>> JobIconArray;
 	
 	UPROPERTY()
-	TObjectPtr<UImage> JobImage;
+	TObjectPtr<class UImage> JobInfoImage;
 	
 	UPROPERTY()
-	TObjectPtr<UTextBlock> JobText;
+	TObjectPtr<class UTextBlock> JobInfoText;
 	
 	UPROPERTY()
 	FString JobTextString;

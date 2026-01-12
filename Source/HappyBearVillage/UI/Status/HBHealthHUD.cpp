@@ -33,13 +33,15 @@ void UHBHealthHUD::UpdateHealth(int32 NewHealth)
 		{
 			continue;
 		}
-
+		
 		HBHealthSlot->SetImage(HeartTexture);
 
 		UHorizontalBoxSlot* BoxSlot = HeartSlots->AddChildToHorizontalBox(HBHealthSlot);
 		if (BoxSlot)
 		{
 			BoxSlot->SetPadding(FMargin(8.f, 0.f));
+			BoxSlot->SetHorizontalAlignment(HAlign_Left);
+			BoxSlot->SetVerticalAlignment(VAlign_Center);
 		}
 	}
 }
