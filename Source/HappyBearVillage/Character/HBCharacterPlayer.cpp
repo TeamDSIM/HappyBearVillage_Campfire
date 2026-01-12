@@ -1084,7 +1084,6 @@ void AHBCharacterPlayer::SetWeaponVisibleForDance(bool bVisible)
 	{
 		// 가시성 및 히든 플래그 동기화
 		CurrentWeapon->SetVisibility(bVisible, true);
-		CurrentWeapon->SetHiddenInGame(!bVisible, true);
 	}
 
 	// 1인칭(First-person) 무기 처리
@@ -1092,7 +1091,6 @@ void AHBCharacterPlayer::SetWeaponVisibleForDance(bool bVisible)
 	{
 		// FPS 무기는 원래 OnlyOwnerSee 설정이 있을 수 있으므로 단순히 히든/가시성 토글
 		FPSCurrentWeapon->SetVisibility(bVisible, true);
-		FPSCurrentWeapon->SetHiddenInGame(!bVisible, true);
 	}
 
 	// 필요 시 추가적으로 충돌 비활성화/활성화 등도 여기서 처리할 수 있음
