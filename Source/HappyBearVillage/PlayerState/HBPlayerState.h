@@ -13,6 +13,7 @@
  */
 
 DECLARE_MULTICAST_DELEGATE(FOnDamageChanged);
+DECLARE_MULTICAST_DELEGATE(FOnPlayerInGameDataChanged);
 
 UCLASS()
 class HAPPYBEARVILLAGE_API AHBPlayerState : public APlayerState
@@ -66,6 +67,7 @@ public:
 	void OnRep_PlayerInGameData();
 
 	FOnDamageChanged OnDamageChanged;
+	FOnPlayerInGameDataChanged OnPlayerInGameDataChanged;
 
 protected:
 	UPROPERTY(Replicated)

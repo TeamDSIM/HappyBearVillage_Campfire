@@ -7,6 +7,7 @@
 #include "Character/HBCharacterPlayer.h"
 #include "Character/Stat/HBPlayerStatComponent.h"
 #include "GameState/HBMafiaGameState.h"
+#include "PlayerState/HBPlayerState.h"
 #include "Subsystem/HBVillageGenerationWorldSubsystem.h"
 #include "UI/Map/HBMapWidget.h"
 
@@ -47,6 +48,9 @@ void UHBMapWidgetComponent::CreateMapWidget(APlayerController* InPlayerControlle
 	HBGameState->OnPlayerStateArrayChanged.AddUObject(MapWidget, &UHBMapWidget::RefreshPlayerColorList);
 	HBGameState->OnGamePhaseChanged.AddUObject(this, &UHBMapWidgetComponent::SetSyncStateByPhase);
 
+	AHBPlayerState* HBPlayerState = Cast<AHBPlayerState>(InPlayerController->PlayerState);
+	HBPlayerState->OnPlayerInGameDataChanged.AddUObject(MapWidget, &UHBMapWidget::RefreshPlayerColorList);
+
 	AHBCharacterPlayer* Character = Cast<AHBCharacterPlayer>(InPlayerController->GetPawn());
 	Character->GetStat()->OnPlayerJobChanged.AddUObject(MapWidget, &UHBMapWidget::SetJobDescText);
 }
@@ -55,7 +59,6 @@ void UHBMapWidgetComponent::ShowMapWidget()
 {
 	if (!IsMapValid()) return;
 	
-	//MapWidget->SetVisibility(ESlateVisibility::Visible);
 	MapWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	bIsMapVisible = true;
 	SetComponentTickEnabled(true);

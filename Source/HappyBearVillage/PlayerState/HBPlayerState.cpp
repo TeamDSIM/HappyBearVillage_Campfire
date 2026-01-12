@@ -72,6 +72,8 @@ void AHBPlayerState::OnRep_PlayerInGameData()
 			HBCharacterPlayer->GetStat()->OnRep_CharacterRole();
 		}
 	}
+
+	OnPlayerInGameDataChanged.Broadcast();
 }
 
 void AHBPlayerState::SetUserID(FString NewID)
