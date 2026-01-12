@@ -263,7 +263,9 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 	{
 		if (i < MafiaNum)
 		{
-			PlayerJobs.Add(MafiaPool.Pop());
+			//PlayerJobs.Add(MafiaPool.Pop());
+			// @PHYTODO : 나중에
+			PlayerJobs.Add(EJobType::ASSASSIN);
 		}
 		else
 		{
