@@ -500,15 +500,25 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 	}
 	HBGameState->OnRep_RemainingTime();
 
+	// WeakPtr를 생성하여 람다에서 안전하게 참조하도록 함
+	TWeakObjectPtr<AHBVillageGameMode> WeakThis(this);
+
+	
 	// 각 페이즈 종료 시 다음 페이즈로 넘겨줄 델리게이트 생성
 	World->GetTimerManager().SetTimer(
 		PhaseTimerHandle,
 		FTimerDelegate::CreateLambda(
-			[this, NewPhase]()
+			[WeakThis, NewPhase]()
 			{
-				if (this == nullptr) return;
+				// 객체가 살아있는지 확인
+				AHBVillageGameMode* StrongThis = WeakThis.Get();
+				if (!StrongThis || !StrongThis->GetWorld())
+				{
+					return;
+				}
 
-				AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
+
+				AHBMafiaGameState* HBGameState = StrongThis->GetWorld()->GetGameState<AHBMafiaGameState>();
 				if (!HBGameState)
 				{
 					return;
@@ -517,7 +527,7 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 				switch (NewPhase)
 				{
 				case EGamePhase::Day:
-					StartDiscussion();
+					StrongThis->StartDiscussion();
 					break;
 
 				case EGamePhase::Discussion:
@@ -525,46 +535,46 @@ void AHBVillageGameMode::SetPhase(EGamePhase NewPhase, float Duration)
 						// 첫날이면 Night 로 스킵
 						if (HBGameState->Date == 1)
 						{
-							StartVoteCheck();
+							StrongThis->StartVoteCheck();
 						}
 						// 첫날이 아니면 fight 로 이동
 						else
 						{
-							StartFight();
+							StrongThis->StartFight();
 						}
 					}
 					break;
 
 				case EGamePhase::Fight:
-					StartVote();
+					StrongThis->StartVote();
 					break;
 
 				case EGamePhase::Vote:
 					{
 						// 밤으로 전환 전에 사망 체크
-						UHBGameVoteSubsystem* VoteSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<
+						UHBGameVoteSubsystem* VoteSubsystem = StrongThis->GetWorld()->GetGameInstance()->GetSubsystem<
 							UHBGameVoteSubsystem>();
 						if (VoteSubsystem)
 						{
 							VoteSubsystem->CheckTargetIsDead();
 						}
 
-						if (!bIsGameEnd)
+						if (!StrongThis->bIsGameEnd)
 						{
-							StartVoteCheck();
+							StrongThis->StartVoteCheck();
 						}
 					}
 					break;
 					
 				case EGamePhase::VoteCheck:
-					StartNight();
+					StrongThis->StartNight();
 					break;
 
 				case EGamePhase::Night:
 					{
 						// 직업의 밤 종료 함수 호출
-						GetHBGameModePlayerControlComponent()->CallJobNightPhaseEnd(HBGameState);
-						StartDay();
+						StrongThis->GetHBGameModePlayerControlComponent()->CallJobNightPhaseEnd(HBGameState);
+						StrongThis->StartDay();
 					}
 					break;
 
