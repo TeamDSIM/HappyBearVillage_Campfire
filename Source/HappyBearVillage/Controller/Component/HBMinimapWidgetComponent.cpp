@@ -2,6 +2,8 @@
 
 
 #include "HBMinimapWidgetComponent.h"
+
+#include "GameState/HBMafiaGameState.h"
 #include "Subsystem/HBVillageGenerationWorldSubsystem.h"
 #include "UI/Map/HBMinimapWidget.h"
 
@@ -29,11 +31,13 @@ void UHBMinimapWidgetComponent::CreateMinimapWidget(APlayerController* InPlayerC
 	UHBVillageGenerationWorldSubsystem* VillageGenerationSystem = GetWorld()->GetSubsystem<UHBVillageGenerationWorldSubsystem>();
 	VillageGenerationSystem->OnVillageGenerated.AddUObject(this, &UHBMinimapWidgetComponent::ShowMinimapWidget);
 	VillageGenerationSystem->OnVillageGenerated.AddUObject(this, &UHBMinimapWidgetComponent::SetMinimapTexture);
+
+	AHBMafiaGameState* HBGameState = Cast<AHBMafiaGameState>(GetWorld()->GetGameState());
+	HBGameState->OnGameProgressChanged.AddUObject(this, &UHBMinimapWidgetComponent::SetMinimapByGameProgress);
 }
 
 void UHBMinimapWidgetComponent::ShowMinimapWidget()
 {
-	//MinimapWidget->SetVisibility(ESlateVisibility::Visible);
 	MinimapWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	SetComponentTickEnabled(true);
 }
@@ -42,6 +46,14 @@ void UHBMinimapWidgetComponent::HideMinimapWidget()
 {
 	MinimapWidget->SetVisibility(ESlateVisibility::Hidden);
 	SetComponentTickEnabled(false);
+}
+
+void UHBMinimapWidgetComponent::SetMinimapByGameProgress(EGameProgress GameProgress)
+{
+	if (GameProgress == EGameProgress::GameOver)
+	{
+		HideMinimapWidget();
+	}
 }
 
 void UHBMinimapWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

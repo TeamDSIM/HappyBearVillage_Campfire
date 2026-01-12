@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameState/HBMafiaGameState.h"
 #include "HBMinimapWidgetComponent.generated.h"
-
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class HAPPYBEARVILLAGE_API UHBMinimapWidgetComponent : public UActorComponent
@@ -18,6 +18,7 @@ public:
 	void CreateMinimapWidget(APlayerController* InPlayerController);
 	void ShowMinimapWidget();
 	void HideMinimapWidget();
+	void SetMinimapByGameProgress(EGameProgress GameProgress);
 	
 protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

@@ -153,7 +153,7 @@ void AHBVillageGameMode::StopGame()
 	bIsGameEnd = false;
 	bIsCivilWin = false;
 	bIsMafiaWin = false;
-
+	
 	HBGameState->CurrentPhase = EGamePhase::Lobby;
 	HBGameState->RemainingTime = 0.f;
 	HBGameState->Date = 0;
@@ -235,6 +235,9 @@ void AHBVillageGameMode::CheckGameEnd()
 			}
 
 			HBGameState->OnRep_GameEnd();
+
+			HBGameState->GameProgress = EGameProgress::GameOver;
+			HBGameState->OnRep_GameProgress();
 		}
 
 		TWeakObjectPtr<AHBVillageGameMode> WeakThis(this);
