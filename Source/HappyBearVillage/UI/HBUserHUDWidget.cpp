@@ -14,6 +14,7 @@
 #include "Status/HBHealthHUD.h"
 #include "UI/HBNightStaminaWidget.h"
 #include "HBHitVignetteHUD.h"
+#include "HBJobHUD.h"
 
 void UHBUserHUDWidget::NativeConstruct()
 {
@@ -36,6 +37,8 @@ void UHBUserHUDWidget::NativeConstruct()
 	StaminaHUDWidget = Cast<UHBHealthHUD>(GetWidgetFromName(TEXT("StaminaHUD")));
 
 	HitVignetteHUDWidget = Cast<UHBHitVignetteHUD>(GetWidgetFromName(TEXT("HitVignetteHUD")));
+
+	JobHUDWidget = Cast<UHBJobHUD>(GetWidgetFromName(TEXT("JobHUD")));
 
 	IHBCharacterHUDInterface* HUDPawn = Cast<IHBCharacterHUDInterface>(GetOwningPlayerPawn());
 	if (HUDPawn)
@@ -129,6 +132,14 @@ void UHBUserHUDWidget::UpdateHealth(int32 NewHealth)
 	{
 		UE_LOG(LogHY, Log, TEXT("HUDWidget Update Health %d"), NewHealth);
 		HealthHUDWidget->UpdateHealth(NewHealth);
+	}
+}
+
+void UHBUserHUDWidget::UpdateJob(EJobType NewJob)
+{
+	if (JobHUDWidget)
+	{
+		JobHUDWidget->UpdateJobInfo(NewJob);
 	}
 }
 

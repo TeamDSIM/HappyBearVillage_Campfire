@@ -228,6 +228,11 @@ void AHBCharacterPlayer::PostInitializeComponents()
 		{
 			OnPlayerHealthChanged.Broadcast(NewHealth);
 		});
+
+		Stat->OnPlayerJobChanged.AddLambda([this](EJobType NewJob)
+		{
+			OnPlayerJobChanged.Broadcast(NewJob);
+		});
 	}
 }
 
@@ -1111,6 +1116,7 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 			InHUDWidget->UpdateDate(GameState->Date);
 
 			InHUDWidget->UpdateStamina(CurrentStamina);
+			InHUDWidget->UpdateJob(GetStat()->GetCharacterRole().Job);
 			
 			if (Stat)
 			{
@@ -1131,7 +1137,8 @@ void AHBCharacterPlayer::SetupHUDWidget(UHBUserHUDWidget* InHUDWidget)
 			OnPoliceEffectChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdatePoliceNotice);
 
 			OnPlayerHealthChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateHealth);
-			
+
+			OnPlayerJobChanged.AddUObject(InHUDWidget, &UHBUserHUDWidget::UpdateJob);
 		}
 
 		// HUD�� Stamina ����: �ʱⰪ ���� �� ĳ�� (���� Ŭ���̾�Ʈ������)

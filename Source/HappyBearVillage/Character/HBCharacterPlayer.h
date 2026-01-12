@@ -11,6 +11,7 @@
 #include "Interface/HBCharacterHUDInterface.h"
 #include "TimerManager.h"
 #include "Component/Job/HBJobBaseComponent.h"
+#include "Stat/HBCharacterRole.h"
 #include "HBCharacterPlayer.generated.h"
 
 /**
@@ -25,6 +26,8 @@ class UHBCharacterMafiaAttackComponent;
 /* ================= Night Flow ================= */
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnCurrentStaminaChanged, int32 /* Stamina */)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerHealthChanged, int32 /* Health */)
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerJobChanged, EJobType /* Job */)
 
 /* ================================================= */
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPoliceEffectChanged, bool /* bHasPoliceEffect */)
@@ -88,6 +91,7 @@ public:
 	FOnCurrentStaminaChanged OnCurrentStaminaChanged;
 	FOnPoliceEffectChanged OnPoliceEffectChanged;
 	FOnPlayerHealthChanged OnPlayerHealthChanged;
+	FOnPlayerJobChanged OnPlayerJobChanged;
 
 protected:
 	// 현재 밤에 적용되는 스태미너
