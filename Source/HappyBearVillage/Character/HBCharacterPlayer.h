@@ -169,6 +169,7 @@ public:
 	}
 
 	FORCEINLINE int32 GetMaxStamina() const { return MaxStamina; }
+	FORCEINLINE int32 GetNightStamina() const { return NightStamina; }
 
 	/* ========== Movement / Action ========== */
 public:

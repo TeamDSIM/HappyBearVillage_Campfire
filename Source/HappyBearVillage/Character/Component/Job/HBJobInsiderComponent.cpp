@@ -72,7 +72,9 @@ void UHBJobInsiderComponent::GatherInvitees()
 		if (InviteeColors.Contains(Character->PlayerColor))
 		{
 			float RandomTheta = FMath::DegreesToRadians(FMath::FRandRange(0.f, 360.f));
+			int32 PreTeleportStamina = Character->GetCurrentStamina();
 			Character->SetActorLocation(GetOwner()->GetActorLocation() + FVector(FMath::Cos(RandomTheta), FMath::Sin(RandomTheta), 0.f) * 50);
+			Character->SetCurrentStamina(PreTeleportStamina);
 			UE_LOG(LogTemp, Log, TEXT("Gather Invitee"));
 		}
 	}

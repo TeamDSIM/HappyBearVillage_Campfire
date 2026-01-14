@@ -458,13 +458,13 @@ void AHBVillageGameMode::StartNight()
 				Character->RenderColor = FLinearColor::Black;
 				Character->OnRep_RenderColor();
 				
-				Character->ResetNightState();
-				
 				UHBJobBaseComponent* JobComponent = Character->GetJobComponent();
 				if (JobComponent)
 				{
 					JobComponent->NightPhaseBegin();
 				}
+				
+				Character->ResetNightState();
 			}
 		}
 	}

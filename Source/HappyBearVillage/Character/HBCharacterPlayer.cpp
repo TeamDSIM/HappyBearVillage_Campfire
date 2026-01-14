@@ -346,7 +346,7 @@ void AHBCharacterPlayer::OnRep_InitNightCollision()
 	}
 	else
 	{
-		GetCapsuleComponent()->SetCollisionProfileName(TEXT("InsideBearCollision"));
+		GetCapsuleComponent()->SetCollisionProfileName(TEXT("OutsideBearCollision"));
 	}
 }
 
@@ -1367,8 +1367,6 @@ void AHBCharacterPlayer::ResetNightState()
 	
 	bExitedHouseThisNight = false;
 	OnRep_ExitedHouseThisNight();
-
-	
 }
 
 void AHBCharacterPlayer::ProcessNightEnd()
