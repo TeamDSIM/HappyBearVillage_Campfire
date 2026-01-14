@@ -64,6 +64,9 @@ void UHBJobInsiderComponent::GatherInvitees()
 {
 	if (!GetOwner()->HasAuthority()) return;
 
+	AHBHouse* TargetHouse = DetectHouse();
+	if (!TargetHouse) return;
+
 	for (APlayerState* PlayerState : GetWorld()->GetGameState()->PlayerArray)
 	{
 		AHBPlayerState* HBPlayerState = Cast<AHBPlayerState>(PlayerState);
