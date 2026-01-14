@@ -324,7 +324,7 @@ void AHBVillageGameMode::StartDay()
 
 void AHBVillageGameMode::StartDiscussion()
 {
-	SetPhase(EGamePhase::Discussion, 30.f);
+	SetPhase(EGamePhase::Discussion, 20.f);
 
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (HBGameState)
@@ -341,7 +341,7 @@ void AHBVillageGameMode::StartFight()
 {
 	//SetPhase(EGamePhase::Fight, 20.f);
 		//Test 위해 시간 늘렸습니다.
-	SetPhase(EGamePhase::Fight, 50.f);
+	SetPhase(EGamePhase::Fight, 30.f);
 
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (HBGameState)
@@ -364,7 +364,7 @@ void AHBVillageGameMode::StartVote()
 {
 	//SetPhase(EGamePhase::Vote, 25.f);
 	//Test 위해 시간 늘렸습니다.
-	SetPhase(EGamePhase::Vote, 50.f);
+	SetPhase(EGamePhase::Vote, 20.f);
 
 	AHBMafiaGameState* HBGameState = GetWorld()->GetGameState<AHBMafiaGameState>();
 	if (HBGameState)
@@ -429,7 +429,7 @@ void AHBVillageGameMode::StartNight()
 	{
 		return;
 	}
-	SetPhase(EGamePhase::Night, 180.f);
+	SetPhase(EGamePhase::Night, 120.f);
 	HBGameState->OnRep_GamePhase();
 	
 	//모든 플레이어 집에 스폰
