@@ -187,7 +187,7 @@ void UHBJobAssassinComponent::EndAction()
 	}
 	
 	bIsSprint = false;
-	ApplyMoveSpeed(800.f);
+	ApplyMoveSpeed(600.f);
 }
 
 void UHBJobAssassinComponent::OnRep_MaxWalkSpeed()
