@@ -790,8 +790,8 @@ void AHBCharacterPlayer::AttackHitCheck()
 		{
 #if WITH_EDITOR
 			// ���� ���� ����� ǥ��
-			FColor DebugColor = HitDetected ? FColor::Green : FColor::Red;
-			DrawDebugAttackRange(DebugColor, Start, End, Forward);
+			//FColor DebugColor = HitDetected ? FColor::Green : FColor::Red;
+			//DrawDebugAttackRange(DebugColor, Start, End, Forward);
 #endif
 
 			// �浹 �ߴٸ�
@@ -876,8 +876,8 @@ void AHBCharacterPlayer::ServerRPCNotifyHit_Implementation(const FHitResult& Hit
 		}
 
 		// �浹 �� Notify �̴� ����� �÷��� Green �� �־ ������� ��
-		DrawDebugAttackRange(FColor::Green, HitResult.TraceStart, HitResult.TraceEnd,
-		                     HitActor->GetActorForwardVector());
+		//DrawDebugAttackRange(FColor::Green, HitResult.TraceStart, HitResult.TraceEnd,
+		//                     HitActor->GetActorForwardVector());
 	}
 }
 
@@ -897,7 +897,7 @@ void AHBCharacterPlayer::ServerRPCNotifyMiss_Implementation(FVector_NetQuantize 
                                                             FVector_NetQuantizeNormal TraceDir, float HitCheckTime)
 {
 	// �浹 ���� �� ���� ���� ����� �׸���
-	DrawDebugAttackRange(FColor::Red, TraceStart, TraceEnd, TraceDir);
+	//DrawDebugAttackRange(FColor::Red, TraceStart, TraceEnd, TraceDir);
 }
 
 bool AHBCharacterPlayer::ServerRPCNotifyMiss_Validate(FVector_NetQuantize TraceStart, FVector_NetQuantize TraceEnd,

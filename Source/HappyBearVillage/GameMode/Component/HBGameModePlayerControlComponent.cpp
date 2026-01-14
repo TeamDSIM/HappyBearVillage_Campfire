@@ -29,7 +29,7 @@ void UHBGameModePlayerControlComponent::InitPlayers(AHBMafiaGameState* InGameSta
 	MafiaNum = 0;
 	PlayerNum = 0;
 	InitPlayersJobList(Players.Num());
-	Algo::RandomShuffle(PlayerJobs);
+	//Algo::RandomShuffle(PlayerJobs);
 
 	TArray<FLinearColor> PlayerColors;
 	InitPlayersColorList(PlayerColors, Players.Num());
@@ -234,8 +234,8 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 	}
 
 	// 풀 셔플
-	Algo::RandomShuffle(MafiaPool);
-	Algo::RandomShuffle(CitizenPool);
+	//Algo::RandomShuffle(MafiaPool);
+	//Algo::RandomShuffle(CitizenPool);
 
 	// 디버깅용 직업 설정
 	// 마피아와 시민 직업 풀을 이용해서 직업 부여
@@ -259,14 +259,34 @@ void UHBGameModePlayerControlComponent::InitPlayersJobList(int InPlayerNum)
 	// }
 
 	// 마피아와 시민 직업 풀을 이용해서 직업 부여
+	// for (int i = 0; i < InPlayerNum; ++i)
+	// {
+	// 	if (i < MafiaNum)
+	// 	{
+	// 		//PlayerJobs.Add(MafiaPool.Pop());
+	// 		// @PHYTODO : 나중에
+	// 		PlayerJobs.Add(EJobType::ASSASSIN);
+	// 	}
+	// 	else
+	// 	{
+	// 		PlayerJobs.Add(CitizenPool.Pop());
+	// 	}
+	// }
+
 	for (int i = 0; i < InPlayerNum; ++i)
 	{
-		if (i < MafiaNum)
+		if (i == 0)
+		{
+			PlayerJobs.Add(EJobType::INSIDER);
+		}
+		
+		else if (i < MafiaNum + 1)
 		{
 			//PlayerJobs.Add(MafiaPool.Pop());
 			// @PHYTODO : 나중에
 			PlayerJobs.Add(EJobType::ASSASSIN);
 		}
+		
 		else
 		{
 			PlayerJobs.Add(CitizenPool.Pop());
