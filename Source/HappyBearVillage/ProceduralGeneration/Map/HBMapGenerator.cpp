@@ -72,7 +72,7 @@ void UHBMapGenerator::GenerateField(FHBMapData InMapData, UWorld* InWorld)
 	AHBVillage* Village = InWorld->SpawnActor<AHBVillage>(AHBVillage::StaticClass());
 	Village->ApplyVillageLocation(InMapData);
 	Village->ApplyVillageSize(InMapData);
-	Village->SpawnBlockingVolumes(InMapData);
+	//Village->SpawnBlockingVolumes(InMapData);
 	VillageActor = Village;
 }
 

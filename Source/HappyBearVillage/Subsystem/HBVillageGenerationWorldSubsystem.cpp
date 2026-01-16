@@ -31,7 +31,7 @@ void UHBVillageGenerationWorldSubsystem::GenerateVillage(FHBVillageGenerationDat
 
 	MapGenerator->GenerateField(MapData, GetWorld());
 	MapGenerator->GenerateHouse(MapData, GetWorld());
-	MapGenerator->GenerateForestSpline(MapData, GetWorld());
+	//MapGenerator->GenerateForestSpline(MapData, GetWorld());
 	MapGenerator->GenerateVillage(MapData, GetWorld());
 
 	bIsGenerated = true;
